@@ -6,11 +6,14 @@ class Line:
         self.name = name
 
     def __str__(self):
-        return "Line(%s, %s)" % (str(self.p1), str(self.p2))
+        return "Line %s(%s, %s)" % (str(self.name), str(self.p1), str(self.p2))
 
     def __repr__(self):
-        return "Line(%s, %s)" % (str(self.p1), str(self.p2))
+        return "Line %s(%s, %s)" % (str(self.name), str(self.p1), str(self.p2))
 
     def __eq__(self, other):
-        return ((self.p1 == other.p1 or self.p1 == other.p2) and
-                (self.p2 == other.p2 or self.p2 == other.p1))
+        if isinstance(other, Line):
+            return ((self.p1 == other.p1 or self.p1 == other.p2) and
+                    (self.p2 == other.p2 or self.p2 == other.p1))
+        else:
+            return False

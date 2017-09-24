@@ -6,10 +6,13 @@ class Point:
         self.name = name
 
     def __str__(self):
-        return "Point(%s, %s)" % (str(self.x), str(self.y))
+        return "Point %s(%s, %s)" % (str(self.name), str(self.x), str(self.y))
 
     def __repr__(self):
-        return "Point(%s, %s)" % (str(self.x), str(self.y))
+        return "Point %s(%s, %s)" % (str(self.name), str(self.x), str(self.y))
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        if isinstance(other, Point):
+            return self.x == other.x and self.y == other.y
+        else:
+            return False
