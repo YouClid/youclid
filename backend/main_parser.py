@@ -99,7 +99,26 @@ def parse_center(args, obj):
     pass
 
 def parse_triangle(args, obj):
-    pass
+    n = ''.join(args)
+    name = rotate_lex(n)
+    point_list = []
+
+    for p in name:
+        if obj.get(p) is None:
+            point_list.append(primitives.Point(p))
+        else:
+            point_list.append(obj[p])
+
+    if obj.get(name) is None:
+        triangle = primitives.Triangle(name)
+        triangle.p1 = point_list[0]
+        triangle.p2 = point_list[1]
+        triangle.p3 = point_list[2]
+        obj[name] = triangle
+    else:
+        triangle = obj[name]
+
+    return triangle
 
 def rotate(l, n):
     return l[-n:] + l[:-n]

@@ -1,5 +1,5 @@
-class Circle:
-    """Represents a circle in 2D"""
+class Triangle:
+    """Represents a triangle in 2D"""
     def __init__(self, name):
         self.name = name
         self.p1 = None
@@ -7,13 +7,13 @@ class Circle:
         self.p3 = None
 
     def __str__(self):
-        return "Circle %s(%s, %s, %s)" % (str(self.name),
+        return "Triangle %s(%s, %s, %s)" % (str(self.name),
                                      str(self.p1),
                                      str(self.p2),
                                      str(self.p3))
 
     def __repr__(self):
-        return "Circle %s(%s, %s, %s)" % (str(self.name),
+        return "Triangle %s(%s, %s, %s)" % (str(self.name),
                                      str(self.p1),
                                      str(self.p2),
                                      str(self.p3))
