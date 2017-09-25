@@ -50,7 +50,26 @@ def parse_line(args, obj):
     return line
 
 def parse_circle(args, obj):
-    pass
+    n = ''.join(args)
+    name = rotate_lex(n)
+    point_list = []
+
+    for p in name:
+        if obj.get(p) is None:
+            point_list.append(primitives.Point(p))
+        else:
+            point_list.append(obj[p])
+
+    if obj.get(name) is None:
+        circle = primitives.Circle(name)
+        circle.p1 = point_list[0]
+        circle.p2 = point_list[1]
+        circle.p3 = point_list[2]
+        obj[name] = circle
+    else:
+        circle = obj[name]
+
+    return circle
 
 def parse_point(args, obj):
     name = args
@@ -68,6 +87,16 @@ def parse_center(args, obj):
 def parse_triangle(args, obj):
     pass
 
+def rotate(l, n):
+    return l[-n:] + l[:-n]
+
+def rotate_lex(l):
+    ind = l.index(min(l))
+    if(ind != 0):
+        rot = len(l) - ind
+        return rotate(l, rot)
+    else:
+        return l
 #-----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
