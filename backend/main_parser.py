@@ -3,6 +3,7 @@
 import sys, re
 import primitives
 import pprint
+import json
 
 def main(argv):
 
@@ -25,8 +26,21 @@ def main(argv):
             arg = re.findall('{.*?}', i)
             parsers[func[0].strip("\\").strip("{")](
                 arg[0].strip("{").strip("}"), object_dict)
+    print(json.dumps(create_output(object_dict, text)))
 
-    pprint.pprint(object_dict)
+def create_output(dict, text):
+    output = {}
+
+    output['text'] = ''.join(text)
+    output['geometry'] = []
+    for k, v in dict.items():
+        output['geometry'].append({
+                                   'type': v.__class__.__name__,
+                                   'id': v.name,
+                                   'data': v.__dict__()
+                                  })
+
+    return output
 
 def parse_line(args, obj):
     name = ''.join(sorted([x for x in args]))

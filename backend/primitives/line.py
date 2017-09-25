@@ -11,7 +11,9 @@ class Line:
                                     str(self.p2))
 
     def __repr__(self):
-        return "Line %s(%s, %s)" % (str(self.name), str(self.p1), str(self.p2))
+        return "Line %s(%s, %s)" % (str(self.name),
+                                    str(self.p1),
+                                    str(self.p2))
 
     def __eq__(self, other):
         if isinstance(other, Line):
@@ -22,3 +24,9 @@ class Line:
 
     def __hash__(self):
         return hash(str(self))
+
+    def __dict__(self):
+        return {
+                'p1': self.p1.name if self.p1 is not None else None,
+                'p2': self.p2.name if self.p2 is not None else None,
+               }

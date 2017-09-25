@@ -23,3 +23,9 @@ class Point:
 
     def __hash__(self):
         return hash(str(self))
+
+    def __dict__(self):
+        return {
+                'x': self.x,
+                'y': self.y
+               }
