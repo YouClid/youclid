@@ -2,22 +2,18 @@
 
 import sys, re
 import primitives
+import pprint
 
 def main(argv):
 
-    parsers = {"line" : parse_line,
-               "circle" : parse_circle,
-               "point" : parse_point,
-               "center" : parse_center,
-               "triangle" : parse_triangle}
+    parsers = {"line": parse_line,
+               "circle": parse_circle,
+               "point": parse_point,
+               "center": parse_center,
+               "triangle": parse_triangle}
 
     # List to hold all of the objects that we create
-    # TODO: We probably want to make this a dictionary, however, that means
-    # we need a way of showing that something like line AB is the same as
-    # line BA, and that if a circle has 5 points that are defining it, any
-    # combination of the 3 of the 5 are defining the same thing... sounds
-    # like a problem for the future
-    object_list = []
+    object_dict = {}
 
     with open(argv) as infile:
         text = infile.readlines()
@@ -28,26 +24,28 @@ def main(argv):
             func = re.findall('\\\.*?{', i)
             arg = re.findall('{.*?}', i)
             parsers[func[0].strip("\\").strip("{")](
-                arg[0].strip("{").strip("}"), object_list)
+                arg[0].strip("{").strip("}"), object_dict)
 
-    print(object_list)
+    pprint.pprint(object_dict)
 
 def parse_line(args, obj):
-    name = args
+    name = ''.join(sorted([x for x in args]))
     point_list = []
 
     for p in name:
-        point = primitives.Point(p)
-        if point not in obj:
-            obj.append(point)
-        point_list.append(point)
+        if obj.get(p) is None:
+            point = primitives.Point(p)
+            point_list.append(point)
+        else:
+            point_list.append(obj[p])
 
-    line = primitives.Line(name)
-    line.p1 = point_list[0]
-    line.p2 = point_list[1]
-
-    if line not in obj:
-        obj.append(line)
+    if obj.get(name) is None:
+        line = primitives.Line(name)
+        line.p1 = point_list[0]
+        line.p2 = point_list[1]
+        obj[name] = line
+    else:
+        line = obj[name]
 
     return line
 
@@ -56,10 +54,11 @@ def parse_circle(args, obj):
 
 def parse_point(args, obj):
     name = args
-    point = primitives.Point(name)
-
-    if point not in obj:
-        obj.append(point)
+    if obj.get(name) is None:
+        point = primitives.Point(name)
+        obj[name] = point
+    else:
+        point = obj[name]
 
     return point
 

@@ -6,7 +6,9 @@ class Line:
         self.name = name
 
     def __str__(self):
-        return "Line %s(%s, %s)" % (str(self.name), str(self.p1), str(self.p2))
+        return "Line %s(%s, %s)" % (str(self.name),
+                                    str(self.p1),
+                                    str(self.p2))
 
     def __repr__(self):
         return "Line %s(%s, %s)" % (str(self.name), str(self.p1), str(self.p2))
@@ -17,3 +19,6 @@ class Line:
                     (self.p2 == other.p2 or self.p2 == other.p1))
         else:
             return False
+
+    def __hash__(self):
+        return hash(str(self))
