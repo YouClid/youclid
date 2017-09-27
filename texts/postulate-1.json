@@ -1,0 +1,98 @@
+{
+    "text": "Let \\line{AB} be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight line \\line{AB}.\nDescribe the circle \\circle{BCD} with center \\center{A, circle=BCD} and radius \\line{AB}.\nAgain describe the circle \\circle{ACE} with center \\center{B, circle=ACE} and radius \\line{BA}.\nJoin the straight lines \\line{CA} and \\line{CB} from the point \\point{C} at which the circles cut one another to the points \\point{A} and \\point{B}.\nNow, since the point \\point{A} is the center of the circle \\circle{CDB}, therefore \\line{AC} equals \\line{AB}.\nAgain, since the point \\point{B} is the center of the circle \\circle{CAE}, therefore \\line{BC} equals \\line{BA}.\nBut \\line{AC} was proved equal to \\line{AB}, therefore each of the straight lines \\line{AC} and \\line{BC} equals \\line{AB}.\nAnd things which equal the same thing also equal one another, therefore \\line{AC} also equals \\line{BC}.\nTherefore the three straight lines \\line{AC}, \\line{AB}, and \\line{BC} equal one another.\nTherefore the triangle \\triangle{ABC} is equilateral, and it has been constructed on the given finite straight line \\line{AB}.\n",
+    "geometry": [
+        {
+            "type": "Line",
+            "id": "AB",
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
+        {
+            "type": "Point",
+            "id": "B",
+            "data": {
+                "x": 0.6106190540115093,
+                "y": 0.22804057259656485
+            }
+        },
+        {
+            "type": "Point",
+            "id": "C",
+            "data": {
+                "x": -0.9316541211344853,
+                "y": -0.7578789302595523
+            }
+        },
+        {
+            "type": "Point",
+            "id": "D",
+            "data": {
+                "x": -0.0970032866188717,
+                "y": -0.8719225608450114
+            }
+        },
+        {
+            "type": "Circle",
+            "id": "BCD",
+            "data": {
+                "p1": "B",
+                "p2": "C",
+                "p3": "D",
+                "center": "A"
+            }
+        },
+        {
+            "type": "Point",
+            "id": "A",
+            "data": {
+                "x": 0.34027941879285484,
+                "y": 0.3734915218827648
+            }
+        },
+        {
+            "type": "Point",
+            "id": "E",
+            "data": {
+                "x": -0.03976955640108004,
+                "y": -0.9003036451216073
+            }
+        },
+        {
+            "type": "Circle",
+            "id": "ACE",
+            "data": {
+                "p1": "A",
+                "p2": "C",
+                "p3": "E",
+                "center": "B"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "AC",
+            "data": {
+                "p1": "A",
+                "p2": "C"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "BC",
+            "data": {
+                "p1": "B",
+                "p2": "C"
+            }
+        },
+        {
+            "type": "Triangle",
+            "id": "ABC",
+            "data": {
+                "p1": "A",
+                "p2": "B",
+                "p3": "C"
+            }
+        }
+    ]
+}
