@@ -96,6 +96,23 @@ def parse_point(args, obj):
     return point
 
 def parse_center(args, obj):
+    # ASSUME CIRCLE ALREADY EXISTS
+    split = args.split(", ")
+    name = split[0]
+    circle = split[1].split("=")[1]
+
+    if obj.get(name):
+        point = obj[name]
+    else:
+        point = primitives.Point(name=name)
+
+    obj[name] = point
+
+    circle = obj[circle]
+    circle.center = point
+    return point
+
+
     pass
 
 def parse_triangle(args, obj):
