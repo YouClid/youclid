@@ -3,7 +3,6 @@
 import sys
 import re
 import primitives
-import pprint
 import json
 
 
@@ -28,7 +27,7 @@ def main(argv):
             arg = re.findall('{.*?}', i)
             parsers[func[0].strip("\\").strip("{")](
                 arg[0].strip("{").strip("}"), object_dict)
-    print(json.dumps(create_output(object_dict, text)))
+    print(json.dumps(create_output(object_dict, text), indent=4))
 
 
 def create_output(dict, text):
@@ -70,12 +69,14 @@ def parse_line(args, obj):
 
 def parse_circle(args, obj):
     n = ''.join(args)
-    name = _rotate_lex(n)
+    name = ''.join(sorted(n))
     point_list = []
 
     for p in name:
         if obj.get(p) is None:
-            point_list.append(primitives.Point(p))
+            point = primitives.Point(p)
+            obj[p] = point
+            point_list.append(point)
         else:
             point_list.append(obj[p])
 
@@ -112,8 +113,7 @@ def parse_center(args, obj):
         point = obj[name]
     else:
         point = primitives.Point(name=name)
-
-    obj[name] = point
+        obj[name] = point
 
     circle = obj[circle]
     circle.center = point
@@ -122,7 +122,7 @@ def parse_center(args, obj):
 
 def parse_triangle(args, obj):
     n = ''.join(args)
-    name = _rotate_lex(n)
+    name = ''.join(sorted(n))
     point_list = []
 
     for p in name:
