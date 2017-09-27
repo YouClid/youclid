@@ -6,7 +6,7 @@ let oldPos = null
 let newPos = null
 let originalCenter = null
 
-init()
+window.onload = init
 
 
 function init() {
@@ -21,6 +21,9 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
+    renderer.render(scene, camera)
+
+    mouse = new THREE.Vector2();
 
     var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
 
@@ -37,14 +40,22 @@ function init() {
     let circleGeom = new THREE.CircleGeometry(3, 100);
     var circle = new THREE.Mesh( circleGeom, circleMaterial );
 
-    mouse = new THREE.Vector2();
 
     objects = []
     objects.push(line)
     objects.push(circle)
 
-    scene.add(line);
+    // scene.add(line);
     scene.add(circle);
+
+    let points = []
+    points.push({x:-0.5, y:-0.5})
+    points.push({x:0.5, y:0.5})
+
+    let particles = addPoints(points)
+    
+    objects.push(particles)
+    scene.add(particles)
 
     document.addEventListener( 'mousedown', onMouseDown, false );
     document.addEventListener( 'mousemove', onMouseMove, false );
@@ -63,6 +74,7 @@ function animate() {
 }
 
 
+// NDC stands for normalized device coordinates
 function NDCtoWorld(x, y, camera) {
     let ndcVec = new THREE.Vector2(x, y)
     let plane = new THREE.Plane(new THREE.Vector3(0,0,1))
@@ -70,6 +82,36 @@ function NDCtoWorld(x, y, camera) {
     raycaster.setFromCamera( ndcVec, camera )
     let pos = raycaster.ray.intersectPlane(plane)
     return pos
+}
+
+function addPoints(points) {
+    // points should be an array of objects
+    // each with an x and a y attribute in NDC coordinate
+    let PARTICLE_SIZE = 5
+
+    let vertices = points.map(p => NDCtoWorld(p.x, p.y, camera))
+
+    let positions = new Float32Array( vertices.length * 3 );
+    let colors = new Float32Array( vertices.length * 3 );
+    let sizes = new Float32Array( vertices.length );
+    let vertex;
+    let color = new THREE.Color();
+    for ( let i = 0, l = vertices.length; i < l; i ++ ) {
+	vertex = vertices[ i ];
+	vertex.toArray( positions, i * 3 );
+	color.setHSL( 0.01 + 0.1 * ( i / l ), 1.0, 0.5 );
+	color.toArray( colors, i * 3 );
+	sizes[ i ] = PARTICLE_SIZE * 0.5;
+    }
+    let geometry = new THREE.BufferGeometry();
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+    geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+    geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
+    //
+    let material = new THREE.PointsMaterial( { size: PARTICLE_SIZE, color: 0x888888 } )
+    //
+    let particles = new THREE.Points( geometry, material );
+    return particles
 }
 
 
