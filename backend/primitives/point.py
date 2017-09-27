@@ -1,10 +1,11 @@
 import random
 
+
 class Point:
     """Represents a point object in 2D"""
     def __init__(self, name):
-        self.x = random.uniform(-1 ,1)
-        self.y = random.uniform(-1 ,1)
+        self.x = random.uniform(-1, 1)
+        self.y = random.uniform(-1, 1)
         self.name = name
 
     def __str__(self):

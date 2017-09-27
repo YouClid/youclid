@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
-import sys, re
+import sys
+import re
 import primitives
 import pprint
 import json
+
 
 def main(argv):
 
@@ -28,6 +30,7 @@ def main(argv):
                 arg[0].strip("{").strip("}"), object_dict)
     print(json.dumps(create_output(object_dict, text)))
 
+
 def create_output(dict, text):
     output = {}
 
@@ -41,6 +44,7 @@ def create_output(dict, text):
                                   })
 
     return output
+
 
 def parse_line(args, obj):
     name = ''.join(sorted([x for x in args]))
@@ -63,9 +67,10 @@ def parse_line(args, obj):
 
     return line
 
+
 def parse_circle(args, obj):
     n = ''.join(args)
-    name = rotate_lex(n)
+    name = _rotate_lex(n)
     point_list = []
 
     for p in name:
@@ -85,6 +90,7 @@ def parse_circle(args, obj):
 
     return circle
 
+
 def parse_point(args, obj):
     name = args
     if obj.get(name) is None:
@@ -94,6 +100,7 @@ def parse_point(args, obj):
         point = obj[name]
 
     return point
+
 
 def parse_center(args, obj):
     # ASSUME CIRCLE ALREADY EXISTS
@@ -113,11 +120,9 @@ def parse_center(args, obj):
     return point
 
 
-    pass
-
 def parse_triangle(args, obj):
     n = ''.join(args)
-    name = rotate_lex(n)
+    name = _rotate_lex(n)
     point_list = []
 
     for p in name:
@@ -137,17 +142,19 @@ def parse_triangle(args, obj):
 
     return triangle
 
-def rotate(l, n):
+
+def _rotate(l, n):
     return l[-n:] + l[:-n]
 
-def rotate_lex(l):
+
+def _rotate_lex(l):
     ind = l.index(min(l))
     if(ind != 0):
         rot = len(l) - ind
-        return rotate(l, rot)
+        return _rotate(l, rot)
     else:
         return l
-#-----------------------------------------------------------------------------#
+
 
 if __name__ == "__main__":
     main(sys.argv[1])
