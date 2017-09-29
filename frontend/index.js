@@ -128,14 +128,10 @@ function makeCircle(p1, p2, p3) {
 
     let radius = dist(worldCenter, worldPoint)
 
-    console.log(p1)
-    console.log(p2)
-    console.log(p3)
-
-    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff } );
     let circleGeom = new THREE.CircleGeometry(radius, 100);
     var circle = new THREE.Mesh( circleGeom, circleMaterial );
-    circle.position = worldCenter
+    circle.position.set(worldCenter.x, worldCenter.y, worldCenter.z)
 
     return circle
     
