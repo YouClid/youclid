@@ -25,6 +25,7 @@ function init() {
 
     mouse = new THREE.Vector2();
 
+
     var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
 
     var geometry = new THREE.Geometry();
@@ -42,20 +43,13 @@ function init() {
 
 
     objects = []
-    objects.push(line)
-    objects.push(circle)
+    // objects.push(line)
+    // objects.push(circle)
 
-    scene.add(line);
-    scene.add(circle);
+    // scene.add(line);
+    // scene.add(circle);
 
-    let points = []
-    points.push({x:-0.5, y:-0.5})
-    points.push({x:0.5, y:0.5})
-
-    let particles = points.map(p => addPoint(p))
-    
-    objects.push(...particles)
-    scene.add(...particles)
+    loadGeometry(scene, camera)
 
     document.addEventListener( 'mousedown', onMouseDown, false );
     document.addEventListener( 'mousemove', onMouseMove, false );
@@ -70,6 +64,81 @@ function init() {
 function animate() {
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
+    
+}
+
+
+function loadGeometry(scene, camera) {
+
+    geo = geometry.geometry
+
+    points = geo.filter(entry => entry.type === "Point")
+
+    pointMap = {}
+    for(let i = 0; i < points.length; i++) {
+	let point = points[i]
+	pointMap[point.id] = point.data
+	let p = makePoint(point.data)
+	objects.push(p)
+	scene.add(p)
+    }
+
+    circles = geo.filter(entry => entry.type === "Circle")
+
+    for(let i = 0; i < circles.length; i++) {
+	let circle = circles[i]
+
+	let d = circle.data
+	
+	let c = makeCircle(pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
+	objects.push(c)
+	scene.add(c)
+    }
+
+    
+}
+
+function dist(p1, p2) {
+    if(p1.z && p2.z) {
+	let xs, ys, zs
+	xs = (p1.x-p2.x)*(p1.x-p2.x)
+	ys = (p1.y-p2.y)*(p1.y-p2.y)
+	zs = (p1.z-p2.z)*(p1.z-p2.z)
+	return Math.sqrt(xs+ys+zs)
+    } else {
+	return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y))
+    }
+}
+
+function makeCircle(p1, p2, p3) {
+    let ma = -(p2.x-p1.x)/(p2.y-p1.y)
+    let mb = -(p3.x-p2.x)/(p3.y-p2.y)
+    let xa = 0.5*(p1.x+p2.x)
+    let ya = 0.5*(p1.y+p2.y)
+    let xb = 0.5*(p2.x+p3.x)
+    let yb = 0.5*(p2.y+p3.y)
+
+    let center = {}
+
+    center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
+    center.y = (ma*(center.x-xa))+ya
+
+    let worldCenter = NDCtoWorld(center.x, center.y, camera)
+    let worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
+
+    let radius = dist(worldCenter, worldPoint)
+
+    console.log(p1)
+    console.log(p2)
+    console.log(p3)
+
+    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    let circleGeom = new THREE.CircleGeometry(radius, 100);
+    var circle = new THREE.Mesh( circleGeom, circleMaterial );
+    circle.position = worldCenter
+
+    return circle
+    
     
 }
 
@@ -114,7 +183,7 @@ function addPoints(points) {
     return particles
 }
 
-function addPoint(point) {
+function makePoint(point) {
     // points should be an array of objects
     // each with an x and a y attribute in NDC coordinate
     let PARTICLE_SIZE = 0.5
