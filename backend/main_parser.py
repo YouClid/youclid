@@ -4,6 +4,8 @@ import sys
 import re
 import primitives
 import json
+import random
+import math
 
 
 def main(argv):
@@ -14,12 +16,16 @@ def main(argv):
                "center": parse_center,
                "triangle": parse_triangle}
 
-    # List to hold all of the objects that we create
+    # Dictionary to hold all of the objects that we create.
+    # The mapping is between names of the object and the object itself
     object_dict = {}
 
+    # Read the text file
     with open(argv) as infile:
         text = infile.readlines()
+
     pattern = '\\\.*?}'
+
     for f in text:
         match = re.findall(pattern, f)
         for i in match:
@@ -27,7 +33,94 @@ def main(argv):
             arg = re.findall('{.*?}', i)
             parsers[func[0].strip("\\").strip("{")](
                 arg[0].strip("{").strip("}"), object_dict)
+
+    # Function that actually mutates the objects in the dictionary to give them
+    # coordinates
+    plot_elements(object_dict)
+
     print(json.dumps(create_output(object_dict, text), indent=4))
+
+
+def plot_elements(object_dict):
+    """Gives the objects a location on the Cartesian plane"""
+
+    # Iterate over each of the elements and place them somewhere on the
+    # Cartesian plane
+    for k, v in object_dict.items():
+        # NOTE: This code will not work for everything! For now, I'm just
+        # getting it to work for the first postulate, which primarily involves
+        # circles. The biggest thing that we are about is having circles
+        # that don't take up the entire screen
+        if type(v) == primitives.Circle:
+            # If there are no points defining this circle yet
+            if ((v.center is None or v.center.x is None) and
+                all([(v.p1 is None or v.p1.x is None),
+                     (v.p2 is None or v.p2.x is None),
+                     (v.p3 is None or v.p3.x is None)])):
+                # Generate a center
+                v.center.x = random.uniform(-0.5, 0.5)
+                v.center.y = random.uniform(-0.5, 0.5)
+
+                radius = random.uniform(0, 0.25)
+
+                theta = random.uniform(0, 2*math.pi)
+                v.p1.x = v.center.x + radius * math.cos(theta)
+                v.p1.y = v.center.y + radius * math.sin(theta)
+
+                theta = random.uniform(0, 2*math.pi)
+                v.p2.x = v.center.x + radius * math.cos(theta)
+                v.p2.y = v.center.y + radius * math.sin(theta)
+
+                theta = random.uniform(0, 2*math.pi)
+                v.p3.x = v.center.x + radius * math.cos(theta)
+                v.p3.y = v.center.y + radius * math.sin(theta)
+
+            # Otherwise, the center is already defined and given a coordinate
+            elif (v.center is not None and v.center.x is not None):
+                radius = 0
+                # If any of the points are given coordinates
+                if v.p1 is not None and v.p1.x is not None:
+                    radius = math.sqrt(math.pow(v.p1.x - v.center.x, 2) +
+                                       math.pow(v.p1.y - v.center.y, 2))
+                elif v.p2 is not None and v.p2.x is not None:
+                    radius = math.sqrt(math.pow(v.p2.x - v.center.x, 2) +
+                                       math.pow(v.p2.y - v.center.y, 2))
+                elif v.p3 is not None and v.p3.x is not None:
+                    radius = math.sqrt(math.pow(v.p3.x - v.center.x, 2) +
+                                       math.pow(v.p3.y - v.center.y, 2))
+                # If none of the points are given coordinates
+                else:
+                    radius = random.uniform(0, 0.25)
+
+                # If p1 isn't given coordinates yet
+                if v.p1.x is None:
+                    theta = random.uniform(0, 2*math.pi)
+                    v.p1.x = radius * math.cos(theta)
+                    v.p1.y = radius * math.sin(theta)
+
+                # If p2 isn't given coordinates yet
+                if v.p2.x is None:
+                    theta = random.uniform(0, 2*math.pi)
+                    v.p2.x = radius * math.cos(theta)
+                    v.p2.y = radius * math.sin(theta)
+
+                # If p3 isn't given coordinates yet
+                if v.p3.x is None:
+                    theta = random.uniform(0, 2*math.pi)
+                    v.p3.x = radius * math.cos(theta)
+                    v.p3.y = radius * math.sin(theta)
+
+            else:
+                print("This case happened")
+                sys.exit(1)
+
+    # NOTE: This is awful code.
+    # If there are any other points, just given them random coordaintes
+    for k, v in object_dict.items():
+        if type(v) == primitives.Point:
+            if v.x is None:
+                v.x = random.uniform(-0.5, 0.5)
+                v.y = random.uniform(-0.5, 0.5)
 
 
 def create_output(dict, text):
@@ -35,6 +128,7 @@ def create_output(dict, text):
 
     output['text'] = ''.join(text)
     output['geometry'] = []
+
     for k, v in dict.items():
         output['geometry'].append({
                                    'type': v.__class__.__name__,
