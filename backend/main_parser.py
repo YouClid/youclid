@@ -5,7 +5,12 @@ import primitives
 import pprint
 import json
 
-def main(argv):
+def parse_text(arg):
+    with open(arg) as infile:
+        text = infile.readlines()
+    return text
+
+def parse(text):
 
     parsers = {"line": parse_line,
                "circle": parse_circle,
@@ -16,8 +21,6 @@ def main(argv):
     # List to hold all of the objects that we create
     object_dict = {}
 
-    with open(argv) as infile:
-        text = infile.readlines()
     pattern = '\\\.*?}'
     for f in text:
         match = re.findall(pattern, f)
@@ -26,6 +29,7 @@ def main(argv):
             arg = re.findall('{.*?}', i)
             parsers[func[0].strip("\\").strip("{")](
                 arg[0].strip("{").strip("}"), object_dict)
+    return create_output(object_dict, text)
     print(json.dumps(create_output(object_dict, text)))
 
 def create_output(dict, text):
@@ -150,4 +154,5 @@ def rotate_lex(l):
 #-----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    t = parse_text(sys.argv[1])
+    parse(sys.argv[1])
