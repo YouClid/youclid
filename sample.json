@@ -1,0 +1,49 @@
+{
+    "text": "This is literally all of our text",
+
+    "geometry": [
+	{
+	    "type": "point",
+	    "id": "A",
+	    "data": {
+		"x": 0,
+		"y": 0,
+	    }
+	},
+	{
+	    "type": "point",
+	    "id": "B",
+	    "data": {
+		"x": 1,
+		"y": 1,
+	    }
+	},
+	{
+	    "type": "line",
+	    "id": "AB",
+	    "data": {
+		"p1": "A", // Should always be the id of another point
+		"p2": "B",
+	    }
+	},
+	{
+	    "type": "circle",
+	    "name": "Awesome circle",
+	    "data": {
+		"center": "A",
+		"radius": 10,
+	    }
+	},
+	{
+	    "type": "polygon",
+	    "name": "triangle1",
+	    "data": {
+		"points": [
+		    "A",
+		    "B",
+		    "C"
+		]
+	    }
+	}
+    ]
+}
