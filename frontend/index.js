@@ -1,12 +1,12 @@
 
-let scene, camera, raycaster, renderer, objects, mouse
+let scene, camera, raycaster, renderer, objects, mouse, geometry
 
 let current = null
 let oldPos = null
 let newPos = null
 let originalCenter = null
 
-window.onload = init
+//window.onload = init
 
 
 function init() {
@@ -18,7 +18,7 @@ function init() {
     raycaster = new THREE.Raycaster();
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( window.innerWidth, window.innerHeight);
     document.body.appendChild( renderer.domElement );
 
     renderer.render(scene, camera)

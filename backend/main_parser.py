@@ -2,13 +2,18 @@
 
 import sys
 import re
-import primitives
+from . import primitives
 import json
 import random
 import math
 
 
-def main(argv):
+def parse_text(arg):
+    with open(arg) as infile:
+        text = infile.readlines()
+    return text
+
+def parse(text):
 
     parsers = {"line": parse_line,
                "circle": parse_circle,
@@ -19,10 +24,6 @@ def main(argv):
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
-
-    # Read the text file
-    with open(argv) as infile:
-        text = infile.readlines()
 
     pattern = '\\\.*?}'
 
@@ -37,6 +38,7 @@ def main(argv):
     # Function that actually mutates the objects in the dictionary to give them
     # coordinates
     plot_elements(object_dict)
+    return create_output(object_dict, text)
 
     print(json.dumps(create_output(object_dict, text), indent=4))
 
@@ -58,6 +60,7 @@ def plot_elements(object_dict):
                      (v.p2 is None or v.p2.x is None),
                      (v.p3 is None or v.p3.x is None)])):
                 # Generate a center
+                v.center = primitives.Point(name=v.name + "_center")
                 v.center.x = random.uniform(-0.5, 0.5)
                 v.center.y = random.uniform(-0.5, 0.5)
 
@@ -251,4 +254,5 @@ def _rotate_lex(l):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    t = parse_text(sys.argv[1])
+    parse(sys.argv[1])
