@@ -98,20 +98,20 @@ def plot_elements(object_dict):
                 # If p1 isn't given coordinates yet
                 if v.p1.x is None:
                     theta = random.uniform(0, 2*math.pi)
-                    v.p1.x = radius * math.cos(theta)
-                    v.p1.y = radius * math.sin(theta)
+                    v.p1.x = v.center.x + radius * math.cos(theta)
+                    v.p1.y = v.center.y + radius * math.sin(theta)
 
                 # If p2 isn't given coordinates yet
                 if v.p2.x is None:
                     theta = random.uniform(0, 2*math.pi)
-                    v.p2.x = radius * math.cos(theta)
-                    v.p2.y = radius * math.sin(theta)
+                    v.p2.x = v.center.x + radius * math.cos(theta)
+                    v.p2.y = v.center.y + radius * math.sin(theta)
 
                 # If p3 isn't given coordinates yet
                 if v.p3.x is None:
                     theta = random.uniform(0, 2*math.pi)
-                    v.p3.x = radius * math.cos(theta)
-                    v.p3.y = radius * math.sin(theta)
+                    v.p3.x = v.center.x + radius * math.cos(theta)
+                    v.p3.y = v.center.y + radius * math.sin(theta)
 
             else:
                 print("This case happened")
