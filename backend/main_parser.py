@@ -2,7 +2,7 @@
 
 import sys
 import re
-import primitives
+from . import primitives
 import json
 import random
 import math
