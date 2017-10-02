@@ -38,6 +38,7 @@ def parse(text):
     # Function that actually mutates the objects in the dictionary to give them
     # coordinates
     plot_elements(object_dict)
+    return create_output(object_dict, text)
 
     print(json.dumps(create_output(object_dict, text), indent=4))
 
@@ -123,10 +124,6 @@ def plot_elements(object_dict):
                 v.x = random.uniform(-0.5, 0.5)
                 v.y = random.uniform(-0.5, 0.5)
 
-=======
-    return create_output(object_dict, text)
-    print(json.dumps(create_output(object_dict, text)))
->>>>>>> feature/parser
 
 def create_output(dict, text):
     output = {}
