@@ -3,14 +3,31 @@
 	<head>
 		<meta charset=utf-8>
 		<title>YouClid</title>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
-		</style>
 	</head>
 	<body>
-		<script src="js/three.js"></script>
-		<script src="index.js"></script>
-		<script id="geometry" src="../texts/postulate-1.json"></script>
+            <textarea id="text" cols="30" rows="50"></textarea>
+            <button id="text_submit" type="submit" text="Submit" onclick="handle()">Submit</button>
+        <script src="./frontend/js/three.js"></script>
+        <script src="./frontend/index.js"></script>
+        <script>
+            function handle(){
+                console.log("handle");
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", '/parse', true);
+                xhttp.onreadystatechange = function() {
+                    if(xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200){
+                        console.log(JSON.parse(xhttp.response))
+                        geometry = JSON.parse(xhttp.response)
+                        init();
+                    }
+                }
+                xhttp.send(document.getElementById("text").value);
+                document.getElementById("text").remove()
+                document.getElementById("text_submit").remove()
+
+            }
+
+
+        </script>
 	</body>
 </html>

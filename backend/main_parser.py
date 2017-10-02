@@ -2,7 +2,7 @@
 
 import sys
 import re
-import primitives
+from . import primitives
 import json
 import random
 import math
@@ -60,6 +60,7 @@ def plot_elements(object_dict):
                      (v.p2 is None or v.p2.x is None),
                      (v.p3 is None or v.p3.x is None)])):
                 # Generate a center
+                v.center = primitives.Point(name=v.name + "_center")
                 v.center.x = random.uniform(-0.5, 0.5)
                 v.center.y = random.uniform(-0.5, 0.5)
 
