@@ -8,7 +8,12 @@ import random
 import math
 
 
-def main(argv):
+def parse_text(arg):
+    with open(arg) as infile:
+        text = infile.readlines()
+    return text
+
+def parse(text):
 
     parsers = {"line": parse_line,
                "circle": parse_circle,
@@ -19,10 +24,6 @@ def main(argv):
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
-
-    # Read the text file
-    with open(argv) as infile:
-        text = infile.readlines()
 
     pattern = '\\\.*?}'
 
@@ -122,6 +123,10 @@ def plot_elements(object_dict):
                 v.x = random.uniform(-0.5, 0.5)
                 v.y = random.uniform(-0.5, 0.5)
 
+=======
+    return create_output(object_dict, text)
+    print(json.dumps(create_output(object_dict, text)))
+>>>>>>> feature/parser
 
 def create_output(dict, text):
     output = {}
@@ -251,4 +256,5 @@ def _rotate_lex(l):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    t = parse_text(sys.argv[1])
+    parse(sys.argv[1])
