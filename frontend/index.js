@@ -41,11 +41,6 @@ function init() {
 
 function animate() {
     requestAnimationFrame( animate );
-
-    for(let i = 0; i<objects.length; i++) {
-	let c = objects[i]
-	c.geometry.verticesNeedUpdate = true
-    }
     renderer.render( scene, camera );
     
 }
@@ -145,7 +140,7 @@ function checkCircle(p1, p2, p3, c) {
 }
 
 function makeCircle(p1, p2, p3, isWorld) {
-    if(!isWorld || isWorld === undefined) {
+    if(!isWorld) {
 	p1 = NDCtoWorld(p1.x, p1.y, camera)
 	p2 = NDCtoWorld(p2.x, p2.y, camera)
 	p3 = NDCtoWorld(p3.x, p3.y, camera)
