@@ -1,6 +1,8 @@
 
 let scene, camera, raycaster, renderer, objects, mouse, geometry
 
+let size = Math.min(window.innerWidth, window.innerHeight)
+
 let current = null
 let oldPos = null
 let newPos = null
@@ -11,14 +13,14 @@ let originalCenter = null
 
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1000 );
+    camera = new THREE.PerspectiveCamera( 75, 1, 1, 1000 );
     camera.position.set(0, 0, 20 );
     // camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     raycaster = new THREE.Raycaster();
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize( window.innerWidth, window.innerHeight);
+    renderer.setSize(size, size);
     document.body.appendChild( renderer.domElement );
 
     renderer.render(scene, camera)
@@ -221,8 +223,8 @@ function makePoint(point) {
 
 function onMouseDown( event ) {
     event.preventDefault();
-    mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+    mouse.x = ( event.clientX / size ) * 2 - 1;
+    mouse.y = - ( event.clientY / size ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
     let intersects = raycaster.intersectObjects( objects );
     if ( intersects.length > 0 ) {
@@ -236,8 +238,8 @@ function onMouseDown( event ) {
 function onMouseMove( event ) {
     event.preventDefault();
     if ( current ) {
-	mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+	mouse.x = ( event.clientX / size ) * 2 - 1;
+	mouse.y = - ( event.clientY / size ) * 2 + 1;
 	let pos = NDCtoWorld(mouse.x, mouse.y, camera)
 	newPos = pos.sub(oldPos)
 	newPos.add(originalCenter)
