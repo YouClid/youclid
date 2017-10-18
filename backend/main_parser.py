@@ -42,7 +42,7 @@ def parse(text):
 def create_output(dict, text):
     output = {}
 
-    output['text'] = ''.join(text)
+    output['text'] = format_text(text)
     output['geometry'] = []
 
     for k, v in dict.items():
@@ -53,6 +53,11 @@ def create_output(dict, text):
                                   })
 
     return output
+
+def format_text(text):
+    text =  ''.join(text)
+    pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
+    return re.sub(pattern, r" <span id=text_\2_\3>\2 \3</span>", text)
 
 
 def parse_line(args, obj):
