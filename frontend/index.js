@@ -1,7 +1,11 @@
 
 let scene, camera, raycaster, renderer, objects, mouse, geometry
 
+<<<<<<< HEAD
 let size = Math.min(window.innerWidth*0.65, window.innerHeight)
+=======
+let size = Math.min(window.innerWidth, window.innerHeight)
+>>>>>>> f426d9bbea5b6bfcd87c4905d9eec7e0fe09b2a1
 
 let current = null
 let oldPos = null
