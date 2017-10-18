@@ -1,63 +1,41 @@
 
 let scene, camera, raycaster, renderer, objects, mouse, geometry
 
+let size = Math.min(window.innerWidth*0.65, window.innerHeight)
+
 let current = null
 let oldPos = null
 let newPos = null
 let originalCenter = null
 
-//window.onload = init
-
 
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1000 );
+    camera = new THREE.PerspectiveCamera( 75, 1, 1, 1000 );
     camera.position.set(0, 0, 20 );
     // camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     raycaster = new THREE.Raycaster();
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize( window.innerWidth, window.innerHeight);
+    renderer.setSize(size, size);
     document.body.appendChild( renderer.domElement );
 
     renderer.render(scene, camera)
 
     mouse = new THREE.Vector2();
 
-
-    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-
-    var geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(0, 10, 0));
-    geometry.vertices.push(new THREE.Vector3(10, 0, 0));
-    geometry.vertices.push(new THREE.Vector3(0, -10, 0));
-    geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
-    
-    var line = new THREE.Line(geometry, material);
-
-    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    let circleGeom = new THREE.CircleGeometry(3, 100);
-    var circle = new THREE.Mesh( circleGeom, circleMaterial );
-
-
     objects = []
-    // objects.push(line)
-    // objects.push(circle)
-
-    // scene.add(line);
-    // scene.add(circle);
 
     loadGeometry(scene, camera)
 
-    document.addEventListener( 'mousedown', onMouseDown, false );
-    document.addEventListener( 'mousemove', onMouseMove, false );
-    document.addEventListener( 'mouseup', onMouseUp, false );
-    document.addEventListener( 'touchstart', onTouchStart, false );
-    document.addEventListener( 'touchmove', onTouchMove, false );
-    document.addEventListener( 'touchend', onTouchEnd, false );
-
+    // document.addEventListener( 'mousedown', onMouseDown, false );
+    // document.addEventListener( 'mousemove', onMouseMove, false );
+    // document.addEventListener( 'mouseup', onMouseUp, false );
+    // document.addEventListener( 'touchstart', onTouchStart, false );
+    // document.addEventListener( 'touchmove', onTouchMove, false );
+    // document.addEventListener( 'touchend', onTouchEnd, false );
+    window.onresize = resize;
     animate();
 }
 
@@ -67,32 +45,50 @@ function animate() {
     
 }
 
+function resize() {
+    size = Math.min(window.innerWidth*0.65, window.innerHeight)
+    renderer.setSize(size, size)
+}
+
 
 function loadGeometry(scene, camera) {
 
     geo = geometry.geometry
 
-    points = geo.filter(entry => entry.type === "Point")
+    let points = geo.filter(entry => entry.type === "Point")
 
-    pointMap = {}
+    let pointMap = {}
     for(let i = 0; i < points.length; i++) {
 	let point = points[i]
 	pointMap[point.id] = point.data
 	let p = makePoint(point.data)
+	// pointMap[point.id] = p.geometry.vertices[0]
 	objects.push(p)
 	scene.add(p)
     }
 
-    circles = geo.filter(entry => entry.type === "Circle")
+    let circles = geo.filter(entry => entry.type === "Circle")
 
     for(let i = 0; i < circles.length; i++) {
 	let circle = circles[i]
 
 	let d = circle.data
-	
+
 	let c = makeCircle(pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
 	objects.push(c)
 	scene.add(c)
+    }
+
+    let lines = geo.filter(entry => entry.type === "Line")
+
+    for(let i = 0; i< lines.length; i++) {
+	let line = lines[i]
+	let d = line.data
+
+	let l = makeLine(pointMap[d.p1], pointMap[d.p2], true)
+
+	objects.push(l)
+	scene.add(l)
     }
 
     
@@ -110,27 +106,83 @@ function dist(p1, p2) {
     }
 }
 
-function makeCircle(p1, p2, p3) {
-    let ma = -(p2.x-p1.x)/(p2.y-p1.y)
-    let mb = -(p3.x-p2.x)/(p3.y-p2.y)
+function makeLine(p1, p2, isNDC) {
+    let wp1, wp2
+    if(isNDC) {
+	wp1 = NDCtoWorld(p1.x, p1.y, camera)
+	wp2 = NDCtoWorld(p2.x, p2.y, camera)
+    } else {
+	wp1 = p1, wp2 = p2
+    }
+
+    let g = new THREE.Geometry()
+    g.vertices.push(wp1, wp2)
+    let m = new THREE.MeshBasicMaterial( { color: 0x990000 } )
+
+    return new THREE.Line(g,m)
+}
+
+function checkCircle(p1, p2, p3, c) {
+    let m1 = (p1.y-p2.y)/(p1.x-p2.x)
+    let m2 = (p3.y-p2.y)/(p3.x-p2.x)
+
+    let ma = -1.0*(1.0/m1)
+    let mb = -1.0*(1.0/m2)
+
     let xa = 0.5*(p1.x+p2.x)
     let ya = 0.5*(p1.y+p2.y)
     let xb = 0.5*(p2.x+p3.x)
     let yb = 0.5*(p2.y+p3.y)
 
-    let center = {}
+    let center = new THREE.Vector3()
 
     center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
-    center.y = (ma*(center.x-xa))+ya
+    center.y = (mb*(center.x-xb))+yb
 
-    let worldCenter = NDCtoWorld(center.x, center.y, camera)
-    let worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
+    console.log(center)
+    console.log(c)
+    console.log(center.x == c.x && center.y == c.y)
+}
+
+function makeCircle(p1, p2, p3, isWorld) {
+    if(!isWorld) {
+	p1 = NDCtoWorld(p1.x, p1.y, camera)
+	p2 = NDCtoWorld(p2.x, p2.y, camera)
+	p3 = NDCtoWorld(p3.x, p3.y, camera)
+    }
+    let m1 = (p1.y-p2.y)/(p1.x-p2.x)
+    let m2 = (p3.y-p2.y)/(p3.x-p2.x)
+
+    let ma = -1.0*(1.0/m1)
+    let mb = -1.0*(1.0/m2)
+
+    let xa = 0.5*(p1.x+p2.x)
+    let ya = 0.5*(p1.y+p2.y)
+    let xb = 0.5*(p2.x+p3.x)
+    let yb = 0.5*(p2.y+p3.y)
+
+    let center = new THREE.Vector3()
+
+    center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
+    center.y = (mb*(center.x-xb))+yb
+    center.z = 0
+
+    let worldCenter, worldPoint
+
+    
+    worldCenter = center
+    worldPoint = p1
+    // worldCenter = NDCtoWorld(center.x, center.y, camera)
+    // worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
+    
 
     let radius = dist(worldCenter, worldPoint)
 
-    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x009900 } );
     let circleGeom = new THREE.CircleGeometry(radius, 100);
-    var circle = new THREE.Mesh( circleGeom, circleMaterial );
+    circleGeom.vertices.shift()
+    circleGeom.vertices.push(circleGeom.vertices[0])
+    var circle = new THREE.Line( circleGeom, circleMaterial );
     circle.position.set(worldCenter.x, worldCenter.y, worldCenter.z)
 
     return circle
@@ -149,63 +201,20 @@ function NDCtoWorld(x, y, camera) {
     return pos
 }
 
-function addPoints(points) {
-    // points should be an array of objects
-    // each with an x and a y attribute in NDC coordinate
-    let PARTICLE_SIZE = 0.5
-
-    let vertices = points.map(p => NDCtoWorld(p.x, p.y, camera))
-
-    let positions = new Float32Array( vertices.length * 3 );
-    let colors = new Float32Array( vertices.length * 3 );
-    let sizes = new Float32Array( vertices.length );
-    let vertex;
-    let color = new THREE.Color();
-    for ( let i = 0, l = vertices.length; i < l; i ++ ) {
-	vertex = vertices[ i ];
-	vertex.toArray( positions, i * 3 );
-	color.setHSL( 0.01 + 0.1 * ( i / l ), 1.0, 0.5 );
-	color.toArray( colors, i * 3 );
-	sizes[ i ] = PARTICLE_SIZE * 0.5;
-    }
-    let geometry = new THREE.BufferGeometry();
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-    geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
-    geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
-    //
-    let material = new THREE.PointsMaterial( { size: PARTICLE_SIZE, color: 0x888888 } )
-    //
-    let particles = new THREE.Points( geometry, material );
-    return particles
-}
 
 function makePoint(point) {
-    // points should be an array of objects
-    // each with an x and a y attribute in NDC coordinate
+    // Point has an x and a y attribute in NDC coordinates
     let PARTICLE_SIZE = 0.5
 
-    let vertices = [NDCtoWorld(point.x, point.y, camera)]
+    let vertex = NDCtoWorld(point.x, point.y, camera)
 
-    let positions = new Float32Array( vertices.length * 3 );
-    let colors = new Float32Array( vertices.length * 3 );
-    let sizes = new Float32Array( vertices.length );
-    let vertex;
-    let color = new THREE.Color();
-    for ( let i = 0, l = vertices.length; i < l; i ++ ) {
-	vertex = vertices[ i ];
-	vertex.toArray( positions, i * 3 );
-	color.setHSL( 0.01 + 0.1 * ( i / l ), 1.0, 0.5 );
-	color.toArray( colors, i * 3 );
-	sizes[ i ] = PARTICLE_SIZE * 0.5;
-    }
-    let geometry = new THREE.BufferGeometry();
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-    geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
-    geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
-    //
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(vertex)
     let material = new THREE.PointsMaterial( { size: PARTICLE_SIZE, color: 0x888888 } )
-    //
+
     let particle = new THREE.Points( geometry, material );
+    particle.material.depthTest = false
+    particle.renderOrder = 1000
     return particle
 }
 
@@ -217,26 +226,32 @@ function makePoint(point) {
 
 function onMouseDown( event ) {
     event.preventDefault();
-    mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+    mouse.x = ( event.clientX / size ) * 2 - 1;
+    mouse.y = - ( event.clientY / size ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
     let intersects = raycaster.intersectObjects( objects );
     if ( intersects.length > 0 ) {
 	current = intersects[0]
 	oldPos = current.point.clone()
 	originalCenter = current.object.position.clone()
+	// originalCenter = current.object.geometry.vertices[0].clone()
     }
 }
 
 function onMouseMove( event ) {
     event.preventDefault();
     if ( current ) {
-	mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+	mouse.x = ( event.clientX / size ) * 2 - 1;
+	mouse.y = - ( event.clientY / size ) * 2 + 1;
 	let pos = NDCtoWorld(mouse.x, mouse.y, camera)
 	newPos = pos.sub(oldPos)
 	newPos.add(originalCenter)
 	current.object.position.set(newPos.x, newPos.y, newPos.z)
+	// let v = current.object.geometry.vertices[0]
+	// v.x = newPos.x
+	// v.y = newPos.y
+	// v.z = newPos.z
+	// current.object.geometry.verticesNeedUpdate = true
     } 
 }
 

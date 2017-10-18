@@ -63,6 +63,7 @@ def parse_line(args, obj):
         if obj.get(p) is None:
             point = primitives.Point(p)
             point_list.append(point)
+            obj[p] = point
         else:
             point_list.append(obj[p])
 
