@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>YouClid</title>
+		<link rel="stylesheet" href="default.css">
+		<script src="js/three.js"></script>
+		<script src="index.js"></script>
+		<script>
+		  
+		  window.onload = init
+
+		  geometry = {
+    "text": "Let `line AB` be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight line `line AB`.\nDescribe the circle `circle BCD` with center `center A circle=BCD` and radius `line AB`.\nAgain describe the circle `circle ACE` with center `center B, circle=ACE` and radius `line BA`.\nJoin the straight lines `line CA` and `line CB` from the point `point C` at which the circles cut one another to the points `point A` and `point B`.\nNow, since the point `point A` is the center of the circle `circle CDB`, therefore `line AC` equals `line AB`.\nAgain, since the point `point B` is the center of the circle `circle CAE`, therefore `line BC` equals `line BA`.\nBut `line AC` was proved equal to `line AB`, therefore each of the straight lines `line AC` and `line BC` equals `line AB`.\nAnd things which equal the same thing also equal one another, therefore `line AC` also equals `line BC`.\nTherefore the three straight lines `line AC`, `line AB`, and `line BC` equal one another.\nTherefore the triangle `triangle ABC` is equilateral, and it has been constructed on the given finite straight line `line AB`.\n\n`loc A 0 0`\n`loc B 0.5 0`\n`loc C 0.25 0.433`\n`loc D -0.5 0`\n`loc E 1 0`\n",
+    "geometry": [
+        {
+            "type": "Point",
+            "id": "A",
+            "data": {
+                "x": 0.0,
+                "y": 0.0
+            }
+        },
+        {
+            "type": "Point",
+            "id": "B",
+            "data": {
+                "x": 0.5,
+                "y": 0.0
+            }
+        },
+        {
+            "type": "Line",
+            "id": "AB",
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
+        {
+            "type": "Point",
+            "id": "C",
+            "data": {
+                "x": 0.25,
+                "y": 0.433
+            }
+        },
+        {
+            "type": "Point",
+            "id": "D",
+            "data": {
+                "x": -0.5,
+                "y": 0.0
+            }
+        },
+        {
+            "type": "Circle",
+            "id": "BCD",
+            "data": {
+                "p1": "B",
+                "p2": "C",
+                "p3": "D",
+                "center": "A"
+            }
+        },
+        {
+            "type": "Point",
+            "id": "E",
+            "data": {
+                "x": 1.0,
+                "y": 0.0
+            }
+        },
+        {
+            "type": "Circle",
+            "id": "ACE",
+            "data": {
+                "p1": "A",
+                "p2": "C",
+                "p3": "E",
+                "center": "B,"
+            }
+        },
+        {
+            "type": "Point",
+            "id": "B,",
+            "data": {
+                "x": null,
+                "y": null
+            }
+        },
+        {
+            "type": "Line",
+            "id": "BA",
+            "data": {
+                "p1": "B",
+                "p2": "A"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "CA",
+            "data": {
+                "p1": "C",
+                "p2": "A"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "CB",
+            "data": {
+                "p1": "C",
+                "p2": "B"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "AC",
+            "data": {
+                "p1": "A",
+                "p2": "C"
+            }
+        },
+        {
+            "type": "Line",
+            "id": "BC",
+            "data": {
+                "p1": "B",
+                "p2": "C"
+            }
+        },
+        {
+            "type": "Triangle",
+            "id": "ABC",
+            "data": {
+                "p1": "A",
+                "p2": "B",
+                "p3": "C"
+            }
+        }
+    ]
+}
+
+		</script>
+	</head>
+	<body>
+	  <div id="text">
+	    Let `line AB` be the given finite straight line.
+It is required to construct an equilateral triangle on the straight line `line AB`.
+Describe the circle `circle BCD` with center `center A circle=BCD` and radius `line AB`.
+Again describe the circle `circle ACE` with center `center B, circle=ACE` and radius `line BA`.
+Join the straight lines `line CA` and `line CB` from the point `point C` at which the circles cut one another to the points `point A` and `point B`.
+Now, since the point `point A` is the center of the circle `circle CDB`, therefore `line AC` equals `line AB`.
+Again, since the point `point B` is the center of the circle `circle CAE`, therefore `line BC` equals `line BA`.
+But `line AC` was proved equal to `line AB`, therefore each of the straight lines `line AC` and `line BC` equals `line AB`.
+And things which equal the same thing also equal one another, therefore `line AC` also equals `line BC`.
+Therefore the three straight lines `line AC`, `line AB`, and `line BC` equal one another.
+Therefore the triangle `triangle ABC` is equilateral, and it has been constructed on the given finite straight line `line AB`.
+
+`loc A 0 0`
+`loc B 0.5 0`
+`loc C 0.25 0.433`
+`loc D -0.5 0`
+`loc E 1 0`
+
+	  </div>
+	</body>
+</html>
+

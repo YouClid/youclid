@@ -36,7 +36,7 @@ def parse(text):
             arguments = data[1:]
             parsers[element_type](arguments, object_dict)
 
-    return json.dumps(create_output(object_dict, text), indent=4)
+    return create_output(object_dict, text)
 
 
 def create_output(dict, text):
@@ -167,19 +167,18 @@ def parse_location(args, obj):
     return o
 
 
-def _rotate(l, n):
-    return l[-n:] + l[:-n]
+def generate_html(json_object):
+    html = ""
+    with open("../frontend/template.html", 'r') as f:
+        html = f.read()
 
+    html = html.replace("// insert json here", json.dumps(json_object, indent=4))
+    html = html.replace("<!-- Insert the text here -->", json_object['text'])
 
-def _rotate_lex(l):
-    ind = l.index(min(l))
-    if(ind != 0):
-        rot = len(l) - ind
-        return _rotate(l, rot)
-    else:
-        return l
+    return html
 
 
 if __name__ == "__main__":
     t = parse_text(sys.argv[1])
-    print(parse(t))
+    json_object = parse(t)
+    print(generate_html(json_object))
