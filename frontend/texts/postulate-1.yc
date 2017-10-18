@@ -9,3 +9,9 @@ But `line AC` was proved equal to `line AB`, therefore each of the straight line
 And things which equal the same thing also equal one another, therefore `line AC` also equals `line BC`.
 Therefore the three straight lines `line AC`, `line AB`, and `line BC` equal one another.
 Therefore the triangle `triangle ABC` is equilateral, and it has been constructed on the given finite straight line `line AB`.
+
+`loc A 0 0`
+`loc B 0.5 0`
+`loc C 0.25 0.433`
+`loc D -0.5 0`
+`loc E 1 0`

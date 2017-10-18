@@ -19,13 +19,14 @@ def parse(text):
                "circle": parse_circle,
                "point": parse_point,
                "center": parse_center,
-               "triangle": parse_triangle}
+               "triangle": parse_triangle,
+               "loc": parse_location}
 
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
 
-    pattern = r'[^\\]`([\s\S]*?)`'
+    pattern = r'[^\\]?`([\s\S]*?)`'
 
     for f in text:
         match = re.findall(pattern, f)
@@ -150,6 +151,19 @@ def parse_triangle(args, obj):
         triangle = obj[name]
 
     return triangle
+
+
+def parse_location(args, obj):
+    """Parses the location for a particular object"""
+    name = args[0]
+    x = float(args[1])
+    y = float(args[2])
+    o = obj[name]
+
+    o.x = x
+    o.y = y
+
+    return o
 
 
 def _rotate(l, n):
