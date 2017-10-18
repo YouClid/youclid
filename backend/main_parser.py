@@ -172,8 +172,10 @@ def generate_html(json_object):
     with open("../frontend/template.html", 'r') as f:
         html = f.read()
 
-    html = html.replace("// insert json here", json.dumps(json_object, indent=4))
-    html = html.replace("<!-- Insert the text here -->", json_object['text'])
+    html = html.replace("// insert json here", json.dumps(json_object,
+                                                          indent=4))
+    html = html.replace("<!-- Insert the text here -->",
+                        json_object['text'].replace("\n", "<br>"))
 
     return html
 
