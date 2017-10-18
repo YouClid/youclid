@@ -1,14 +1,12 @@
 
 let scene, camera, raycaster, renderer, objects, mouse, geometry
 
-let size = Math.min(window.innerWidth, window.innerHeight)
+let size = Math.min(window.innerWidth*0.65, window.innerHeight)
 
 let current = null
 let oldPos = null
 let newPos = null
 let originalCenter = null
-
-//window.onload = init
 
 
 function init() {
@@ -31,13 +29,13 @@ function init() {
 
     loadGeometry(scene, camera)
 
-    document.addEventListener( 'mousedown', onMouseDown, false );
-    document.addEventListener( 'mousemove', onMouseMove, false );
-    document.addEventListener( 'mouseup', onMouseUp, false );
-    document.addEventListener( 'touchstart', onTouchStart, false );
-    document.addEventListener( 'touchmove', onTouchMove, false );
-    document.addEventListener( 'touchend', onTouchEnd, false );
-
+    // document.addEventListener( 'mousedown', onMouseDown, false );
+    // document.addEventListener( 'mousemove', onMouseMove, false );
+    // document.addEventListener( 'mouseup', onMouseUp, false );
+    // document.addEventListener( 'touchstart', onTouchStart, false );
+    // document.addEventListener( 'touchmove', onTouchMove, false );
+    // document.addEventListener( 'touchend', onTouchEnd, false );
+    window.onresize = resize;
     animate();
 }
 
@@ -45,6 +43,11 @@ function animate() {
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
     
+}
+
+function resize() {
+    size = Math.min(window.innerWidth*0.65, window.innerHeight)
+    renderer.setSize(size, size)
 }
 
 

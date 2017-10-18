@@ -1,0 +1,21 @@
+
+body {
+    margin: 0;
+    height: 100vh;
+}
+
+#text {
+    width: 30%;
+    height: 94vh;
+    vertical-align: top;
+    display: inline-block;
+    padding: 1em;
+    overflow-y: scroll;
+	
+
+}
+
+canvas {
+    display: inline-block;
+
+}
