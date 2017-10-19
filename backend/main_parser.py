@@ -63,7 +63,7 @@ def format_text(text):
     text = newtext
     text =  ''.join(text)
     pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
-    return re.sub(pattern, r" <span id=text_\2_\3>\2 \3</span>", text)
+    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
 
 
 def parse_line(args, obj):
