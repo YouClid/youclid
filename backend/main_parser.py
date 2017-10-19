@@ -55,6 +55,12 @@ def create_output(dict, text):
     return output
 
 def format_text(text):
+    newtext = []
+    for i in text:
+        if not i.startswith('`loc'):
+            newtext.append(i)
+    newtext = newtext[:-1]
+    text = newtext
     text =  ''.join(text)
     pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
     return re.sub(pattern, r" <span id=text_\2_\3>\2 \3</span>", text)
