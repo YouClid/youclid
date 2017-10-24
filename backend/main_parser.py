@@ -25,8 +25,8 @@ def parse(text):
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
-    animations = None
-    curr_step = None
+    animations = []
+    curr_step = []
 
     pattern = r'[^\\]?`([\s\S]*?)`'
 
@@ -37,15 +37,12 @@ def parse(text):
             element_type = data[0]
             arguments = data[1:]
             if element_type == 'step':
-                if(animations is None):
-                    animations = []
-                    curr_step = []
                 if(len(curr_step) > 0):
                     animations.append(curr_step)
                     curr_step = []
             else:
                 obj = parsers[element_type](arguments, object_dict)
-                if(animations is not None and obj is not None):
+                if obj is not None:
                     curr_step.append(obj.name)
 
     return create_output(object_dict, text, animations)
@@ -70,6 +67,7 @@ def create_output(dict, text, animations):
 def format_text(text):
     newtext = []
     for i in text:
+        i = i.replace('`step`', '')
         if not i.startswith('`loc'):
             newtext.append(i)
     newtext = newtext[:-1]
