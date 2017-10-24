@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>YouClid</title>
+		<link rel="stylesheet" href="default.css">
+		<script src="js/three.js"></script>
+		<script src="index.js"></script>
+		<script>
+		  
+		  window.onload = init
+
+		  geometry = {
+    "text": "Let <span id=text_line_AB style='background-color: #dddddd'>line AB</span> be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. \nDescribe the <span id=text_circle_BCD style='background-color: #dddddd'>circle BCD</span> with <span id=text_center_A style='background-color: #dddddd'>center A</span> and radius <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. \nAgain describe the <span id=text_circle_ACE style='background-color: #dddddd'>circle ACE</span> with <span id=text_center_B style='background-color: #dddddd'>center B</span> and radius <span id=text_line_BA style='background-color: #dddddd'>line BA</span>. \nJoin the straight lines <span id=text_line_CA style='background-color: #dddddd'>line CA</span> and <span id=text_line_CB style='background-color: #dddddd'>line CB</span> from the <span id=text_point_C style='background-color: #dddddd'>point C</span> at which the circles cut one another to the points <span id=text_point_A style='background-color: #dddddd'>point A</span> and <span id=text_point_B style='background-color: #dddddd'>point B</span>. \nNow, since the <span id=text_point_A style='background-color: #dddddd'>point A</span> is the center of the <span id=text_circle_CDB style='background-color: #dddddd'>circle CDB</span>, therefore <span id=text_line_AC style='background-color: #dddddd'>line AC</span> equals <span id=text_line_AB style='background-color: #dddddd'>line AB</span>.\nAgain, since the <span id=text_point_B style='background-color: #dddddd'>point B</span> is the center of the <span id=text_circle_CAE style='background-color: #dddddd'>circle CAE</span>, therefore <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span id=text_line_BA style='background-color: #dddddd'>line BA</span>.\nBut <span id=text_line_AC style='background-color: #dddddd'>line AC</span> was proved equal to <span id=text_line_AB style='background-color: #dddddd'>line AB</span>, therefore each of the straight lines <span id=text_line_AC style='background-color: #dddddd'>line AC</span> and <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span id=text_line_AB style='background-color: #dddddd'>line AB</span>.\nAnd things which equal the same thing also equal one another, therefore <span id=text_line_AC style='background-color: #dddddd'>line AC</span> also equals <span id=text_line_BC style='background-color: #dddddd'>line BC</span>.\nTherefore the three straight lines <span id=text_line_AC style='background-color: #dddddd'>line AC</span>, <span id=text_line_AB style='background-color: #dddddd'>line AB</span>, and <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equal one another.\nTherefore the <span id=text_triangle_ABC style='background-color: #dddddd'>triangle ABC</span> is equilateral, and it has been constructed on the given finite straight <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. \n",
+    "geometry": [
+        {
+            "A": {
+                "type": "Point",
+                "id": "A",
+                "data": {
+                    "x": -0.25,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "B": {
+                "type": "Point",
+                "id": "B",
+                "data": {
+                    "x": 0.25,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "AB": {
+                "type": "Line",
+                "id": "AB",
+                "data": {
+                    "p1": "A",
+                    "p2": "B"
+                }
+            }
+        },
+        {
+            "C": {
+                "type": "Point",
+                "id": "C",
+                "data": {
+                    "x": 0.0,
+                    "y": 0.433
+                }
+            }
+        },
+        {
+            "D": {
+                "type": "Point",
+                "id": "D",
+                "data": {
+                    "x": -0.75,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "BCD": {
+                "type": "Circle",
+                "id": "BCD",
+                "data": {
+                    "p1": "B",
+                    "p2": "C",
+                    "p3": "D",
+                    "center": null
+                }
+            }
+        },
+        {
+            "E": {
+                "type": "Point",
+                "id": "E",
+                "data": {
+                    "x": 0.75,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "ACE": {
+                "type": "Circle",
+                "id": "ACE",
+                "data": {
+                    "p1": "A",
+                    "p2": "C",
+                    "p3": "E",
+                    "center": null
+                }
+            }
+        },
+        {
+            "BA": {
+                "type": "Line",
+                "id": "BA",
+                "data": {
+                    "p1": "B",
+                    "p2": "A"
+                }
+            }
+        },
+        {
+            "CA": {
+                "type": "Line",
+                "id": "CA",
+                "data": {
+                    "p1": "C",
+                    "p2": "A"
+                }
+            }
+        },
+        {
+            "CB": {
+                "type": "Line",
+                "id": "CB",
+                "data": {
+                    "p1": "C",
+                    "p2": "B"
+                }
+            }
+        },
+        {
+            "AC": {
+                "type": "Line",
+                "id": "AC",
+                "data": {
+                    "p1": "A",
+                    "p2": "C"
+                }
+            }
+        },
+        {
+            "BC": {
+                "type": "Line",
+                "id": "BC",
+                "data": {
+                    "p1": "B",
+                    "p2": "C"
+                }
+            }
+        },
+        {
+            "ABC": {
+                "type": "Triangle",
+                "id": "ABC",
+                "data": {
+                    "p1": "A",
+                    "p2": "B",
+                    "p3": "C"
+                }
+            }
+        }
+    ],
+    "animations": [
+        [
+            "AB"
+        ],
+        [
+            "BCD"
+        ],
+        [
+            "ACE",
+            "BA"
+        ],
+        [
+            "CA",
+            "CB"
+        ],
+        [
+            "AC",
+            "BC",
+            "ABC"
+        ]
+    ]
+}
+
+		</script>
+	</head>
+	<body>
+	  <div id="text">
+	    Let <span id=text_line_AB style='background-color: #dddddd'>line AB</span> be the given finite straight line.<br>It is required to construct an equilateral triangle on the straight <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>Describe the <span id=text_circle_BCD style='background-color: #dddddd'>circle BCD</span> with <span id=text_center_A style='background-color: #dddddd'>center A</span> and radius <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>Again describe the <span id=text_circle_ACE style='background-color: #dddddd'>circle ACE</span> with <span id=text_center_B style='background-color: #dddddd'>center B</span> and radius <span id=text_line_BA style='background-color: #dddddd'>line BA</span>. <br>Join the straight lines <span id=text_line_CA style='background-color: #dddddd'>line CA</span> and <span id=text_line_CB style='background-color: #dddddd'>line CB</span> from the <span id=text_point_C style='background-color: #dddddd'>point C</span> at which the circles cut one another to the points <span id=text_point_A style='background-color: #dddddd'>point A</span> and <span id=text_point_B style='background-color: #dddddd'>point B</span>. <br>Now, since the <span id=text_point_A style='background-color: #dddddd'>point A</span> is the center of the <span id=text_circle_CDB style='background-color: #dddddd'>circle CDB</span>, therefore <span id=text_line_AC style='background-color: #dddddd'>line AC</span> equals <span id=text_line_AB style='background-color: #dddddd'>line AB</span>.<br>Again, since the <span id=text_point_B style='background-color: #dddddd'>point B</span> is the center of the <span id=text_circle_CAE style='background-color: #dddddd'>circle CAE</span>, therefore <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span id=text_line_BA style='background-color: #dddddd'>line BA</span>.<br>But <span id=text_line_AC style='background-color: #dddddd'>line AC</span> was proved equal to <span id=text_line_AB style='background-color: #dddddd'>line AB</span>, therefore each of the straight lines <span id=text_line_AC style='background-color: #dddddd'>line AC</span> and <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span id=text_line_AB style='background-color: #dddddd'>line AB</span>.<br>And things which equal the same thing also equal one another, therefore <span id=text_line_AC style='background-color: #dddddd'>line AC</span> also equals <span id=text_line_BC style='background-color: #dddddd'>line BC</span>.<br>Therefore the three straight lines <span id=text_line_AC style='background-color: #dddddd'>line AC</span>, <span id=text_line_AB style='background-color: #dddddd'>line AB</span>, and <span id=text_line_BC style='background-color: #dddddd'>line BC</span> equal one another.<br>Therefore the <span id=text_triangle_ABC style='background-color: #dddddd'>triangle ABC</span> is equilateral, and it has been constructed on the given finite straight <span id=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>
+	  </div>
+	</body>
+</html>

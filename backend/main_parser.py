@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-
+import argparse
 import sys
 import re
-from . import primitives
 import json
-import random
-import math
+import primitives
+from pprint import pprint
 
 
 def parse_text(arg):
@@ -13,133 +12,69 @@ def parse_text(arg):
         text = infile.readlines()
     return text
 
+
 def parse(text):
 
     parsers = {"line": parse_line,
                "circle": parse_circle,
                "point": parse_point,
                "center": parse_center,
-               "triangle": parse_triangle}
+               "triangle": parse_triangle,
+               "loc": parse_location}
 
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
+    animations = []
+    curr_step = []
 
-    pattern = '\\\.*?}'
+    pattern = r'[^\\]?`([\s\S]*?)`'
 
     for f in text:
         match = re.findall(pattern, f)
         for i in match:
-            func = re.findall('\\\.*?{', i)
-            arg = re.findall('{.*?}', i)
-            parsers[func[0].strip("\\").strip("{")](
-                arg[0].strip("{").strip("}"), object_dict)
-
-    # Function that actually mutates the objects in the dictionary to give them
-    # coordinates
-    plot_elements(object_dict)
-    return create_output(object_dict, text)
-
-    print(json.dumps(create_output(object_dict, text), indent=4))
-
-
-def plot_elements(object_dict):
-    """Gives the objects a location on the Cartesian plane"""
-
-    # Iterate over each of the elements and place them somewhere on the
-    # Cartesian plane
-    for k, v in object_dict.items():
-        # NOTE: This code will not work for everything! For now, I'm just
-        # getting it to work for the first postulate, which primarily involves
-        # circles. The biggest thing that we are about is having circles
-        # that don't take up the entire screen
-        if type(v) == primitives.Circle:
-            # If there are no points defining this circle yet
-            if ((v.center is None or v.center.x is None) and
-                all([(v.p1 is None or v.p1.x is None),
-                     (v.p2 is None or v.p2.x is None),
-                     (v.p3 is None or v.p3.x is None)])):
-                # Generate a center
-                v.center = primitives.Point(name=v.name + "_center")
-                v.center.x = random.uniform(-0.5, 0.5)
-                v.center.y = random.uniform(-0.5, 0.5)
-
-                radius = random.uniform(0, 0.25)
-
-                theta = random.uniform(0, 2*math.pi)
-                v.p1.x = v.center.x + radius * math.cos(theta)
-                v.p1.y = v.center.y + radius * math.sin(theta)
-
-                theta = random.uniform(0, 2*math.pi)
-                v.p2.x = v.center.x + radius * math.cos(theta)
-                v.p2.y = v.center.y + radius * math.sin(theta)
-
-                theta = random.uniform(0, 2*math.pi)
-                v.p3.x = v.center.x + radius * math.cos(theta)
-                v.p3.y = v.center.y + radius * math.sin(theta)
-
-            # Otherwise, the center is already defined and given a coordinate
-            elif (v.center is not None and v.center.x is not None):
-                radius = 0
-                # If any of the points are given coordinates
-                if v.p1 is not None and v.p1.x is not None:
-                    radius = math.sqrt(math.pow(v.p1.x - v.center.x, 2) +
-                                       math.pow(v.p1.y - v.center.y, 2))
-                elif v.p2 is not None and v.p2.x is not None:
-                    radius = math.sqrt(math.pow(v.p2.x - v.center.x, 2) +
-                                       math.pow(v.p2.y - v.center.y, 2))
-                elif v.p3 is not None and v.p3.x is not None:
-                    radius = math.sqrt(math.pow(v.p3.x - v.center.x, 2) +
-                                       math.pow(v.p3.y - v.center.y, 2))
-                # If none of the points are given coordinates
-                else:
-                    radius = random.uniform(0, 0.25)
-
-                # If p1 isn't given coordinates yet
-                if v.p1.x is None:
-                    theta = random.uniform(0, 2*math.pi)
-                    v.p1.x = v.center.x + radius * math.cos(theta)
-                    v.p1.y = v.center.y + radius * math.sin(theta)
-
-                # If p2 isn't given coordinates yet
-                if v.p2.x is None:
-                    theta = random.uniform(0, 2*math.pi)
-                    v.p2.x = v.center.x + radius * math.cos(theta)
-                    v.p2.y = v.center.y + radius * math.sin(theta)
-
-                # If p3 isn't given coordinates yet
-                if v.p3.x is None:
-                    theta = random.uniform(0, 2*math.pi)
-                    v.p3.x = v.center.x + radius * math.cos(theta)
-                    v.p3.y = v.center.y + radius * math.sin(theta)
-
+            data = i.split(' ')
+            element_type = data[0]
+            arguments = data[1:]
+            if element_type == 'step':
+                if(len(curr_step) > 0):
+                    animations.append(curr_step)
+                    curr_step = []
             else:
-                print("This case happened")
-                sys.exit(1)
+                obj = parsers[element_type](arguments, object_dict)
+                if obj is not None:
+                    curr_step.append(obj.name)
 
-    # NOTE: This is awful code.
-    # If there are any other points, just given them random coordaintes
-    for k, v in object_dict.items():
-        if type(v) == primitives.Point:
-            if v.x is None:
-                v.x = random.uniform(-0.5, 0.5)
-                v.y = random.uniform(-0.5, 0.5)
+    return create_output(object_dict, text, animations)
 
 
-def create_output(dict, text):
+def create_output(dict, text, animations):
     output = {}
 
-    output['text'] = ''.join(text)
+    output['text'] = format_text(text)
     output['geometry'] = []
+    output['animations'] = animations
 
     for k, v in dict.items():
-        output['geometry'].append({
+        output['geometry'].append({v.name:{
                                    'type': v.__class__.__name__,
                                    'id': v.name,
                                    'data': v.__dict__()
-                                  })
+                                  }})
 
     return output
+
+def format_text(text):
+    newtext = []
+    for i in text:
+        i = i.replace('`step`', '')
+        if not i.startswith('`loc'):
+            newtext.append(i)
+    newtext = newtext[:-1]
+    text = newtext
+    text =  ''.join(text)
+    pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
+    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
 
 
 def parse_line(args, obj):
@@ -160,7 +95,7 @@ def parse_line(args, obj):
         line.p2 = point_list[1]
         obj[name] = line
     else:
-        line = obj[name]
+        line = None
 
     return line
 
@@ -185,30 +120,30 @@ def parse_circle(args, obj):
         circle.p3 = point_list[2]
         obj[name] = circle
     else:
-        circle = obj[name]
+        circle = None
 
     return circle
 
 
 def parse_point(args, obj):
+    args = ''.join(args)
     name = args
     if obj.get(name) is None:
         point = primitives.Point(name)
         obj[name] = point
     else:
-        point = obj[name]
+        point = None
 
     return point
 
 
 def parse_center(args, obj):
     # ASSUME CIRCLE ALREADY EXISTS
-    split = args.split(", ")
-    name = split[0]
-    circle = split[1].split("=")[1]
+    name = args[0]
+    circle = args[1].split("=")[1]
 
     if obj.get(name):
-        point = obj[name]
+        point = None
     else:
         point = primitives.Point(name=name)
         obj[name] = point
@@ -236,24 +171,47 @@ def parse_triangle(args, obj):
         triangle.p3 = point_list[2]
         obj[name] = triangle
     else:
-        triangle = obj[name]
+        triangle = None
 
     return triangle
 
 
-def _rotate(l, n):
-    return l[-n:] + l[:-n]
+def parse_location(args, obj):
+    """Parses the location for a particular object"""
+    name = args[0]
+    x = float(args[1])
+    y = float(args[2])
+    o = obj[name]
+
+    o.x = x
+    o.y = y
+
+    return o
 
 
-def _rotate_lex(l):
-    ind = l.index(min(l))
-    if(ind != 0):
-        rot = len(l) - ind
-        return _rotate(l, rot)
-    else:
-        return l
+def generate_html(json_object):
+    html = ""
+    with open("../frontend/template.html", 'r') as f:
+        html = f.read()
+
+    html = html.replace("// insert json here", json.dumps(json_object,
+                                                          indent=4))
+    html = html.replace("<!-- Insert the text here -->",
+                        json_object['text'].replace("\n", "<br>"))
+
+    return html
 
 
 if __name__ == "__main__":
-    t = parse_text(sys.argv[1])
-    parse(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Generate html from .yc files")
+    parser.add_argument("path", type=str, help="Path to .yc file")
+    parser.add_argument("-o", "--output",  type=str, help="Path to output html file")
+    args = parser.parse_args()
+    t = parse_text(args.path)
+    json_object = parse(t)
+    if(args.output):
+        with open(args.output, "w") as f:
+            f.write(generate_html(json_object))
+
+    else:
+        print(json_object)
