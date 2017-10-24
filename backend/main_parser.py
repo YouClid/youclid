@@ -78,7 +78,6 @@ def format_text(text):
 
 
 def parse_line(args, obj):
-    created = False
     name = ''.join(sorted([x for x in args]))
     point_list = []
 
