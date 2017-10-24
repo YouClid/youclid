@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import argparse
 import sys
 import re
 import json
@@ -25,6 +25,8 @@ def parse(text):
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
+    animations = []
+    curr_step = []
 
     pattern = r'[^\\]?`([\s\S]*?)`'
 
@@ -34,29 +36,38 @@ def parse(text):
             data = i.split(' ')
             element_type = data[0]
             arguments = data[1:]
-            parsers[element_type](arguments, object_dict)
+            if element_type == 'step':
+                if(len(curr_step) > 0):
+                    animations.append(curr_step)
+                    curr_step = []
+            else:
+                obj = parsers[element_type](arguments, object_dict)
+                if obj is not None:
+                    curr_step.append(obj.name)
 
-    return create_output(object_dict, text)
+    return create_output(object_dict, text, animations)
 
 
-def create_output(dict, text):
+def create_output(dict, text, animations):
     output = {}
 
     output['text'] = format_text(text)
     output['geometry'] = []
+    output['animations'] = animations
 
     for k, v in dict.items():
-        output['geometry'].append({
+        output['geometry'].append({v.name:{
                                    'type': v.__class__.__name__,
                                    'id': v.name,
                                    'data': v.__dict__()
-                                  })
+                                  }})
 
     return output
 
 def format_text(text):
     newtext = []
     for i in text:
+        i = i.replace('`step`', '')
         if not i.startswith('`loc'):
             newtext.append(i)
     newtext = newtext[:-1]
@@ -84,7 +95,7 @@ def parse_line(args, obj):
         line.p2 = point_list[1]
         obj[name] = line
     else:
-        line = obj[name]
+        line = None
 
     return line
 
@@ -109,7 +120,7 @@ def parse_circle(args, obj):
         circle.p3 = point_list[2]
         obj[name] = circle
     else:
-        circle = obj[name]
+        circle = None
 
     return circle
 
@@ -121,7 +132,7 @@ def parse_point(args, obj):
         point = primitives.Point(name)
         obj[name] = point
     else:
-        point = obj[name]
+        point = None
 
     return point
 
@@ -132,7 +143,7 @@ def parse_center(args, obj):
     circle = args[1].split("=")[1]
 
     if obj.get(name):
-        point = obj[name]
+        point = None
     else:
         point = primitives.Point(name=name)
         obj[name] = point
@@ -160,7 +171,7 @@ def parse_triangle(args, obj):
         triangle.p3 = point_list[2]
         obj[name] = triangle
     else:
-        triangle = obj[name]
+        triangle = None
 
     return triangle
 
@@ -192,6 +203,15 @@ def generate_html(json_object):
 
 
 if __name__ == "__main__":
-    t = parse_text(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Generate html from .yc files")
+    parser.add_argument("path", type=str, help="Path to .yc file")
+    parser.add_argument("-o", "--output",  type=str, help="Path to output html file")
+    args = parser.parse_args()
+    t = parse_text(args.path)
     json_object = parse(t)
-    print(generate_html(json_object))
+    if(args.output):
+        with open(args.output, "w") as f:
+            f.write(generate_html(json_object))
+
+    else:
+        print(json_object)
