@@ -46,11 +46,11 @@ def create_output(dict, text):
     output['geometry'] = []
 
     for k, v in dict.items():
-        output['geometry'].append({
+        output['geometry'].append({v.name:{
                                    'type': v.__class__.__name__,
                                    'id': v.name,
                                    'data': v.__dict__()
-                                  })
+                                  }})
 
     return output
 
@@ -194,4 +194,5 @@ def generate_html(json_object):
 if __name__ == "__main__":
     t = parse_text(sys.argv[1])
     json_object = parse(t)
-    print(generate_html(json_object))
+    print(json_object)
+    #print(generate_html(json_object))
