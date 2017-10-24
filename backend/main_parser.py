@@ -25,6 +25,8 @@ def parse(text):
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
     object_dict = {}
+    animations = None
+    curr_step = None
 
     pattern = r'[^\\]?`([\s\S]*?)`'
 
@@ -34,16 +36,27 @@ def parse(text):
             data = i.split(' ')
             element_type = data[0]
             arguments = data[1:]
-            parsers[element_type](arguments, object_dict)
+            if element_type == 'step':
+                if(animations is None):
+                    animations = []
+                    curr_step = []
+                if(len(curr_step) > 0):
+                    animations.append(curr_step)
+                    curr_step = []
+            else:
+                obj = parsers[element_type](arguments, object_dict)
+                if(animations is not None and obj is not None):
+                    curr_step.append(obj.name)
 
-    return create_output(object_dict, text)
+    return create_output(object_dict, text, animations)
 
 
-def create_output(dict, text):
+def create_output(dict, text, animations):
     output = {}
 
     output['text'] = format_text(text)
     output['geometry'] = []
+    output['animations'] = animations
 
     for k, v in dict.items():
         output['geometry'].append({v.name:{
@@ -67,6 +80,7 @@ def format_text(text):
 
 
 def parse_line(args, obj):
+    created = False
     name = ''.join(sorted([x for x in args]))
     point_list = []
 
@@ -84,7 +98,7 @@ def parse_line(args, obj):
         line.p2 = point_list[1]
         obj[name] = line
     else:
-        line = obj[name]
+        line = None
 
     return line
 
@@ -109,7 +123,7 @@ def parse_circle(args, obj):
         circle.p3 = point_list[2]
         obj[name] = circle
     else:
-        circle = obj[name]
+        circle = None
 
     return circle
 
@@ -121,7 +135,7 @@ def parse_point(args, obj):
         point = primitives.Point(name)
         obj[name] = point
     else:
-        point = obj[name]
+        point = None
 
     return point
 
@@ -132,7 +146,7 @@ def parse_center(args, obj):
     circle = args[1].split("=")[1]
 
     if obj.get(name):
-        point = obj[name]
+        point = None
     else:
         point = primitives.Point(name=name)
         obj[name] = point
@@ -160,7 +174,7 @@ def parse_triangle(args, obj):
         triangle.p3 = point_list[2]
         obj[name] = triangle
     else:
-        triangle = obj[name]
+        triangle = None
 
     return triangle
 
