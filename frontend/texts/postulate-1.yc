@@ -1,8 +1,8 @@
-Let `line AB` be the given finite straight line.
-It is required to construct an equilateral triangle on the straight `line AB`.
-Describe the `circle BCD` with `center A circle=BCD` and radius `line AB`.
-Again describe the `circle ACE` with `center B circle=ACE` and radius `line BA`.
-Join the straight lines `line CA` and `line CB` from the `point C` at which the circles cut one another to the points `point A` and `point B`.
+'step' Let `line AB` be the given finite straight line.
+It is required to construct an equilateral triangle on the straight `line AB`. 'step'
+Describe the `circle BCD` with `center A circle=BCD` and radius `line AB`. 'step'
+Again describe the `circle ACE` with `center B circle=ACE` and radius `line BA`. 'step'
+Join the straight lines `line CA` and `line CB` from the `point C` at which the circles cut one another to the points `point A` and `point B`. 'step'
 Now, since the `point A` is the center of the `circle CDB`, therefore `line AC` equals `line AB`.
 Again, since the `point B` is the center of the `circle CAE`, therefore `line BC` equals `line BA`.
 But `line AC` was proved equal to `line AB`, therefore each of the straight lines `line AC` and `line BC` equals `line AB`.
