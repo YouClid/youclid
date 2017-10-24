@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import argparse
 import sys
 import re
 import json
@@ -206,7 +206,15 @@ def generate_html(json_object):
 
 
 if __name__ == "__main__":
-    t = parse_text(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Generate html from .yc files")
+    parser.add_argument("path", type=str, help="Path to .yc file")
+    parser.add_argument("-o", "--output",  type=str, help="Path to output html file")
+    args = parser.parse_args()
+    t = parse_text(args.path)
     json_object = parse(t)
-    print(json_object)
-    #print(generate_html(json_object))
+    if(args.output):
+        with open(args.output, "w") as f:
+            f.write(generate_html(json_object))
+
+    else:
+        print(json_object)
