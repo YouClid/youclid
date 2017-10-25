@@ -1,4 +1,4 @@
-syn region YouclidText start="`" end="`" contains=YouclidKeyword,YouclidDelimeter keepend nextgroup=YouclidKeyword
+syn region YouclidText start="[^\\]\=`" end="`" contains=YouclidKeyword,YouclidDelimeter keepend nextgroup=YouclidKeyword
 syn keyword YouclidKeyword contained point line circle center loc step triangle nextgroup=YouclidName
 syn region YouclidName matchgroup=YouclidText start=' ' end="[ `]" contained
 
