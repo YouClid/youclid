@@ -74,8 +74,8 @@ def format_text(text, dict):
     newtext = newtext[:-1]
     text = newtext
     text =  ''.join(text)
-    pattern = r'(\`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
-    return re.sub(pattern, get_text, text)
+    pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
+    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
 
 def get_text(match):
     match = match.group()
