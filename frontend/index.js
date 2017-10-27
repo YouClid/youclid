@@ -1,5 +1,5 @@
 
-let scene, camera, raycaster, renderer, objects, mouse, geometry
+let scene, camera, raycaster, renderer, objects, mouse, geometry, scenes, anim_index
 
 let size = Math.min(window.innerWidth*0.65, window.innerHeight)
 
@@ -26,8 +26,8 @@ function init() {
     mouse = new THREE.Vector2();
 
     objects = []
-
-    loadGeometry(scene, camera)
+    anim_index = 0
+    scenes = loadGeometry(camera)
 
     // document.addEventListener( 'mousedown', onMouseDown, false );
     // document.addEventListener( 'mousemove', onMouseMove, false );
@@ -35,11 +35,13 @@ function init() {
     // document.addEventListener( 'touchstart', onTouchStart, false );
     // document.addEventListener( 'touchmove', onTouchMove, false );
     // document.addEventListener( 'touchend', onTouchEnd, false );
+    document.addEventListener( 'keydown', onKeyDown)
     window.onresize = resize;
     animate();
 }
 
 function animate() {
+    scene = scenes[anim_index];
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
     
@@ -51,47 +53,56 @@ function resize() {
 }
 
 
-function loadGeometry(scene, camera) {
+function loadGeometry(camera) {
+    let scenes = []
 
-    geo = geometry.geometry
+    let steps = geometry.animations.map(arr => arr.map(obj => geometry.geometry[obj]))
 
-    let points = geo.filter(entry => entry.type === "Point")
+    let temp = new THREE.Scene()
+    for(let i = 0; i < steps.length; i++) {
+	let geo = steps[i]
+	scene = temp.clone()
+	
+	let points = geo.filter(entry => entry.type === "Point")
 
-    let pointMap = {}
-    for(let i = 0; i < points.length; i++) {
-	let point = points[i]
-	pointMap[point.id] = point.data
-	let p = makePoint(point.data)
-	// pointMap[point.id] = p.geometry.vertices[0]
-	objects.push(p)
-	scene.add(p)
+	let pointMap = {}
+	for(let i = 0; i < points.length; i++) {
+	    let point = points[i]
+	    pointMap[point.id] = point.data
+	    let p = makePoint(point.data)
+	    // pointMap[point.id] = p.geometry.vertices[0]
+	    objects.push(p)
+	    scene.add(p)
+	}
+	
+	let circles = geo.filter(entry => entry.type === "Circle")
+
+	for(let i = 0; i < circles.length; i++) {
+	    let circle = circles[i]
+	    
+	    let d = circle.data
+
+	    let c = makeCircle(pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
+	    objects.push(c)
+	    scene.add(c)
+	}
+
+	let lines = geo.filter(entry => entry.type === "Line")
+
+	for(let i = 0; i< lines.length; i++) {
+	    let line = lines[i]
+	    let d = line.data
+	    
+	    let l = makeLine(pointMap[d.p1], pointMap[d.p2], true)
+
+	    objects.push(l)
+	    scene.add(l)
+	}
+	scenes.push(scene)
+	temp = scene
     }
 
-    let circles = geo.filter(entry => entry.type === "Circle")
-
-    for(let i = 0; i < circles.length; i++) {
-	let circle = circles[i]
-
-	let d = circle.data
-
-	let c = makeCircle(pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
-	objects.push(c)
-	scene.add(c)
-    }
-
-    let lines = geo.filter(entry => entry.type === "Line")
-
-    for(let i = 0; i< lines.length; i++) {
-	let line = lines[i]
-	let d = line.data
-
-	let l = makeLine(pointMap[d.p1], pointMap[d.p2], true)
-
-	objects.push(l)
-	scene.add(l)
-    }
-
-    
+    return scenes
 }
 
 function dist(p1, p2) {
@@ -277,5 +288,15 @@ function onTouchEnd( event ) {
     event.preventDefault();
     onMouseUp( event );
 }
+
+function onKeyDown( event ) {
+    if(event.keyCode == 37) {
+	anim_index = anim_index === 0 ? anim_index : anim_index - 1
+    }
+    else if(event.keyCode == 39) {
+	anim_index = anim_index === scenes.length-1 ? anim_index : anim_index + 1
+    }
+}
+
 
 

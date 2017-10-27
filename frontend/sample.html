@@ -10,23 +10,143 @@
 		  
 		  window.onload = init
 
-		  geometry = {"text":"Let \\line{AB} be the given finite straight line.It is required to construct an equilateral triangle on the straight line \\line{AB}.Describe the circle \\circle{BCD} with center \\center{A, circle=BCD} and radius \\line{AB}.Again describe the circle \\circle{ACE} with center \\center{B, circle=ACE} and radius \\line{BA}.Join the straight lines \\line{CA} and \\line{CB} from the point \\point{C} at which the circles cut one another to the points \\point{A} and \\point{B}.Now, since the point \\point{A} is the center of the circle \\circle{CDB}, therefore \\line{AC} equals \\line{AB}.Again, since the point \\point{B} is the center of the circle \\circle{CAE}, therefore \\line{BC} equals \\line{BA}.But \\line{AC} was proved equal to \\line{AB}, therefore each of the straight lines \\line{AC} and \\line{BC} equals \\line{AB}.And things which equal the same thing also equal one another, therefore \\line{AC} also equals \\line{BC}.Therefore the three straight lines \\line{AC}, \\line{AB}, and \\line{BC} equal one another.Therefore the triangle \\triangle{ABC} is equilateral, and it has been constructed on the given finite straight line \\line{AB}.","geometry":[{"type":"Point","id":"A","data":{"x":-0.19386985361803025,"y":0.15579816924926576}},{"type":"Point","id":"B","data":{"x":-0.380138302505392,"y":0.3482875064657474}},{"type":"Line","id":"AB","data":{"p1":"A","p2":"B"}},{"type":"Point","id":"C","data":{"x":-0.5595975579307602,"y":0.1494346572653486}},{"type":"Point","id":"D","data":{"x":-0.5727902551464414,"y":0.17176750339988986}},{"type":"Circle","id":"BCD","data":{"p1":"B","p2":"C","p3":"D","center":"BCD_center"}},{"type":"Point","id":"E","data":{"x":-0.647968161389487,"y":0.3521922065912135}},{"type":"Circle","id":"ACE","data":{"p1":"A","p2":"C","p3":"E","center":"B"}},{"type":"Line","id":"AC","data":{"p1":"A","p2":"C"}},{"type":"Line","id":"BC","data":{"p1":"B","p2":"C"}},{"type":"Triangle","id":"ABC","data":{"p1":"A","p2":"B","p3":"C"}}]}
+		  geometry = {
+    "text": "Let line AB be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight line AB. \nDescribe the circle BCD with center A and radius line AB. \nAgain describe the circle ACE with center B and radius line BA. \nJoin the straight lines line CA and line CB from the point C at which the circles cut one another to the points point A and point B. \nNow, since the point A is the center of the circle CDB, therefore line AC equals line AB.\nAgain, since the point B is the center of the circle CAE, therefore line BC equals line BA.\nBut line AC was proved equal to line AB, therefore each of the straight lines line AC and line BC equals line AB.\nAnd things which equal the same thing also equal one another, therefore line AC also equals line BC.\nTherefore the three straight lines line AC, line AB, and line BC equal one another.\nTherefore the triangle ABC is equilateral, and it has been constructed on the given finite straight line AB. \n",
+    "geometry": {
+        "A": {
+            "type": "Point",
+            "id": "A",
+            "data": {
+                "x": -0.25,
+                "y": 0.0
+            }
+        },
+        "B": {
+            "type": "Point",
+            "id": "B",
+            "data": {
+                "x": 0.25,
+                "y": 0.0
+            }
+        },
+        "AB": {
+            "type": "Line",
+            "id": "AB",
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
+        "C": {
+            "type": "Point",
+            "id": "C",
+            "data": {
+                "x": 0.0,
+                "y": 0.433
+            }
+        },
+        "D": {
+            "type": "Point",
+            "id": "D",
+            "data": {
+                "x": -0.75,
+                "y": 0.0
+            }
+        },
+        "BCD": {
+            "type": "Circle",
+            "id": "BCD",
+            "data": {
+                "p1": "B",
+                "p2": "C",
+                "p3": "D",
+                "center": null
+            }
+        },
+        "E": {
+            "type": "Point",
+            "id": "E",
+            "data": {
+                "x": 0.75,
+                "y": 0.0
+            }
+        },
+        "ACE": {
+            "type": "Circle",
+            "id": "ACE",
+            "data": {
+                "p1": "A",
+                "p2": "C",
+                "p3": "E",
+                "center": null
+            }
+        },
+        "AC": {
+            "type": "Line",
+            "id": "AC",
+            "data": {
+                "p1": "A",
+                "p2": "C"
+            }
+        },
+        "BC": {
+            "type": "Line",
+            "id": "BC",
+            "data": {
+                "p1": "B",
+                "p2": "C"
+            }
+        },
+        "ABC": {
+            "type": "Triangle",
+            "id": "ABC",
+            "data": {
+                "p1": "A",
+                "p2": "B",
+                "p3": "C"
+            }
+        }
+    },
+    "animations": [
+        [
+            "AB",
+            "A",
+            "B"
+        ],
+        [
+            "BCD",
+            "B",
+            "C",
+            "D"
+        ],
+        [
+            "ACE",
+            "A",
+            "C",
+            "E"
+        ],
+        [
+            "AC",
+            "A",
+            "C",
+            "BC",
+            "B",
+            "C"
+        ],
+        [
+            "ABC",
+            "A",
+            "B",
+            "C"
+        ]
+    ]
+}
 
 		</script>
 	</head>
 	<body>
 	  <div id="text">
-	    Let \line{AB} be the given finite straight line.
-It is required to construct an equilateral triangle on the straight line \line{AB}.
-Describe the circle \circle{BCD} with center \center{A, circle=BCD} and radius \line{AB}.
-Again describe the circle \circle{ACE} with center \center{B, circle=ACE} and radius \line{BA}.
-Join the straight lines \line{CA} and \line{CB} from the point \point{C} at which the circles cut one another to the points \point{A} and \point{B}.
-Now, since the point \point{A} is the center of the circle \circle{CDB}, therefore \line{AC} equals \line{AB}.
-Again, since the point \point{B} is the center of the circle \circle{CAE}, therefore \line{BC} equals \line{BA}.
-But \line{AC} was proved equal to \line{AB}, therefore each of the straight lines \line{AC} and \line{BC} equals \line{AB}.
-And things which equal the same thing also equal one another, therefore \line{AC} also equals \line{BC}.
-Therefore the three straight lines \line{AC}, \line{AB}, and \line{BC} equal one another.
-Therefore the triangle \triangle{ABC} is equilateral, and it has been constructed on the given finite straight line \line{AB}.
+	    Let line AB be the given finite straight line.<br>It is required to construct an equilateral triangle on the straight line AB. <br>Describe the circle BCD with center A and radius line AB. <br>Again describe the circle ACE with center B and radius line BA. <br>Join the straight lines line CA and line CB from the point C at which the circles cut one another to the points point A and point B. <br>Now, since the point A is the center of the circle CDB, therefore line AC equals line AB.<br>Again, since the point B is the center of the circle CAE, therefore line BC equals line BA.<br>But line AC was proved equal to line AB, therefore each of the straight lines line AC and line BC equals line AB.<br>And things which equal the same thing also equal one another, therefore line AC also equals line BC.<br>Therefore the three straight lines line AC, line AB, and line BC equal one another.<br>Therefore the triangle ABC is equilateral, and it has been constructed on the given finite straight line AB. <br>
 	  </div>
 	</body>
 </html>
