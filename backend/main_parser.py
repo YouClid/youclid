@@ -51,20 +51,20 @@ def parse(text):
 def create_output(dict, text, animations):
     output = {}
 
-    output['text'] = format_text(text)
-    output['geometry'] = []
+    output['text'] = format_text(text, dict)
+    output['geometry'] = {}
     output['animations'] = animations
 
     for k, v in dict.items():
-        output['geometry'].append({v.name:{
+        output['geometry'][v.name] = {
                                    'type': v.__class__.__name__,
                                    'id': v.name,
                                    'data': v.__dict__()
-                                  }})
+                                  }
 
     return output
 
-def format_text(text):
+def format_text(text, dict):
     newtext = []
     for i in text:
         i = i.replace('`step`', '')
@@ -73,9 +73,13 @@ def format_text(text):
     newtext = newtext[:-1]
     text = newtext
     text =  ''.join(text)
-    pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
-    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+    pattern = r'(\`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
+    return re.sub(pattern, get_text, text)
 
+def get_text(match):
+    match = match.group()
+    match = match.replace("`", "").split(" ")
+    return match[0] + " " + match[1]
 
 def parse_line(args, obj):
     name = ''.join(sorted([x for x in args]))
