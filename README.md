@@ -13,16 +13,17 @@ The parser currently supports the following data types
 - line
 - circle
 - triangle
+
 Arguments to the data types are space separated.
-The second argument to each data type must be the name of the object (which currently must be one letter point names that make up the object)
+The second argument to each data type must be the name of the object (which currently must be one letter point names that make up the object).
+The `center` keyword can be used to specify the center point for a circle.
 At the bottom of the file, the `loc` keyword must be used to give the points coordinates (floating point numbers between -1 and 1 inclusive), where `(0, 0)` is the center of the canvas.
 We have provided an example file in [frontend/texts/postulate1.yc](https://raw.githubusercontent.com/YouClid/youclid/master/frontend/texts/postulate-1.yc) which can be used as a reference.
-The `center` keyword can be used to specify the center point for a circle.
 
 ### Running the parser
-To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and the argument to `-o` with the path to where you want your html file to be placed:
+To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and the argument to `-o` with the path to the `frontend` directory of this repository, and then the name of the HTML file that you want to generate:
 ```
-python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/file.html
+python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/test.html
 ```
 If you wish to specify transitions between steps in your text, simply include a \`step\` command.
 Any objects created between \`step\` commands will be displayed as one transition.
