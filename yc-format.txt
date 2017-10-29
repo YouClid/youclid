@@ -40,6 +40,7 @@ Specifications
         - point
         - triangle
         - loc
+        - step
 6.  The second word inside BACKTICKS MUST represent the name of the object and
     SHALL be the name of the points that define that object, each represented
     by a single character.
@@ -61,3 +62,10 @@ Specifications
     finite straight line" and not "Let line `line AB` be a given finite
     straight line", as the later will result in the word "line" being
     displayed twice.
+12. The user MAY specify steps in the markup, which will represent groups of
+    elements to be displayed together in the frontend. This allows the user to
+    create animated steps in the frontend construction. All elements created
+    between two `step` commands will be displayed together, as will all
+    elements between the start of the file and the first `step` command, as
+    well as all elements between the final step command and the end of the
+    file.
