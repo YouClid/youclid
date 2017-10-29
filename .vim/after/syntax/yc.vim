@@ -1,3 +1,5 @@
+syntax case ignore
+
 syn region YouclidText matchgroup=YouclidMarker start="[^\\]\=`" end="`" contains=YouclidKeyword keepend nextgroup=YouclidKeyword
 syn keyword YouclidKeyword contained point line circle center loc step triangle nextgroup=YouclidName
 syn region YouclidName matchgroup=YouclidMarker start=' ' end="[ `]" contained
