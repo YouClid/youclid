@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import argparse
 import sys
 import re
@@ -28,9 +29,24 @@ def parse(text):
     animations = []
     curr_step = []
 
-    pattern = r'[^\\]?`([\s\S]*?)`'
+    pattern = r'[^\\]?\[([\s\S]*?)\]'
 
-    for f in text:
+    def_index = 0
+
+    for c,d in enumerate(text):
+        if "[Definitions]" in d:
+            def_index = c
+            break
+
+    for e in text[def_index+1:]:
+        match = re.findall(pattern, e)
+        for i in match:
+            data = i.split(' ')
+            element_type = data[0]
+            arguments = data[1:]
+            obj = parsers[element_type](arguments, object_dict)
+
+    for f in text[:def_index]:
         match = re.findall(pattern, f)
         for i in match:
             data = i.split(' ')
@@ -68,18 +84,19 @@ def create_output(dict, text, animations):
 def format_text(text, dict):
     newtext = []
     for i in text:
-        i = i.replace('`step`', '')
-        if not i.startswith('`loc'):
+        i = i.replace('[step]', '')
+        i = i.replace('[Definitions]', '')
+        if not i.startswith('[loc'):
             newtext.append(i)
     newtext = newtext[:-1]
     text = newtext
     text =  ''.join(text)
-    pattern = r'([^\\]?`)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)`'
+    pattern = r'([^\\]?\[)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)\]'
     return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
 
 def get_text(match):
     match = match.group()
-    match = match.replace("`", "").split(" ")
+    match = match.replace("[", "").split(" ")
     return match[0] + " " + match[1]
 
 def parse_line(args, obj):
@@ -196,6 +213,7 @@ def parse_location(args, obj):
     name = args[0]
     x = float(args[1])
     y = float(args[2])
+    parse_point(name, obj)
     o = obj[name]
 
     o.x = x
