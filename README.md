@@ -18,6 +18,7 @@ Arguments to the data types are space separated.
 The second argument to each data type must be the name of the object (which currently must be one letter point names that make up the object).
 The `center` keyword can be used to specify the center point for a circle.
 At the bottom of the file, the `loc` keyword must be used to give the points coordinates (floating point numbers between -1 and 1 inclusive), where `(0, 0)` is the center of the canvas.
+To mark where this part of the document starts, it must be preceded by a `[Definitions]` tag.
 We have provided an example file in [frontend/texts/postulate1.yc](https://raw.githubusercontent.com/YouClid/youclid/master/frontend/texts/postulate-1.yc) which can be used as a reference.
 
 ### Running the parser
@@ -35,6 +36,7 @@ Start by making a file called `line.yc`, with the following contents:
 This text won't be marked up, since it's not enclosed in bracketes!
 This is [line AB], which is made up of [point A] and [point B].
 
+[Definitions]
 [loc A -0.75 -0.75]
 [loc B 0.75 0.75]
 ```
