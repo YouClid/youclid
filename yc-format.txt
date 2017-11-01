@@ -44,6 +44,7 @@ Specifications
         - triangle
         - loc
         - step
+        - clear
 6.  The second word inside BRACKETS MUST represent the name of the object and
     SHALL be the name of the points that define that object, each represented
     by a single character.
@@ -72,3 +73,5 @@ Specifications
     elements between the start of the file and the first `step` command, as
     well as all elements between the final step command and the end of the
     file.
+13. The user MAY use the "clear" keyword as a way to remove all visualization
+    from the screen.
