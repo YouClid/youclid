@@ -91,6 +91,7 @@ def format_text(text, dict):
     for i in text:
         i = i.replace('[step]', '')
         i = i.replace('[Definitions]', '')
+        i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
             newtext.append(i)
     newtext = newtext[:-1]
@@ -242,7 +243,7 @@ def generate_html(json_object):
     html = html.replace("// insert json here", json.dumps(json_object,
                                                           indent=4))
     html = html.replace("<!-- Insert the text here -->",
-                        json_object['text'].replace("\n", "<br>"))
+                        json_object['text'].replace("\n", "<br>\n        "))
 
     return html
 
