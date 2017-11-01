@@ -18,21 +18,21 @@ Definitions
 1.  The terms "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
     "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to
     be interpreted as described in RFC 2119.
-2.  The "`" character will be referred to in this document as the BACKTICK
-    character.
+2.  The "[" and "]" characters will be referred to in this document as the
+    BRACKET characters.
 3.  The "\" character will be referred to in this document as the BACKSLASH
     character.
 
 Specifications
 
-1.  All text that is desired to be parsed MUST be enclosed by the BACKTICK
+1.  All text that is desired to be parsed MUST be enclosed by the BRACKET
     character.
-2.  Text that is not enclosed by the BACKTICK character will be treated as
+2.  Text that is not enclosed by the BRACKET characters will be treated as
     normal text.
-3.  In the event that a BACKTICK is to be interpreted literally in the text, it
+3.  In the event that a BRACKET is to be interpreted literally in the text, it
     MUST be escaped by a BACKSLASH character.
-4.  Words inside BACKTICKS MUST be separated by a single space.
-5.  The first word inside BACKTICKS MUST represent the type of the object to be
+4.  Words inside BRACKETS MUST be separated by a single space.
+5.  The first word inside BRACKETS MUST represent the type of the object to be
     drawn and MUST be one of the following:
         - line
         - circle
@@ -41,15 +41,15 @@ Specifications
         - triangle
         - loc
         - step
-6.  The second word inside BACKTICKS MUST represent the name of the object and
+6.  The second word inside BRACKETS MUST represent the name of the object and
     SHALL be the name of the points that define that object, each represented
     by a single character.
-7.  For the "circle" keyword, the third word inside BACKTICKS MUST be
+7.  For the "circle" keyword, the third word inside BRACKETS MUST be
     "circle=ABC" where ABC MUST be the name of a circle object.
-8.  For the "loc" keyword, the third word inside BACKTICKS MUST be a floating
+8.  For the "loc" keyword, the third word inside BRACKETS MUST be a floating
     point number that represents the x coordinate of the point between -1.0 and
     1.0 inclusive.
-9.  For the "loc" keyword, the forth word inside BACKTICKS MUST be a floating
+9.  For the "loc" keyword, the forth word inside BRACKETS MUST be a floating
     point number that represents the y coordinate of the point between -1.0 and
     1.0 inclusive.
 10. For each point specified, either explicitly by the "point" keyword, or
@@ -58,8 +58,8 @@ Specifications
     that point.
 11. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object
     not be added to the text. For example, if the text was "Let line AB be a
-    given finite straight line", the markup should be "Let `line AB` be a given
-    finite straight line" and not "Let line `line AB` be a given finite
+    given finite straight line", the markup should be "Let [line AB] be a given
+    finite straight line" and not "Let line [line AB] be a given finite
     straight line", as the later will result in the word "line" being
     displayed twice.
 12. The user MAY specify steps in the markup, which will represent groups of
