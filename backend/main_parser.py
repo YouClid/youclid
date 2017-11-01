@@ -33,7 +33,7 @@ def parse(text):
     def_index = 0
 
     for c, d in enumerate(text):
-        if "[Definitions]" in d:
+        if "[definitions]" in d:
             def_index = c
             break
 
@@ -90,7 +90,7 @@ def format_text(text, dict):
     newtext = []
     for i in text:
         i = i.replace('[step]', '')
-        i = i.replace('[Definitions]', '')
+        i = i.replace('[definitions]', '')
         i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
             newtext.append(i)
