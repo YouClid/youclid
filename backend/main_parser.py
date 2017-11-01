@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import argparse
-import sys
 import re
 import json
 import primitives
@@ -33,7 +32,7 @@ def parse(text):
 
     def_index = 0
 
-    for c,d in enumerate(text):
+    for c, d in enumerate(text):
         if "[Definitions]" in d:
             def_index = c
             break
@@ -54,13 +53,18 @@ def parse(text):
             arguments = data[1:]
             if element_type == 'step':
                 if(len(curr_step) > 0):
-                    animations.append(curr_step)
+                    animations.append(curr_step[:])
+            elif element_type == 'clear':
                     curr_step = []
             else:
                 obj = parsers[element_type](arguments, object_dict)
                 if obj is not None:
                     for e in obj:
-                        curr_step.append(e.name)
+                        if(e.name not in curr_step):
+                            curr_step.append(e.name)
+
+    if(len(animations) == 0):
+        animations.append(curr_step[:])
 
     return create_output(object_dict, text, animations)
 
@@ -81,28 +85,43 @@ def create_output(dict, text, animations):
 
     return output
 
+
 def format_text(text, dict):
     newtext = []
     for i in text:
         i = i.replace('[step]', '')
         i = i.replace('[Definitions]', '')
+        i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
             newtext.append(i)
     newtext = newtext[:-1]
     text = newtext
-    text =  ''.join(text)
-    pattern = r'([^\\]?\[)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)\]'
-    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+    text = ''.join(text)
+    pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    replaced = re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+
+    # We need the name in the ID field to be sorted, so we need to replace all
+    # of the unsorted versions with the sorted versions
+    p = r"<span id=(.*?_.*?_.*?) "
+    for m in re.findall(p, replaced):
+        t = m.split("_")
+        t[2] = ''.join(sorted(t[2]))
+        t = '_'.join(t)
+        replaced = re.sub(m, t, replaced)
+
+    return replaced
+
 
 def get_text(match):
     match = match.group()
     match = match.replace("[", "").split(" ")
     return match[0] + " " + match[1]
 
+
 def parse_line(args, obj):
     name = ''.join(sorted([x for x in args[0]]))
     point_list = []
-    ret = None
+    ret = []
 
     for p in name:
         if obj.get(p) is None:
@@ -116,10 +135,11 @@ def parse_line(args, obj):
         line = primitives.Line(name)
         line.p1 = point_list[0]
         line.p2 = point_list[1]
-        ret = [line] + point_list
         obj[name] = line
     else:
-        line = None
+        line = obj.get(name)
+
+    ret.extend((line, line.p1, line.p2))
 
     return ret
 
@@ -128,7 +148,7 @@ def parse_circle(args, obj):
     n = ''.join(args)
     name = ''.join(sorted(n))
     point_list = []
-    ret = None
+    ret = []
 
     for p in name:
         if obj.get(p) is None:
@@ -143,10 +163,12 @@ def parse_circle(args, obj):
         circle.p1 = point_list[0]
         circle.p2 = point_list[1]
         circle.p3 = point_list[2]
-        ret = [circle] + point_list
         obj[name] = circle
     else:
-        circle = None
+        circle = obj.get(name)
+
+    ret.append(circle)
+    ret.extend(point_list)
 
     return ret
 
@@ -154,14 +176,15 @@ def parse_circle(args, obj):
 def parse_point(args, obj):
     args = ''.join(args)
     name = args
-    ret = None
+    ret = []
     if obj.get(name) is None:
         point = primitives.Point(name)
         ret = [point]
         obj[name] = point
     else:
-        point = None
+        point = obj.get(name)
 
+    ret.append(point)
     return ret
 
 
@@ -169,10 +192,10 @@ def parse_center(args, obj):
     # ASSUME CIRCLE ALREADY EXISTS
     name = args[0]
     circle = args[1].split("=")[1]
-    ret = None
+    ret = []
 
     if obj.get(name):
-        point = None
+        point = obj.get(name)
     else:
         point = primitives.Point(name=name)
         ret = [point]
@@ -180,6 +203,7 @@ def parse_center(args, obj):
 
     circle = obj[circle]
     circle.center = point
+    ret.append(point)
     return ret
 
 
@@ -187,7 +211,7 @@ def parse_triangle(args, obj):
     n = ''.join(args)
     name = ''.join(sorted(n))
     point_list = []
-    ret = None
+    ret = []
 
     for p in name:
         if obj.get(p) is None:
@@ -203,8 +227,10 @@ def parse_triangle(args, obj):
         ret = [triangle] + point_list
         obj[name] = triangle
     else:
-        triangle = None
+        triangle = obj.get(name)
 
+    ret.append(triangle)
+    ret.extend(point_list)
     return ret
 
 
@@ -230,7 +256,7 @@ def generate_html(json_object):
     html = html.replace("// insert json here", json.dumps(json_object,
                                                           indent=4))
     html = html.replace("<!-- Insert the text here -->",
-                        json_object['text'].replace("\n", "<br>"))
+                        json_object['text'].replace("\n", "<br>\n        "))
 
     return html
 
