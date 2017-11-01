@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import argparse
-import sys
 import re
 import json
 import primitives
@@ -33,7 +32,7 @@ def parse(text):
 
     def_index = 0
 
-    for c,d in enumerate(text):
+    for c, d in enumerate(text):
         if "[Definitions]" in d:
             def_index = c
             break
@@ -86,6 +85,7 @@ def create_output(dict, text, animations):
 
     return output
 
+
 def format_text(text, dict):
     newtext = []
     for i in text:
@@ -96,7 +96,7 @@ def format_text(text, dict):
             newtext.append(i)
     newtext = newtext[:-1]
     text = newtext
-    text =  ''.join(text)
+    text = ''.join(text)
     pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
 
@@ -111,10 +111,12 @@ def format_text(text, dict):
 
     return replaced
 
+
 def get_text(match):
     match = match.group()
     match = match.replace("[", "").split(" ")
     return match[0] + " " + match[1]
+
 
 def parse_line(args, obj):
     name = ''.join(sorted([x for x in args[0]]))
@@ -135,7 +137,7 @@ def parse_line(args, obj):
         line.p2 = point_list[1]
         obj[name] = line
     else:
-        line = obj.get(name);
+        line = obj.get(name)
 
     ret.extend((line, line.p1, line.p2))
 
