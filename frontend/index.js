@@ -258,15 +258,19 @@ function overTextChange(event)  {
         //alert(obj_id_str);
         testname = scene.getObjectByName(obj_id_str);
         //alert(testname.name);
-        oldcolor = new THREE.Color( testname.material.color );
-        testname.material.color.setHex( 0xfffa00 );
+        if(testname != null){
+          oldcolor = new THREE.Color( testname.material.color );
+          testname.material.color.setHex( 0xfffa00 );
+      }
     }
 }
 
 function overTextRevert(event)  {
     if(event.target.tagName === "SPAN") {
         event.target.style.backgroundColor = "#dddddd";
-        testname.material.color.setHex( oldcolor.getHex() );
+        if(testname != null){
+          testname.material.color.setHex( oldcolor.getHex() );
+      }
         oldcolor=null;
         testname=null;
    }
