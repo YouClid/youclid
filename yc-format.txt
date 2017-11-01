@@ -47,6 +47,9 @@ Specifications
         - step
         - clear
         - definitions
+    None of the keywords are case sensitive. That is to say, "Line" will be
+    interpreted the same as "line", and the frontend will respect whatever
+    case the letters are in.
 6.  The second word inside BRACKETS MUST represent the name of the object and
     SHALL be the name of the points that define that object, each represented
     by a single character.

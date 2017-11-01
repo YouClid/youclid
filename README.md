@@ -36,7 +36,7 @@ Start by making a file called `line.yc`, with the following contents:
 This text won't be marked up, since it's not enclosed in bracketes!
 This is [line AB], which is made up of [point A] and [point B].
 
-[Definitions]
+[definitions]
 [loc A -0.75 -0.75]
 [loc B 0.75 0.75]
 ```
