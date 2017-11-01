@@ -64,6 +64,9 @@ def parse(text):
                         if(e.name not in curr_step):
                             curr_step.append(e.name)
 
+    if(len(animations) == 0):
+        animations.append(curr_step[:])
+
     return create_output(object_dict, text, animations)
 
 
