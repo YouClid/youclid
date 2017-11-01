@@ -91,8 +91,19 @@ def format_text(text, dict):
     newtext = newtext[:-1]
     text = newtext
     text =  ''.join(text)
-    pattern = r'([^\\]?\[)([a-zA-Z]+) ([a-zA-Z]+)([\s\S]*?)\]'
-    return re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+    pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    replaced = re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+
+    # We need the name in the ID field to be sorted, so we need to replace all
+    # of the unsorted versions with the sorted versions
+    p = r"<span id=(.*?_.*?_.*?) "
+    for m in re.findall(p, replaced):
+        t = m.split("_")
+        t[2] = ''.join(sorted(t[2]))
+        t = '_'.join(t)
+        replaced = re.sub(m, t, replaced)
+
+    return replaced
 
 def get_text(match):
     match = match.group()
