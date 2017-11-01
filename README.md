@@ -7,7 +7,7 @@
 
 ### Creating a Markup
 The format for creating a markup file is specified in [yc-format.txt](https://raw.githubusercontent.com/YouClid/youclid/master/yc-format.txt).
-In general, the text that should be interpreted by the parser must be enclosed in backticks, the \` character.
+In general, the text that should be interpreted by the parser must be enclosed in brackets, like so: `[line AB]`
 The parser currently supports the following data types
 - point
 - line
@@ -32,11 +32,11 @@ Any objects created between \`step\` commands will be displayed as one transitio
 Let's say that you wish to create a diagonal line across the screen.
 Start by making a file called `line.yc`, with the following contents:
 ```
-This text won't be marked up, since it's not enclosed in backticks!
-This is `line AB`, which is made up of `point A` and `point B`.
+This text won't be marked up, since it's not enclosed in bracketes!
+This is [line AB], which is made up of [point A] and [point B].
 
-`loc A -0.75 -0.75`
-`loc B 0.75 0.75`
+[loc A -0.75 -0.75]
+[loc B 0.75 0.75]
 ```
 
 The first line won't be interpreted by our parser, since it doesn't have any markup.
