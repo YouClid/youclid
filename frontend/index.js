@@ -105,7 +105,6 @@ function loadGeometry(camera) {
 	    scene.add(l)
 	}
 	scenes.push(scene)
-	temp = scene
     }
 
     return scenes
@@ -253,16 +252,16 @@ function makePoint(ident, point) {
 
 /* Two functions for hovering over span elements, and leaving from hover */
 function overTextChange(event)  {
-      if(event.target.tagName === "SPAN") {
+    if(event.target.tagName === "SPAN") {
         event.target.style.backgroundColor = "yellow";
         let obj_id_str = event.target.id.replace('text', 'object');
-          //alert(obj_id_str);
-          testname = scene.getObjectByName(obj_id_str);
-          //alert(testname.name);
-          oldcolor = new THREE.Color( testname.material.color );
-          testname.material.color.setHex( 0xfffa00 );
-      }
-  }
+        //alert(obj_id_str);
+        testname = scene.getObjectByName(obj_id_str);
+        //alert(testname.name);
+        oldcolor = new THREE.Color( testname.material.color );
+        testname.material.color.setHex( 0xfffa00 );
+    }
+}
 
 function overTextRevert(event)  {
     if(event.target.tagName === "SPAN") {
