@@ -19,16 +19,19 @@ Definitions
     "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to
     be interpreted as described in RFC 2119.
 2.  The "[" and "]" characters will be referred to in this document as the
-    BRACKET characters.
+    BRACKET characters. The "[" character will be referred to as the
+    OPEN BRACKET character, and the "]" character will be referred to as the
+    CLOSED BRACKET character. When talking about both characters, the term
+    BRACKETS will be used.
 3.  The "\" character will be referred to in this document as the BACKSLASH
     character.
 
 Specifications
 
-1.  All text that is desired to be parsed MUST be enclosed by the BRACKET
-    character.
-2.  Text that is not enclosed by the BRACKET characters will be treated as
-    normal text.
+1.  All text that is desired to be parsed MUST be enclosed by BRACKETS. The
+    first character MUST be the OPEN BRACKET character, and the last character
+    MUST be the CLOSED BRACKET character.
+2.  Text that is not enclosed by BRACKETS will be treated as normal text.
 3.  In the event that a BRACKET is to be interpreted literally in the text, it
     MUST be escaped by a BACKSLASH character.
 4.  Words inside BRACKETS MUST be separated by a single space.
