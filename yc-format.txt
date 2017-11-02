@@ -73,8 +73,8 @@ Specifications
 13. The user MAY specify steps in the markup, which will represent groups of
     elements to be displayed together in the frontend. This allows the user to
     create animated steps in the frontend construction. All elements created
-    between two `step` commands will be displayed together, as will all
-    elements between the start of the file and the first `step` command, as
+    between two [step] commands will be displayed together, as will all
+    elements between the start of the file and the first [step] command, as
     well as all elements between the final step command and the end of the
     file.
 14. The user MAY use the "clear" keyword as a way to remove all visualization
