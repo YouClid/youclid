@@ -36,6 +36,12 @@ function init() {
     // document.addEventListener( 'touchmove', onTouchMove, false );
     // document.addEventListener( 'touchend', onTouchEnd, false );
     document.addEventListener( 'keydown', onKeyDown)
+
+/*Adds listeners for hovering over text span elements */
+    var mydiv = document.getElementById("text");
+    mydiv.addEventListener("mouseover", overTextChange, false);
+    mydiv.addEventListener("mouseout", overTextRevert, false);
+
     window.onresize = resize;
     animate();
 }
@@ -44,7 +50,7 @@ function animate() {
     scene = scenes[anim_index];
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
-    
+
 }
 
 function resize() {
@@ -62,27 +68,27 @@ function loadGeometry(camera) {
     for(let i = 0; i < steps.length; i++) {
 	let geo = steps[i]
 	scene = temp.clone()
-	
+
 	let points = geo.filter(entry => entry.type === "Point")
 
 	let pointMap = {}
 	for(let i = 0; i < points.length; i++) {
 	    let point = points[i]
 	    pointMap[point.id] = point.data
-	    let p = makePoint(point.data)
+	    let p = makePoint(point.id, point.data)
 	    // pointMap[point.id] = p.geometry.vertices[0]
 	    objects.push(p)
 	    scene.add(p)
 	}
-	
+
 	let circles = geo.filter(entry => entry.type === "Circle")
 
 	for(let i = 0; i < circles.length; i++) {
 	    let circle = circles[i]
-	    
+
 	    let d = circle.data
 
-	    let c = makeCircle(pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
+	    let c = makeCircle(circle.id, pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
 	    objects.push(c)
 	    scene.add(c)
 	}
@@ -92,14 +98,13 @@ function loadGeometry(camera) {
 	for(let i = 0; i< lines.length; i++) {
 	    let line = lines[i]
 	    let d = line.data
-	    
-	    let l = makeLine(pointMap[d.p1], pointMap[d.p2], true)
+
+	    let l = makeLine(line.id, pointMap[d.p1], pointMap[d.p2], true)
 
 	    objects.push(l)
 	    scene.add(l)
 	}
 	scenes.push(scene)
-	temp = scene
     }
 
     return scenes
@@ -117,7 +122,7 @@ function dist(p1, p2) {
     }
 }
 
-function makeLine(p1, p2, isNDC) {
+function makeLine(ident, p1, p2, isNDC) {
     let wp1, wp2
     if(isNDC) {
 	wp1 = NDCtoWorld(p1.x, p1.y, camera)
@@ -130,7 +135,10 @@ function makeLine(p1, p2, isNDC) {
     g.vertices.push(wp1, wp2)
     let m = new THREE.MeshBasicMaterial( { color: 0x990000 } )
 
-    return new THREE.Line(g,m)
+    let lineret  = new THREE.Line(g,m)
+    let namestart = "object_line_";
+    lineret.name = namestart.concat(ident.toString());
+    return lineret;
 }
 
 function checkCircle(p1, p2, p3, c) {
@@ -155,7 +163,7 @@ function checkCircle(p1, p2, p3, c) {
     console.log(center.x == c.x && center.y == c.y)
 }
 
-function makeCircle(p1, p2, p3, isWorld) {
+function makeCircle(ident, p1, p2, p3, isWorld) {
     if(!isWorld) {
 	p1 = NDCtoWorld(p1.x, p1.y, camera)
 	p2 = NDCtoWorld(p2.x, p2.y, camera)
@@ -180,12 +188,12 @@ function makeCircle(p1, p2, p3, isWorld) {
 
     let worldCenter, worldPoint
 
-    
+
     worldCenter = center
     worldPoint = p1
     // worldCenter = NDCtoWorld(center.x, center.y, camera)
     // worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
-    
+
 
     let radius = dist(worldCenter, worldPoint)
 
@@ -196,9 +204,12 @@ function makeCircle(p1, p2, p3, isWorld) {
     var circle = new THREE.Line( circleGeom, circleMaterial );
     circle.position.set(worldCenter.x, worldCenter.y, worldCenter.z)
 
+    let namestart = "object_circle_";
+    circle.name = namestart.concat(ident.toString());
+
     return circle
-    
-    
+
+
 }
 
 
@@ -213,7 +224,7 @@ function NDCtoWorld(x, y, camera) {
 }
 
 
-function makePoint(point) {
+function makePoint(ident, point) {
     // Point has an x and a y attribute in NDC coordinates
     let PARTICLE_SIZE = 0.5
 
@@ -226,6 +237,10 @@ function makePoint(point) {
     let particle = new THREE.Points( geometry, material );
     particle.material.depthTest = false
     particle.renderOrder = 1000
+
+    let namestart = "object_point_";
+    particle.name = namestart.concat(ident.toString());
+
     return particle
 }
 
@@ -234,6 +249,33 @@ function makePoint(point) {
 /*
   All Event Callbacks
 */
+
+/* Two functions for hovering over span elements, and leaving from hover */
+function overTextChange(event)  {
+    if(event.target.tagName === "SPAN") {
+        event.target.style.backgroundColor = "yellow";
+        let obj_id_str = event.target.id.replace('text', 'object');
+        //alert(obj_id_str);
+        testname = scene.getObjectByName(obj_id_str);
+        //alert(testname.name);
+        if(testname != null){
+          oldcolor = new THREE.Color( testname.material.color );
+          testname.material.color.setHex( 0xfffa00 );
+      }
+    }
+}
+
+function overTextRevert(event)  {
+    if(event.target.tagName === "SPAN") {
+        event.target.style.backgroundColor = "#dddddd";
+        if(testname != null){
+          testname.material.color.setHex( oldcolor.getHex() );
+      }
+        oldcolor=null;
+        testname=null;
+   }
+}
+
 
 function onMouseDown( event ) {
     event.preventDefault();
@@ -263,7 +305,7 @@ function onMouseMove( event ) {
 	// v.y = newPos.y
 	// v.z = newPos.z
 	// current.object.geometry.verticesNeedUpdate = true
-    } 
+    }
 }
 
 function onMouseUp( event ) {
@@ -297,6 +339,3 @@ function onKeyDown( event ) {
 	anim_index = anim_index === scenes.length-1 ? anim_index : anim_index + 1
     }
 }
-
-
-
