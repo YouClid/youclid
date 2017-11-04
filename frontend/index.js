@@ -1,5 +1,5 @@
 
-let scene, camera, raycaster, renderer, objects, mouse, geometry, scenes, anim_index
+let scene, camera, raycaster, renderer, objects, mouse, geometry, scenes, anim_index, canvasRect
 
 let size = Math.min(window.innerWidth*0.65, window.innerHeight)
 
@@ -21,6 +21,9 @@ function init() {
     renderer.setSize(size, size);
     document.body.appendChild( renderer.domElement );
 
+    canvasRect = renderer.domElement.getBoundingClientRect()
+    console.log(canvasRect)
+    
     renderer.render(scene, camera)
 
     mouse = new THREE.Vector2();
@@ -30,7 +33,7 @@ function init() {
     scenes = loadGeometry(camera)
 
     // document.addEventListener( 'mousedown', onMouseDown, false );
-    // document.addEventListener( 'mousemove', onMouseMove, false );
+    document.addEventListener( 'mousemove', onMouseMove, false );
     // document.addEventListener( 'mouseup', onMouseUp, false );
     // document.addEventListener( 'touchstart', onTouchStart, false );
     // document.addEventListener( 'touchmove', onTouchMove, false );
@@ -56,6 +59,7 @@ function animate() {
 function resize() {
     size = Math.min(window.innerWidth*0.65, window.innerHeight)
     renderer.setSize(size, size)
+    canvasRect = renderer.domElement.getBoundingClientRect()
 }
 
 
@@ -292,20 +296,27 @@ function onMouseDown( event ) {
 }
 
 function onMouseMove( event ) {
-    event.preventDefault();
-    if ( current ) {
-	mouse.x = ( event.clientX / size ) * 2 - 1;
-	mouse.y = - ( event.clientY / size ) * 2 + 1;
-	let pos = NDCtoWorld(mouse.x, mouse.y, camera)
-	newPos = pos.sub(oldPos)
-	newPos.add(originalCenter)
-	current.object.position.set(newPos.x, newPos.y, newPos.z)
-	// let v = current.object.geometry.vertices[0]
-	// v.x = newPos.x
-	// v.y = newPos.y
-	// v.z = newPos.z
-	// current.object.geometry.verticesNeedUpdate = true
+    let xgood = event.clientX > canvasRect.left && event.clientX < canvasRect.right
+    let ygood = event.clientY > canvasRect.top  && event.clientY < canvasRect.bottom
+
+    if(xgood && ygood) {
+	mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
+	mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
+	raycaster.setFromCamera( mouse, camera );
+	let intersects = raycaster.intersectObjects( objects );
+	for(let i = 0; i<intersects.length; i++) {
+	    let curr = intersects[i]
+            let idStr = curr.object.name.replace('object', 'text');
+	    let element = document.getElementById(idStr)
+	    if(element == null) {
+		console.log(idStr)
+	    }
+	    
+	    element.style.backgroundColor = "yellow";
+	}
+
     }
+    
 }
 
 function onMouseUp( event ) {
