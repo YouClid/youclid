@@ -2,13 +2,14 @@
 body {
     margin: 0;
     height: 100vh;
+    display: flex;
 }
 
 #text {
-    width: 30%;
+    float: left;
+    flex-grow: 100;
     height: 94vh;
     vertical-align: top;
-    display: inline-block;
     padding: 1em;
     overflow-y: scroll;
     font-family: sans-serif;
@@ -17,6 +18,5 @@ body {
 }
 
 canvas {
-    display: inline-block;
 
 }
