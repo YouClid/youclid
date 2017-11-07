@@ -13,6 +13,23 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
+class CaseInsensitiveDictionary(dict):
+    def __init__(self):
+        self.d = {}
+
+    def __getitem__(self, key):
+        if type(key) == str:
+            return self.d.__getitem__(key.lower())
+        else:
+            return self.d.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if type(key) == str:
+            return self.d.__setitem__(key.lower(), value)
+        else:
+            return self.d.__setitem__(key, value)
+
+
 def parse_text(arg):
     with open(arg) as infile:
         text = infile.readlines()
@@ -20,16 +37,13 @@ def parse_text(arg):
 
 
 def parse(text):
-
-    parsers = {
-               "line": parse_line,
-               "circle": parse_circle,
-               "point": parse_point,
-               "center": parse_center,
-               "polygon": parse_polygon,
-               "loc": parse_location
-              }
-
+    parsers = CaseInsensitiveDictionary()
+    parsers["line"] = parse_line
+    parsers["circle"] = parse_circle
+    parsers["point"] = parse_point
+    parsers["center"] = parse_center
+    parsers["polygon"] = parse_polygon
+    parsers["loc"] = parse_location
 
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
@@ -40,8 +54,11 @@ def parse(text):
 
     def_index = 0
 
+    definitions_pattern = r'\[definitions\]'
+    definitions_re = re.compile(definitions_pattern, re.IGNORECASE)
+
     for c, d in enumerate(text):
-        if "[definitions]" in d:
+        if definitions_re.match(d):
             def_index = c
             break
 
@@ -59,10 +76,10 @@ def parse(text):
             data = i.split(' ')
             element_type = data[0]
             arguments = data[1:]
-            if element_type == 'step':
+            if element_type.lower() == 'step':
                 if(len(curr_step) > 0):
                     animations.append(curr_step[:])
-            elif element_type == 'clear':
+            elif element_type.lower() == 'clear':
                     curr_step = []
             else:
                 obj = parsers[element_type](arguments, object_dict)
