@@ -21,12 +21,14 @@ def parse_text(arg):
 
 def parse(text):
 
-    parsers = {"line": parse_line,
-           "circle": parse_circle,
-           "point": parse_point,
-           "center": parse_center,
-           "polygon": parse_polygon,
-           "loc": parse_location}
+    parsers = {
+               "line": parse_line,
+               "circle": parse_circle,
+               "point": parse_point,
+               "center": parse_center,
+               "polygon": parse_polygon,
+               "loc": parse_location
+              }
 
 
     # Dictionary to hold all of the objects that we create.
@@ -123,11 +125,12 @@ def get_text(match):
     match = match.replace("[", "").replace("]", "").split(" ")
     del match[0]
     obj = object_dict.get(match[1])
-    if(match[0] == "polygon"):
+    if (match[0] == "polygon"):
         name = polygons.get(len(obj.points), "Polygon")
     else:
-        name = match[0].title()
-    span_id = "text_%s_%s" % (match[0], match[1])
+        name = match[0]
+    span_id = "text_%s_%s" % (match[0] if match[0] != "center" else "point",
+                              match[1])
     return " <span id=%s style='background-color: #dddddd'>%s %s</span>" % (span_id, name, match[1])
 
 
@@ -239,9 +242,9 @@ def parse_polygon(args, obj):
         obj[name] = polygon
     else:
         polygon = obj.get(name)
+        ret.append(polygon)
+        ret.extend(point_list)
 
-    ret.append(polygon)
-    ret.extend(point_list)
     return ret
 
 
