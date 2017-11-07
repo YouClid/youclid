@@ -57,7 +57,7 @@ Now, you can open the HTML file in your browser, and you should see a line!
 
 ### Syntax Highlighting
 We plan on creating syntax files for popular text editors.
-Currently, the only syntax files we have created are for vim.
+Currently, the only syntax files we have created are for vim and atom.
 
 #### Vim
 In order to utilize the provided syntax files, create the following directory structure in your home directory (if it does not already exist) by running the following commands:
@@ -67,8 +67,8 @@ mkdir -p ~/.vim/after/syntax
 ```
 Next, run the following commands to create symlinks to our relevant syntax files, replacing the `/path/to/youclid` with the absolute path to the directory where you cloned our repository
 ```
-ln -s /path/to/youclid/.vim/ftdetect/yc.vim ~/.vim/ftdetect/yc.vim
-ln -s /path/to/youclid/.vim/after/syntax/yc.vim ~/.vim/after/syntax/yc.vim
+ln -s /path/to/youclid/colors/.vim/ftdetect/yc.vim ~/.vim/ftdetect/yc.vim
+ln -s /path/to/youclid/colors/.vim/after/syntax/yc.vim ~/.vim/after/syntax/yc.vim
 ```
 
 The syntax file should pull colors from your vim color scheme.
@@ -77,3 +77,14 @@ If you wish to customize the colors, we utilize the following definitions:
 - `YouclidMarker`
 - `YouclidText`
 - `YouclidName`
+
+#### Atom
+In order to utilize the provided syntax files, create the following directory structure in your home directory (if it does not exist) by running the following commands:
+```
+mkdir -p ~/.atom/packages
+```
+Next, run the following commands to create symlinks to our package, replacing `/path/to/youclid` with the absolute path to the directory where you cloned our repository
+```
+ln -s /path/to/youclid/colors/packages/language-youclid ~/.atom/packages/language-youclid
+```
+If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
