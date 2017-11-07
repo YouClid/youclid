@@ -42,7 +42,7 @@ Specifications
         - circle
         - center
         - point
-        - triangle
+        - polygon
         - loc
         - step
         - clear
@@ -61,7 +61,7 @@ Specifications
     point number that represents the y coordinate of the point between -1.0 and
     1.0 inclusive.
 11. For each point specified, either explicitly by the "point" keyword, or
-    implicitly by using a "line", "circle", "center", or "triangle" keyword,
+    implicitly by using a "line", "circle", "center", or "polygon" keyword,
     there MUST be a corresponding "loc" keyword to provide coordinates for
     that point.
 12. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object

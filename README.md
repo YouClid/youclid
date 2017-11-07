@@ -12,7 +12,7 @@ The parser currently supports the following data types:
 - point
 - line
 - circle
-- triangle
+- polygon
 
 Arguments to the data types are space separated.
 The first argument to each data type must be the name of the object (which currently must be one letter point names that make up the object).
