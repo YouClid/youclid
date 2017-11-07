@@ -6,6 +6,12 @@ import json
 import primitives
 from pprint import pprint
 
+object_dict = {}
+
+polygons = {3: "Triangle",
+            5: "Pentagon",
+            6: "Hexagon",
+            8: "Octagon"}
 
 def parse_text(arg):
     with open(arg) as infile:
@@ -16,15 +22,15 @@ def parse_text(arg):
 def parse(text):
 
     parsers = {"line": parse_line,
-               "circle": parse_circle,
-               "point": parse_point,
-               "center": parse_center,
-               "triangle": parse_triangle,
-               "loc": parse_location}
+           "circle": parse_circle,
+           "point": parse_point,
+           "center": parse_center,
+           "polygon": parse_polygon,
+           "loc": parse_location}
+
 
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
-    object_dict = {}
     animations = []
     curr_step = []
 
@@ -98,7 +104,7 @@ def format_text(text, dict):
     text = newtext
     text = ''.join(text)
     pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+    replaced = re.sub(pattern, get_text, text)
 
     # We need the name in the ID field to be sorted, so we need to replace all
     # of the unsorted versions with the sorted versions
@@ -114,8 +120,16 @@ def format_text(text, dict):
 
 def get_text(match):
     match = match.group()
-    match = match.replace("[", "").split(" ")
-    return match[0] + " " + match[1]
+    match = match.replace("[", "").replace("]", "").split(" ")
+    del match[0]
+    obj = object_dict.get(match[1])
+    if(match[0] == "polygon"):
+        name = polygons.get(len(obj.points), "Polygon")
+        pass
+    else:
+        name = match[0].title()
+    span_id = "text_%s_%s" % (match[0], match[1])
+    return " <span id=%s style='background-color: #dddddd'>%s %s</span>" % (span_id, name, match[1])
 
 
 def parse_line(args, obj):
@@ -207,7 +221,7 @@ def parse_center(args, obj):
     return ret
 
 
-def parse_triangle(args, obj):
+def parse_polygon(args, obj):
     n = ''.join(args)
     name = ''.join(sorted(n))
     point_list = []
@@ -220,16 +234,14 @@ def parse_triangle(args, obj):
             point_list.append(obj[p])
 
     if obj.get(name) is None:
-        triangle = primitives.Triangle(name)
-        triangle.p1 = point_list[0]
-        triangle.p2 = point_list[1]
-        triangle.p3 = point_list[2]
-        ret = [triangle] + point_list
-        obj[name] = triangle
+        polygon = primitives.Polygon(name)
+        polygon.points = point_list
+        ret = [polygon] + point_list
+        obj[name] = polygon
     else:
-        triangle = obj.get(name)
+        polygon = obj.get(name)
 
-    ret.append(triangle)
+    ret.append(polygon)
     ret.extend(point_list)
     return ret
 
