@@ -125,7 +125,6 @@ def get_text(match):
     obj = object_dict.get(match[1])
     if(match[0] == "polygon"):
         name = polygons.get(len(obj.points), "Polygon")
-        pass
     else:
         name = match[0].title()
     span_id = "text_%s_%s" % (match[0], match[1])
