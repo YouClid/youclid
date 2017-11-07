@@ -85,6 +85,6 @@ mkdir -p ~/.atom/packages
 ```
 Next, run the following commands to create symlinks to our package, replacing `/path/to/youclid` with the absolute path to the directory where you cloned our repository
 ```
-ln -s /path/to/youclid/colors/packages/language-youclid ~/.atom/packages/language-youclid
+ln -s /path/to/youclid/colors/language-youclid ~/.atom/packages/language-youclid
 ```
 If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
