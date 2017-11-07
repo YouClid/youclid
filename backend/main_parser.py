@@ -142,11 +142,11 @@ def get_text(match):
     match = match.replace("[", "").replace("]", "").split(" ")
     del match[0]
     obj = object_dict.get(match[1])
-    if (match[0] == "polygon"):
+    if (match[0].lower() == "polygon"):
         name = polygons.get(len(obj.points), "Polygon")
     else:
         name = match[0]
-    span_id = "text_%s_%s" % (match[0] if match[0] != "center" else "point",
+    span_id = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
                               match[1])
     return " <span id=%s style='background-color: #dddddd'>%s %s</span>" % (span_id, name, match[1])
 
