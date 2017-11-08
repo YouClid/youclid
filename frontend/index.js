@@ -1,5 +1,5 @@
 
-let scene, camera, raycaster, renderer, objects, mouse, geometry, scenes, anim_index
+let scene, camera, raycaster, renderer, mouse, geometry, scenes, anim_index, canvasRect
 
 let size = Math.min(window.innerWidth*0.65, window.innerHeight)
 
@@ -21,16 +21,17 @@ function init() {
     renderer.setSize(size, size);
     document.body.appendChild( renderer.domElement );
 
+    canvasRect = renderer.domElement.getBoundingClientRect()
+    
     renderer.render(scene, camera)
 
     mouse = new THREE.Vector2();
 
-    objects = []
     anim_index = 0
     scenes = loadGeometry(camera)
 
     // document.addEventListener( 'mousedown', onMouseDown, false );
-    // document.addEventListener( 'mousemove', onMouseMove, false );
+    document.addEventListener( 'mousemove', onMouseMove, false );
     // document.addEventListener( 'mouseup', onMouseUp, false );
     // document.addEventListener( 'touchstart', onTouchStart, false );
     // document.addEventListener( 'touchmove', onTouchMove, false );
@@ -56,6 +57,7 @@ function animate() {
 function resize() {
     size = Math.min(window.innerWidth*0.65, window.innerHeight)
     renderer.setSize(size, size)
+    canvasRect = renderer.domElement.getBoundingClientRect()
 }
 
 
@@ -77,7 +79,6 @@ function loadGeometry(camera) {
 	    pointMap[point.id] = point.data
 	    let p = makePoint(point.id, point.data)
 	    // pointMap[point.id] = p.geometry.vertices[0]
-	    objects.push(p)
 	    scene.add(p)
 	}
 
@@ -89,7 +90,6 @@ function loadGeometry(camera) {
 	    let d = circle.data
 
 	    let c = makeCircle(circle.id, pointMap[d.p1], pointMap[d.p2], pointMap[d.p3])
-	    objects.push(c)
 	    scene.add(c)
 	}
 
@@ -101,7 +101,6 @@ function loadGeometry(camera) {
 
 	    let l = makeLine(line.id, pointMap[d.p1], pointMap[d.p2], true)
 
-	    objects.push(l)
 	    scene.add(l)
 	}
 	scenes.push(scene)
@@ -139,28 +138,6 @@ function makeLine(ident, p1, p2, isNDC) {
     let namestart = "object_line_";
     lineret.name = namestart.concat(ident.toString());
     return lineret;
-}
-
-function checkCircle(p1, p2, p3, c) {
-    let m1 = (p1.y-p2.y)/(p1.x-p2.x)
-    let m2 = (p3.y-p2.y)/(p3.x-p2.x)
-
-    let ma = -1.0*(1.0/m1)
-    let mb = -1.0*(1.0/m2)
-
-    let xa = 0.5*(p1.x+p2.x)
-    let ya = 0.5*(p1.y+p2.y)
-    let xb = 0.5*(p2.x+p3.x)
-    let yb = 0.5*(p2.y+p3.y)
-
-    let center = new THREE.Vector3()
-
-    center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
-    center.y = (mb*(center.x-xb))+yb
-
-    console.log(center)
-    console.log(c)
-    console.log(center.x == c.x && center.y == c.y)
 }
 
 function makeCircle(ident, p1, p2, p3, isWorld) {
@@ -254,7 +231,7 @@ function makePoint(ident, point) {
 function overTextChange(event)  {
     if(event.target.tagName === "SPAN") {
         event.target.style.backgroundColor = "yellow";
-        let obj_id_str = event.target.id.replace('text', 'object');
+        let obj_id_str = event.target.getAttribute("name").replace('text', 'object');
         //alert(obj_id_str);
         testname = scene.getObjectByName(obj_id_str);
         //alert(testname.name);
@@ -282,7 +259,7 @@ function onMouseDown( event ) {
     mouse.x = ( event.clientX / size ) * 2 - 1;
     mouse.y = - ( event.clientY / size ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
-    let intersects = raycaster.intersectObjects( objects );
+    let intersects = raycaster.intersectObjects(scene.children);
     if ( intersects.length > 0 ) {
 	current = intersects[0]
 	oldPos = current.point.clone()
@@ -291,21 +268,46 @@ function onMouseDown( event ) {
     }
 }
 
+let changed = {text:[], objects:[]}
+let objectColors = {}
+
 function onMouseMove( event ) {
-    event.preventDefault();
-    if ( current ) {
-	mouse.x = ( event.clientX / size ) * 2 - 1;
-	mouse.y = - ( event.clientY / size ) * 2 + 1;
-	let pos = NDCtoWorld(mouse.x, mouse.y, camera)
-	newPos = pos.sub(oldPos)
-	newPos.add(originalCenter)
-	current.object.position.set(newPos.x, newPos.y, newPos.z)
-	// let v = current.object.geometry.vertices[0]
-	// v.x = newPos.x
-	// v.y = newPos.y
-	// v.z = newPos.z
-	// current.object.geometry.verticesNeedUpdate = true
+    let xgood = event.clientX > canvasRect.left && event.clientX < canvasRect.right
+    let ygood = event.clientY > canvasRect.top  && event.clientY < canvasRect.bottom
+    let text = []
+    let objects = []
+
+    if(xgood && ygood) {
+	mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
+	mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
+	raycaster.setFromCamera( mouse, camera );
+	let intersects = raycaster.intersectObjects(scene.children);
+	for(let i = 0; i<intersects.length; i++) {
+	    let curr = intersects[i].object
+	    let oldColor = new THREE.Color(curr.material.color)
+	    if(!objectColors[curr.uuid]) {
+		objectColors[curr.uuid] = oldColor
+	    }
+	    objects.push(curr)
+            let idStr = curr.name.replace('object', 'text');
+	    let elements = document.getElementsByName(idStr)
+	    elements.forEach((element) => {
+		text.push(element)
+	    })
+		
+	    
+	}
+
     }
+
+    changed.text.forEach((c) => c.style.backgroundColor = "#dddddd")
+    changed.objects.forEach((c) => c.material.color.setHex(objectColors[c.uuid].getHex()))
+
+    text.forEach((c) => c.style.backgroundColor = "yellow")
+    objects.forEach((c) => c.material.color.setHex( 0xfffa00 ))
+
+    changed.text = text
+    changed.objects = objects
 }
 
 function onMouseUp( event ) {
