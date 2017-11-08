@@ -125,9 +125,9 @@ def format_text(text, dict):
     pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(pattern, get_text, text)
 
-    # We need the name in the ID field to be sorted, so we need to replace all
+    # We need the name in the name field to be sorted, so we need to replace all
     # of the unsorted versions with the sorted versions
-    p = r"<span id=(.*?_.*?_.*?) "
+    p = r"<span name=(.*?_.*?_.*?) "
     for m in re.findall(p, replaced):
         t = m.split("_")
         t[2] = ''.join(sorted(t[2]))
@@ -146,9 +146,9 @@ def get_text(match):
         name = polygons.get(len(obj.points), "Polygon")
     else:
         name = match[0]
-    span_id = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
+    span_name = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
                               match[1])
-    return " <span id=%s style='background-color: #dddddd'>%s %s</span>" % (span_id, name, match[1])
+    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, name, match[1])
 
 
 def parse_line(args, obj):
