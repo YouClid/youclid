@@ -6,6 +6,29 @@ import json
 import primitives
 from pprint import pprint
 
+object_dict = {}
+
+polygons = {3: "Triangle",
+            5: "Pentagon",
+            6: "Hexagon",
+            8: "Octagon"}
+
+class CaseInsensitiveDictionary(dict):
+    def __init__(self):
+        self.d = {}
+
+    def __getitem__(self, key):
+        if type(key) == str:
+            return self.d.__getitem__(key.lower())
+        else:
+            return self.d.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if type(key) == str:
+            return self.d.__setitem__(key.lower(), value)
+        else:
+            return self.d.__setitem__(key, value)
+
 
 def parse_text(arg):
     with open(arg) as infile:
@@ -14,17 +37,16 @@ def parse_text(arg):
 
 
 def parse(text):
-
-    parsers = {"line": parse_line,
-               "circle": parse_circle,
-               "point": parse_point,
-               "center": parse_center,
-               "triangle": parse_triangle,
-               "loc": parse_location}
+    parsers = CaseInsensitiveDictionary()
+    parsers["line"] = parse_line
+    parsers["circle"] = parse_circle
+    parsers["point"] = parse_point
+    parsers["center"] = parse_center
+    parsers["polygon"] = parse_polygon
+    parsers["loc"] = parse_location
 
     # Dictionary to hold all of the objects that we create.
     # The mapping is between names of the object and the object itself
-    object_dict = {}
     animations = []
     curr_step = []
 
@@ -32,8 +54,11 @@ def parse(text):
 
     def_index = 0
 
+    definitions_pattern = r'\[definitions\]'
+    definitions_re = re.compile(definitions_pattern, re.IGNORECASE)
+
     for c, d in enumerate(text):
-        if "[definitions]" in d:
+        if definitions_re.match(d):
             def_index = c
             break
 
@@ -51,10 +76,10 @@ def parse(text):
             data = i.split(' ')
             element_type = data[0]
             arguments = data[1:]
-            if element_type == 'step':
+            if element_type.lower() == 'step':
                 if(len(curr_step) > 0):
                     animations.append(curr_step[:])
-            elif element_type == 'clear':
+            elif element_type.lower() == 'clear':
                     curr_step = []
             else:
                 obj = parsers[element_type](arguments, object_dict)
@@ -98,11 +123,11 @@ def format_text(text, dict):
     text = newtext
     text = ''.join(text)
     pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(pattern, r" <span id=text_\2_\3 style='background-color: #dddddd'>\2 \3</span>", text)
+    replaced = re.sub(pattern, get_text, text)
 
-    # We need the name in the ID field to be sorted, so we need to replace all
+    # We need the name in the name field to be sorted, so we need to replace all
     # of the unsorted versions with the sorted versions
-    p = r"<span id=(.*?_.*?_.*?) "
+    p = r"<span name=(.*?_.*?_.*?) "
     for m in re.findall(p, replaced):
         t = m.split("_")
         t[2] = ''.join(sorted(t[2]))
@@ -114,8 +139,16 @@ def format_text(text, dict):
 
 def get_text(match):
     match = match.group()
-    match = match.replace("[", "").split(" ")
-    return match[0] + " " + match[1]
+    match = match.replace("[", "").replace("]", "").split(" ")
+    del match[0]
+    obj = object_dict.get(match[1])
+    if (match[0].lower() == "polygon"):
+        name = polygons.get(len(obj.points), "Polygon")
+    else:
+        name = match[0]
+    span_name = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
+                              match[1])
+    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, name, match[1])
 
 
 def parse_line(args, obj):
@@ -207,7 +240,7 @@ def parse_center(args, obj):
     return ret
 
 
-def parse_triangle(args, obj):
+def parse_polygon(args, obj):
     n = ''.join(args)
     name = ''.join(sorted(n))
     point_list = []
@@ -220,17 +253,15 @@ def parse_triangle(args, obj):
             point_list.append(obj[p])
 
     if obj.get(name) is None:
-        triangle = primitives.Triangle(name)
-        triangle.p1 = point_list[0]
-        triangle.p2 = point_list[1]
-        triangle.p3 = point_list[2]
-        ret = [triangle] + point_list
-        obj[name] = triangle
+        polygon = primitives.Polygon(name)
+        polygon.points = point_list
+        ret = [polygon] + point_list
+        obj[name] = polygon
     else:
-        triangle = obj.get(name)
+        polygon = obj.get(name)
+        ret.append(polygon)
+        ret.extend(point_list)
 
-    ret.append(triangle)
-    ret.extend(point_list)
     return ret
 
 

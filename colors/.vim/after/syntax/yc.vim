@@ -9,7 +9,7 @@ syn region YouclidText matchgroup=YouclidMarker start="[^\\]\[" end="\]" contain
 " just add another thing that will match, which is the start of a line
 " followed by a bracket
 syn region YouclidText matchgroup=YouclidMarker start="^\[" end="\]" contains=YouclidKeyword keepend nextgroup=YouclidKeyword
-syn keyword YouclidKeyword contained point line circle center loc step triangle definitions nextgroup=YouclidName
+syn keyword YouclidKeyword contained point line circle center loc step polygon definitions clear nextgroup=YouclidName
 syn region YouclidName matchgroup=YouclidMarker start=' ' end="[ \]]" contained
 
 " Youclid Customizations

@@ -8,10 +8,10 @@ Again, since the [point B] is the center of the [circle CAE], therefore [line BC
 But [line AC] was proved equal to [line AB], therefore each of the straight lines [line AC] and [line BC] equals [line AB].
 And things which equal the same thing also equal one another, therefore [line AC] also equals [line BC].
 Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another.
-Therefore the [triangle ABC] is equilateral, and it has been constructed on the given finite straight [line AB]. [step]
-[clear] [triangle ABC] [step]
+Therefore the [polygon ABC] is equilateral, and it has been constructed on the given finite straight [line AB]. [step]
+[clear] [polygon ABC] [step]
 
-[Definitions]
+[definitions]
 
 [loc A -0.25 0]
 [loc B 0.25 0]
