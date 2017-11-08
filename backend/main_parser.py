@@ -178,27 +178,62 @@ def parse_line(args, obj):
 
 
 def parse_circle(args, obj):
-    n = ''.join(args)
-    name = ''.join(sorted(n))
-    point_list = []
-    ret = []
 
-    for p in name:
-        if obj.get(p) is None:
-            point = primitives.Point(p)
-            obj[p] = point
+    if len(args) > 1:
+        center = ''
+        radius = 0
+        name = ''
+        for i in args:
+            for j, k in enumerate(i):
+                if k == '=':
+                    if i[:j] == "center":
+                        center = i[j+1:]
+                    elif i[:j] == "radius":
+                        radius = int(i[j+1:])
+                    elif i[:j] == "name":
+                        name = i[j+1:]
+                    break
+
+        point_list = []
+        ret = []
+
+        if obj.get(center) is None:
+            point = primitives.Point(center)
+            obj[center] = point
             point_list.append(point)
         else:
-            point_list.append(obj[p])
+            point_list.append(obj[center])
 
-    if obj.get(name) is None:
-        circle = primitives.Circle(name)
-        circle.p1 = point_list[0]
-        circle.p2 = point_list[1]
-        circle.p3 = point_list[2]
-        obj[name] = circle
+        if obj.get(name) is None:
+            circle = primitives.Circle(name)
+            circle.center = point_list[0]
+            circle.radius = radius
+            obj[name] = circle
+        else:
+            circle = obj.get(name)
+
     else:
-        circle = obj.get(name)
+        n = ''.join(args)
+        name = ''.join(sorted(n))
+        point_list = []
+        ret = []
+
+        for p in name:
+            if obj.get(p) is None:
+                point = primitives.Point(p)
+                obj[p] = point
+                point_list.append(point)
+            else:
+                point_list.append(obj[p])
+
+        if obj.get(name) is None:
+            circle = primitives.Circle(name)
+            circle.p1 = point_list[0]
+            circle.p2 = point_list[1]
+            circle.p3 = point_list[2]
+            obj[name] = circle
+        else:
+            circle = obj.get(name)
 
     ret.append(circle)
     ret.extend(point_list)

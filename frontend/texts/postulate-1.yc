@@ -18,3 +18,4 @@ Therefore the [polygon ABC] is equilateral, and it has been constructed on the g
 [loc C 0 0.433]
 [loc D -0.75 0]
 [loc E 0.75 0]
+[circle center=F radius=100 name=CircleXYZ]
