@@ -290,12 +290,10 @@ function onMouseMove( event ) {
 	    }
 	    objects.push(curr)
             let idStr = curr.name.replace('object', 'text');
-	    let element = document.getElementById(idStr)
-	    if(!element) {
-		// console.log(idStr)
-	    } else {
+	    let elements = document.getElementsByName(idStr)
+	    elements.forEach((element) => {
 		text.push(element)
-	    }
+	    })
 		
 	    
 	}
