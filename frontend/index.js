@@ -231,7 +231,7 @@ function makePoint(ident, point) {
 function overTextChange(event)  {
     if(event.target.tagName === "SPAN") {
         event.target.style.backgroundColor = "yellow";
-        let obj_id_str = event.target.id.replace('text', 'object');
+        let obj_id_str = event.target.getAttribute("name").replace('text', 'object');
         //alert(obj_id_str);
         testname = scene.getObjectByName(obj_id_str);
         //alert(testname.name);
