@@ -122,17 +122,18 @@ def format_text(text, dict):
     newtext = newtext[:-1]
     text = newtext
     text = ''.join(text)
-    pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    #pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(pattern, get_text, text)
 
     # We need the name in the name field to be sorted, so we need to replace all
     # of the unsorted versions with the sorted versions
-    p = r"<span name=(.*?_.*?_.*?) "
-    for m in re.findall(p, replaced):
-        t = m.split("_")
-        t[2] = ''.join(sorted(t[2]))
-        t = '_'.join(t)
-        replaced = re.sub(m, t, replaced)
+    #p = r"<span name=(.*?_.*?_.*?) "
+    #for m in re.findall(p, replaced):
+    #    t = m.split("_")
+    #    t[2] = ''.join(sorted(t[2]))
+    #    t = '_'.join(t)
+    #    replaced = re.sub(m, t, replaced)
 
     return replaced
 
@@ -140,19 +141,17 @@ def format_text(text, dict):
 def get_text(match):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
-    del match[0]
-    obj = object_dict.get(match[1])
+    obj = object_dict.get(rotate_lex(match[1]))
     if (match[0].lower() == "polygon"):
-        name = polygons.get(len(obj.points), "Polygon")
+        obj_type = polygons.get(len(obj.points), "Polygon")
     else:
-        name = match[0]
-    span_name = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
-                              match[1])
-    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, name, match[1])
+        obj_type = match[0]
+    span_name = "text_%s_%s" % (type(obj).__name__.lower(), obj.name)
+    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, obj_type, match[1])
 
 
 def parse_line(args, obj):
-    name = ''.join(sorted([x for x in args[0]]))
+    name = rotate_lex(args[0])
     point_list = []
     ret = []
 
@@ -179,7 +178,7 @@ def parse_line(args, obj):
 
 def parse_circle(args, obj):
     n = ''.join(args)
-    name = ''.join(sorted(n))
+    name = rotate_lex(n)
     point_list = []
     ret = []
 
@@ -242,7 +241,7 @@ def parse_center(args, obj):
 
 def parse_polygon(args, obj):
     n = ''.join(args)
-    name = ''.join(sorted(n))
+    name = ''.join(rotate_lex(n))
     point_list = []
     ret = []
 
@@ -290,6 +289,17 @@ def generate_html(json_object):
                         json_object['text'].replace("\n", "<br>\n        "))
 
     return html
+
+def rotate(l, n):
+    return l[-n:] + l[:-n]
+
+def rotate_lex(l):
+    ind = l.index(min(l))
+    if(ind != 0):
+        rot = len(l) - ind
+        return rotate(l, rot)
+    else:
+        return l
 
 
 if __name__ == "__main__":
