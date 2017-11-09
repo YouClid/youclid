@@ -179,64 +179,88 @@ def parse_line(args, obj):
 
 def parse_circle(args, obj):
 
-    if len(args) > 1:
-        center = ''
-        radius = 0
-        name = ''
-        for i in args:
-            for j, k in enumerate(i):
-                if k == '=':
-                    if i[:j] == "center":
-                        center = i[j+1:]
-                    elif i[:j] == "radius":
-                        radius = int(i[j+1:])
-                    elif i[:j] == "name":
-                        name = i[j+1:]
-                    break
+    # Variables to hold the properties of a circle
+    circle = None
+    center = None
+    radius = 0
+    name = None
 
-        point_list = []
-        ret = []
+    # Objects that we have created in this parse function, for display purposes
+    ret = []
 
-        if obj.get(center) is None:
-            point = primitives.Point(center)
-            obj[center] = point
-            point_list.append(point)
-        else:
-            point_list.append(obj[center])
-
-        if obj.get(name) is None:
-            circle = primitives.Circle(name)
-            circle.center = point_list[0]
-            circle.radius = radius
-            obj[name] = circle
-        else:
-            circle = obj.get(name)
-
-    else:
-        n = ''.join(args)
-        name = ''.join(sorted(n))
-        point_list = []
-        ret = []
-
-        for p in name:
-            if obj.get(p) is None:
-                point = primitives.Point(p)
-                obj[p] = point
-                point_list.append(point)
+    # For each argument
+    for arg in args:
+        # Split on space, get the type of the argument and the value, but
+        # first make sure that we're parsing an argument with an equal sign,
+        # ie: not just a circle with a name, or other keywords that we might
+        # end up using
+        if "=" not in arg: continue
+        arg_type, arg_value = arg.split("=")
+        # For each argument type that we support, parse it
+        if arg_type == "center":
+            # If the cetner object does not exist, make it
+            if obj.get(arg_value) is None:
+                center = primitives.Point(arg_value)
+                obj[arg_value] = center
+                ret.append(center)
+            # Otherwise, get it
             else:
-                point_list.append(obj[p])
+                center = obj[arg_value]
+        elif arg_type == "radius":
+            # Get the radius as a number
+            radius = int(arg_value)
+        elif arg_type == "name":
+            name = arg_value
+            # If the user is specifying a name, look to see if we have the
+            # circle already, otherwise create a new one
+            if obj.get(arg_value) is None:
+                circle = primitives.Circle(arg_value)
+                obj[arg_value] = circle
+                ret.append(circle)
+            else:
+                circle = obj[arg_value]
 
+    # If the user did not specify a name when creating the circle, since it's
+    # defaulted to be None, this will be True
+    if name is None:
+        # List to hold the points that we've created
+        point_list = []
+        # Get the first argument and treat it as the name
+        n = ''.join(args[0])
+        name = ''.join(sorted(n))
+
+
+        # If there is not a circle with this name already
         if obj.get(name) is None:
+            # Treat each letter as a point
+            for p in name:
+                # Create each point object if it does not exist
+                if obj.get(p) is None:
+                    point = primitives.Point(p)
+                    obj[p] = point
+                    point_list.append(point)
+                else:
+                    point_list.append(obj[p])
+            # Create the circle and assign the points
             circle = primitives.Circle(name)
             circle.p1 = point_list[0]
             circle.p2 = point_list[1]
             circle.p3 = point_list[2]
+
             obj[name] = circle
+        # Otherwise, just grab this circle
         else:
             circle = obj.get(name)
 
+        # Add any points that we've created to our return list
+        ret.extend(point_list)
+
+    # Set the radius and the center
+    circle.radius = radius
+    circle.center = center
+
+    # Add the circle we created to the return list
     ret.append(circle)
-    ret.extend(point_list)
 
     return ret
 
