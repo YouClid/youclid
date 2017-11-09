@@ -13,6 +13,7 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
+
 class CaseInsensitiveDictionary(dict):
     def __init__(self):
         self.d = {}
@@ -193,7 +194,8 @@ def parse_circle(args, obj):
         # first make sure that we're parsing an argument with an equal sign,
         # ie: not just a circle with a name, or other keywords that we might
         # end up using
-        if "=" not in arg: continue
+        if "=" not in arg:
+            continue
         arg_type, arg_value = arg.split("=")
         # For each argument type that we support, parse it
         if arg_type == "center":
@@ -345,8 +347,10 @@ def generate_html(json_object):
 
     return html
 
+
 def rotate(l, n):
     return l[-n:] + l[:-n]
+
 
 def rotate_lex(l):
     ind = l.index(min(l))
