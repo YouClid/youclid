@@ -103,10 +103,10 @@ def create_output(dict, text, animations):
 
     for k, v in dict.items():
         output['geometry'][v.name] = {
-                                   'type': v.__class__.__name__,
-                                   'id': v.name,
-                                   'data': v.__dict__()
-                                  }
+                                      'type': v.__class__.__name__,
+                                      'id': v.name,
+                                      'data': v.__dict__()
+                                     }
 
     return output
 
@@ -122,17 +122,9 @@ def format_text(text, dict):
     newtext = newtext[:-1]
     text = newtext
     text = ''.join(text)
-    pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(pattern, get_text, text)
 
-    # We need the name in the name field to be sorted, so we need to replace all
-    # of the unsorted versions with the sorted versions
-    p = r"<span name=(.*?_.*?_.*?) "
-    for m in re.findall(p, replaced):
-        t = m.split("_")
-        t[2] = ''.join(sorted(t[2]))
-        t = '_'.join(t)
-        replaced = re.sub(m, t, replaced)
+    pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    replaced = re.sub(pattern, get_text, text)
 
     return replaced
 
@@ -140,19 +132,26 @@ def format_text(text, dict):
 def get_text(match):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
-    del match[0]
-    obj = object_dict.get(match[1])
+    obj = object_dict.get(rotate_lex(match[1]))
+    # This code is absolutely, and unequivocally, the dumbest thing. There
+    # is absolutely no reason why we need to get doing disgusting things like
+    # this, but, here we are writing anyways. This MUST get removed at some
+    # point because there is a better way to do this.
+    # Since sometimes we care about the ordering of the points, and sometimes
+    # we don't, we might not get the object we want from doing a sort based
+    # upon ordering, so sort it like a normal person would and check that.
+    if obj is None:
+        obj = object_dict.get(''.join(sorted(match[1])))
     if (match[0].lower() == "polygon"):
-        name = polygons.get(len(obj.points), "Polygon")
+        obj_type = polygons.get(len(obj.points), "Polygon")
     else:
-        name = match[0]
-    span_name = "text_%s_%s" % (match[0].lower() if match[0].lower() != "center" else "point",
-                              match[1])
-    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, name, match[1])
+        obj_type = match[0]
+    span_name = "text_%s_%s" % (type(obj).__name__.lower(), obj.name)
+    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, obj_type, match[1])
 
 
 def parse_line(args, obj):
-    name = ''.join(sorted([x for x in args[0]]))
+    name = rotate_lex(args[0])
     point_list = []
     ret = []
 
@@ -223,12 +222,8 @@ def parse_circle(args, obj):
     # If the user did not specify a name when creating the circle, since it's
     # defaulted to be None, this will be True
     if name is None:
-        # List to hold the points that we've created
+        name = ''.join(sorted(args[0]))
         point_list = []
-        # Get the first argument and treat it as the name
-        n = ''.join(args[0])
-        name = ''.join(sorted(n))
-
 
         # If there is not a circle with this name already
         if obj.get(name) is None:
@@ -301,7 +296,7 @@ def parse_center(args, obj):
 
 def parse_polygon(args, obj):
     n = ''.join(args)
-    name = ''.join(sorted(n))
+    name = ''.join(rotate_lex(n))
     point_list = []
     ret = []
 
@@ -349,6 +344,17 @@ def generate_html(json_object):
                         json_object['text'].replace("\n", "<br>\n        "))
 
     return html
+
+def rotate(l, n):
+    return l[-n:] + l[:-n]
+
+def rotate_lex(l):
+    ind = l.index(min(l))
+    if(ind != 0):
+        rot = len(l) - ind
+        return rotate(l, rot)
+    else:
+        return l
 
 
 if __name__ == "__main__":
