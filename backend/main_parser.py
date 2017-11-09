@@ -15,8 +15,8 @@ polygons = {3: "Triangle",
 
 
 class CaseInsensitiveDictionary(dict):
-    def __init__(self):
-        self.d = {}
+    def __init__(self, d=None):
+        self.d = {} if d is None else d
 
     def __getitem__(self, key):
         if type(key) == str:
@@ -38,17 +38,18 @@ def parse_text(arg):
 
 
 def parse(text):
-    parsers = CaseInsensitiveDictionary()
-    parsers["line"] = parse_line
-    parsers["circle"] = parse_circle
-    parsers["point"] = parse_point
-    parsers["center"] = parse_center
-    parsers["polygon"] = parse_polygon
-    parsers["loc"] = parse_location
+    parsers = CaseInsensitiveDictionary({
+                                         "line": parse_line,
+                                         "circle": parse_circle,
+                                         "point": parse_point,
+                                         "center": parse_center,
+                                         "polygon": parse_polygon,
+                                         "loc": parse_location
+                                        })
 
-    # Dictionary to hold all of the objects that we create.
-    # The mapping is between names of the object and the object itself
+    # A list of the objects that need to be drawn at each step
     animations = []
+    # Ojbects that we've added at this step
     curr_step = []
 
     pattern = r'[^\\]?\[([\s\S]*?)\]'
@@ -98,7 +99,7 @@ def parse(text):
 def create_output(dict, text, animations):
     output = {}
 
-    output['text'] = format_text(text, dict)
+    output['text'] = format_text(text)
     output['geometry'] = {}
     output['animations'] = animations
 
@@ -112,7 +113,7 @@ def create_output(dict, text, animations):
     return output
 
 
-def format_text(text, dict):
+def format_text(text):
     newtext = []
     for i in text:
         i = i.replace('[step]', '')
@@ -128,7 +129,6 @@ def format_text(text, dict):
     replaced = re.sub(pattern, get_text, text)
 
     return replaced
-
 
 def get_text(match):
     match = match.group()
