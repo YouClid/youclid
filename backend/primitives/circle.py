@@ -6,7 +6,6 @@ class Circle:
         self.p2 = None
         self.p3 = None
         self.center = None
-        self.radius = None
 
     def __str__(self):
         return "Circle %s(%s, %s, %s)" % (str(self.name),
@@ -37,5 +36,4 @@ class Circle:
                 'p2': self.p2.name if self.p2 is not None else None,
                 'p3': self.p3.name if self.p3 is not None else None,
                 'center': self.center.name if self.center is not None else None,
-                'radius': self.radius if self.radius is not None else None,
                }
