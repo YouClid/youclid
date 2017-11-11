@@ -50,7 +50,7 @@ Specifications
 6.  The second word inside BRACKETS MUST represent the name of the object and
     SHALL be the name of the points that define that object, each represented
     by a single character.
-7.  For the "center" keyword, the third word inside BRACKETS MUST be
+7.  For the "circle" keyword, the third word inside BRACKETS MUST be
     "circle=ABC" where ABC MUST be the name of a circle object.
 8.  The "definitions" keyword MUST be used before the "loc" keyword. All "loc"
     keywords MUST follow immediately after the "definitions" keyword.
@@ -79,7 +79,3 @@ Specifications
     file.
 14. The user MAY use the "clear" keyword as a way to remove all visualization
     from the screen.
-15. Circles MUST specified either by giving three points, or by giving a center
-    and a radius. The center and radius MUST be specified as keyword arguments,
-    as shown below
-    [circle center=A radius=10 name=ABC]
