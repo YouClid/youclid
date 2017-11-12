@@ -71,6 +71,13 @@ function NDCtoWorld(x, y) {
     return pos
 }
 
+function underMouse(object) {
+    let raycaster = new THREE.Raycaster()
+    raycaster.setFromCamera( UIState.mouse, UIState.camera )
+    let intersects = raycaster.intersectObjects([object])
+    return intersects.length > 0
+}
+
 
 
 /*************************************
@@ -111,7 +118,16 @@ function drawPoint(ident, point, color) {
 
     let hot = isHot(name)
     
-    if(dist(UIState.mouse, point) < 0.04) {
+    
+    let material = new THREE.PointsMaterial({ size: PARTICLE_SIZE, color: color })
+
+    let particle = new THREE.Points( geometry, material )
+    particle.material.depthTest = false
+    particle.renderOrder = 1000
+
+    particle.name = name
+
+    if(underMouse(particle)) {
 	if(!hot) {
 	    if(UIState.active === null) {
 		UIState.hot[name] = true
@@ -126,18 +142,97 @@ function drawPoint(ident, point, color) {
     }
     
     if(hot) {
-	color = "yellow"
+	particle.material.color.set("yellow")
     }
-    let material = new THREE.PointsMaterial({ size: PARTICLE_SIZE, color: color })
-
-    let particle = new THREE.Points( geometry, material )
-    particle.material.depthTest = false
-    particle.renderOrder = 1000
-
-    particle.name = name
 
     UIState.scene.add(particle)
     
+}
+
+
+function drawLine(ident, p1, p2, color) {
+    let wp1 = NDCtoWorld(p1.x, p1.y)
+    let wp2 = NDCtoWorld(p2.x, p2.y)
+
+    let name = "object_line_" + ident.toString()
+
+    let hot = isHot(name)
+
+    let g = new THREE.Geometry()
+    g.vertices.push(wp1, wp2)
+    let m = new THREE.MeshBasicMaterial( { color: color } )
+
+    let line  = new THREE.Line(g,m)
+    line.name = name
+    
+    if(underMouse(line)) {
+	if(!hot) {
+	    if(UIState.active === null) {
+		UIState.hot[name] = true
+		hot = true
+	    }
+	}
+    } else {
+	if(hot) {
+	    UIState.hot[name] = false
+	    hot = false
+	}
+    }
+    
+    if(hot) {
+	line.material.color.set("yellow")
+    }
+
+    UIState.scene.add(line)
+}
+
+function makeCircle(ident, p1, p2, p3, isWorld) {
+    if(!isWorld) {
+	p1 = NDCtoWorld(p1.x, p1.y, camera)
+	p2 = NDCtoWorld(p2.x, p2.y, camera)
+	p3 = NDCtoWorld(p3.x, p3.y, camera)
+    }
+    let m1 = (p1.y-p2.y)/(p1.x-p2.x)
+    let m2 = (p3.y-p2.y)/(p3.x-p2.x)
+
+    let ma = -1.0*(1.0/m1)
+    let mb = -1.0*(1.0/m2)
+
+    let xa = 0.5*(p1.x+p2.x)
+    let ya = 0.5*(p1.y+p2.y)
+    let xb = 0.5*(p2.x+p3.x)
+    let yb = 0.5*(p2.y+p3.y)
+
+    let center = new THREE.Vector3()
+
+    center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
+    center.y = (mb*(center.x-xb))+yb
+    center.z = 0
+
+    let worldCenter, worldPoint
+
+
+    worldCenter = center
+    worldPoint = p1
+    // worldCenter = NDCtoWorld(center.x, center.y, camera)
+    // worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
+
+
+    let radius = dist(worldCenter, worldPoint)
+
+    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x009900 } );
+    let circleGeom = new THREE.CircleGeometry(radius, 100);
+    circleGeom.vertices.shift()
+    circleGeom.vertices.push(circleGeom.vertices[0])
+    var circle = new THREE.Line( circleGeom, circleMaterial );
+    circle.position.set(worldCenter.x, worldCenter.y, worldCenter.z)
+
+    let namestart = "object_circle_";
+    circle.name = namestart.concat(ident.toString());
+
+    return circle
+
+
 }
 
 
