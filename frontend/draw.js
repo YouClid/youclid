@@ -6,8 +6,9 @@ let UIState = {
     mousedown: false,
     mouseup: true,
 
-    scene: null,
+    scene: new THREE.Scene(),
     camera: new THREE.PerspectiveCamera( 75, 1, 1, 1000 ),
+    drawn: {},
 
     size: Math.min(window.innerWidth*0.65, window.innerHeight),
 
@@ -26,6 +27,8 @@ function init() {
 
     UIState.canvasRect = renderer.domElement.getBoundingClientRect()
 
+    renderer.render( UIState.scene, UIState.camera )
+
 
     // Register listeners
     document.addEventListener( 'mousemove', onMouseMove, false );
@@ -34,9 +37,13 @@ function init() {
 }
 
 function mainLoop() {
-    UIState.scene = new THREE.Scene()
     
     render() // Defined by user
+
+    removeOldObjects()
+    for(prop in UIState.drawn) {
+	UIState.drawn[prop] = false
+    }
 
     renderer.render( UIState.scene, UIState.camera )
 
@@ -79,6 +86,15 @@ function underMouse(object) {
 }
 
 
+function removeOldObjects() {
+    let objects = UIState.scene.children
+    let drawn = UIState.drawn
+    let remove = objects.filter((o) => !drawn[o.name])
+    remove.forEach((o) => UIState.scene.remove(o))
+
+}
+
+
 
 /*************************************
 
@@ -112,20 +128,29 @@ function drawPoint(ident, point, color) {
     let PARTICLE_SIZE = 0.5
 
     let name = "object_point_" + ident.toString()
+    UIState.drawn[name] = true
     let vertex = NDCtoWorld(point.x, point.y)
-    let geometry = new THREE.Geometry();
-    geometry.vertices.push(vertex)
 
     let hot = isHot(name)
-    
-    
-    let material = new THREE.PointsMaterial({ size: PARTICLE_SIZE, color: color })
 
-    let particle = new THREE.Points( geometry, material )
-    particle.material.depthTest = false
-    particle.renderOrder = 1000
+    let particle = UIState.scene.getObjectByName(name)
+    
+    if(!particle) {
+	let geometry = new THREE.Geometry();
+	geometry.vertices.push(vertex)
+	let material = new THREE.PointsMaterial({ size: PARTICLE_SIZE, color: color })
 
-    particle.name = name
+	particle = new THREE.Points( geometry, material )
+	particle.material.depthTest = false
+	particle.renderOrder = 1000
+
+	particle.name = name
+
+	UIState.scene.add(particle)
+    } else {
+	particle.geometry.vertices = [vertex]
+	particle.material.color.set(color)
+    }
 
     if(underMouse(particle)) {
 	if(!hot) {
@@ -143,9 +168,8 @@ function drawPoint(ident, point, color) {
     
     if(hot) {
 	particle.material.color.set("yellow")
-    }
+    } 
 
-    UIState.scene.add(particle)
     
 }
 
@@ -155,15 +179,25 @@ function drawLine(ident, p1, p2, color) {
     let wp2 = NDCtoWorld(p2.x, p2.y)
 
     let name = "object_line_" + ident.toString()
+    UIState.drawn[name] = true
 
     let hot = isHot(name)
 
-    let g = new THREE.Geometry()
-    g.vertices.push(wp1, wp2)
-    let m = new THREE.MeshBasicMaterial( { color: color } )
+    let line = UIState.scene.getObjectByName(name)
 
-    let line  = new THREE.Line(g,m)
-    line.name = name
+    if(!line) {
+	let g = new THREE.Geometry()
+	g.vertices.push(wp1, wp2)
+	let m = new THREE.MeshBasicMaterial( { color: color } )
+
+	line = new THREE.Line(g,m)
+	line.name = name
+	UIState.scene.add(line)
+	
+    } else {
+	line.geometry.vertices = [wp1, wp2]
+	line.material.color.set(color)
+    }
     
     if(underMouse(line)) {
 	if(!hot) {
@@ -183,7 +217,6 @@ function drawLine(ident, p1, p2, color) {
 	line.material.color.set("yellow")
     }
 
-    UIState.scene.add(line)
 }
 
 function makeCircle(ident, p1, p2, p3, isWorld) {
