@@ -1,14 +1,20 @@
 const vertexShader = `
+precision mediump float;
 attribute vec4 a_Position;
+attribute vec4 a_Color;
+varying vec4 v_Color;
 void main() {
      gl_Position = a_Position;
      gl_PointSize = 10.0;
+     v_Color = a_Color;
 }
 `
 
 const fragmentShader = `
+precision mediump float;
+varying vec4 v_Color;
 void main() {
-     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+     gl_FragColor = v_Color;
 }
 `
 
@@ -183,6 +189,7 @@ function onMouseMove( event ) {
 
 function drawPoint(ident, point, color) {
     // Point has an x and a y attribute in NDC coordinates
+    let gl = UIState.gl
     let name = "object_point_" + ident.toString()
     UIState.drawn[name] = true
 
@@ -203,22 +210,24 @@ function drawPoint(ident, point, color) {
     }
     
     if(hot) {
-	color = 'yellow'
+	color = [1.0, 1.0, 0, 1.0]
     } 
     
-    let gl = UIState.gl
-    let data = UIState.glData
-
     let vertices = [
 	point.x, point.y, 0.0, 1.0
     ]
+    vertices = vertices.concat(color)
 
-    data.set(vertices)
+    UIState.glData.set(vertices)
 
-    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, UIState.glData, gl.DYNAMIC_DRAW)
     let a_Position = gl.getAttribLocation(gl.program, "a_Position")
     gl.enableVertexAttribArray(a_Position)
-    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*4, 0)
+
+    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+    gl.enableVertexAttribArray(a_Color)
+    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*4, 4*4)
 
     gl.drawArrays(gl.POINTS, 0, 1)
     
@@ -247,25 +256,36 @@ function drawLine(ident, p1, p2, color) {
     }
     
     if(hot) {
-	color = "yellow"
+	color = [1.0, 1.0, 0, 1.0] // Yellow
     }
 
     
     let gl = UIState.gl
     let data = UIState.glData
 
-    let vertices = [
-	p1.x, p1.y, 0.0, 1.0,
+    let FSIZE = data.BYTES_PER_ELEMENT
+
+    let v1 = [
+	p1.x, p1.y, 0.0, 1.0
+    ]
+    v1 = v1.concat(color)
+    let v2 = [
 	p2.x, p2.y, 0.0, 1.0
     ]
+    v2 = v2.concat(color)
+
+    let vertices = v1.concat(v2)
     
     data.set(vertices)
-    
 
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
     let a_Position = gl.getAttribLocation(gl.program, "a_Position")
     gl.enableVertexAttribArray(a_Position)
-    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+    gl.enableVertexAttribArray(a_Color)
+    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
     gl.drawArrays(gl.LINES, 0, 2)
 
