@@ -77,9 +77,7 @@ function mainLoop() {
 	UIState.drawn[prop] = false
     }
 
-    
-
-    // requestAnimationFrame(mainLoop)
+    requestAnimationFrame(mainLoop)
 }
 
 function isHot(name) {
@@ -145,8 +143,8 @@ function NDCtoWorld(x, y) {
     return pos
 }
 
-function underMouse(object) {
-    return false
+function underMouse(point) {
+    return dist(UIState.mouse, point) < 0.06
 }
 
 
