@@ -1,13 +1,26 @@
+const vertexShader = `
+attribute vec4 a_Position;
+void main() {
+     gl_Position = a_Position;
+     gl_PointSize = 10.0;
+}
+`
 
-let renderer = new THREE.WebGLRenderer({ antialias: true });
+const fragmentShader = `
+void main() {
+     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+`
+
 
 let UIState = {
     mouse: {x:1000, y:10000},
     mousedown: false,
     mouseup: true,
 
-    scene: new THREE.Scene(),
-    camera: new THREE.PerspectiveCamera( 75, 1, 1, 1000 ),
+    gl: null,
+    glData: null,
+
     drawn: {},
 
     size: Math.min(window.innerWidth*0.65, window.innerHeight),
@@ -20,14 +33,24 @@ let UIState = {
 }
 
 function init() {
+
+    let canvas = document.createElement('canvas')
+    document.body.appendChild( canvas )
+    canvas.width = UIState.size
+    canvas.height = UIState.size
     
-    renderer.setSize(UIState.size, UIState.size)
-    document.body.appendChild( renderer.domElement )
-    UIState.camera.position.set(0, 0, 20 );
+    let gl = canvas.getContext('webgl')
+    let program = initShaders(gl, vertexShader, fragmentShader)
+    gl.program = program
+    gl.useProgram(program)
 
-    UIState.canvasRect = renderer.domElement.getBoundingClientRect()
+    let buf = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+    UIState.glData = new Float32Array(1024)
 
-    renderer.render( UIState.scene, UIState.camera )
+    UIState.gl = gl
+    
+    UIState.canvasRect = canvas.getBoundingClientRect()
 
 
     // Register listeners
@@ -37,22 +60,60 @@ function init() {
 }
 
 function mainLoop() {
+    let gl = UIState.gl
+    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT)
     
     render() // Defined by user
 
-    removeOldObjects()
+    
     for(prop in UIState.drawn) {
 	UIState.drawn[prop] = false
     }
 
-    renderer.render( UIState.scene, UIState.camera )
+    
 
-    requestAnimationFrame(mainLoop)
+    // requestAnimationFrame(mainLoop)
 }
 
 function isHot(name) {
     let hot = UIState.hot[name]
     return hot ? true : false
+}
+
+function initShaders(gl, vertSrc, fragSrc) {
+    let vshader = gl.createShader(gl.VERTEX_SHADER)
+    let fshader = gl.createShader(gl.FRAGMENT_SHADER)
+
+    gl.shaderSource(vshader, vertSrc)
+    gl.shaderSource(fshader, fragSrc)
+
+    gl.compileShader(vshader)
+    gl.compileShader(fshader)
+
+
+    if (!gl.getShaderParameter(vshader, gl.COMPILE_STATUS)) {
+	alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(vshader));
+	return null;
+    }
+    if (!gl.getShaderParameter(fshader, gl.COMPILE_STATUS)) {
+	alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(fshader));
+	return null;
+    }
+
+
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vshader);
+    gl.attachShader(shaderProgram, fshader);
+    gl.linkProgram(shaderProgram);
+
+    var success = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+    if (!success) {
+	// something went wrong with the link
+	throw ("program filed to link:" + gl.getProgramInfoLog (shaderProgram));
+    }
+
+    return shaderProgram
 }
 
 
@@ -79,10 +140,7 @@ function NDCtoWorld(x, y) {
 }
 
 function underMouse(object) {
-    let raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera( UIState.mouse, UIState.camera )
-    let intersects = raycaster.intersectObjects([object])
-    return intersects.length > 0
+    return false
 }
 
 
@@ -125,34 +183,12 @@ function onMouseMove( event ) {
 
 function drawPoint(ident, point, color) {
     // Point has an x and a y attribute in NDC coordinates
-    let PARTICLE_SIZE = 0.5
-
     let name = "object_point_" + ident.toString()
     UIState.drawn[name] = true
-    let vertex = NDCtoWorld(point.x, point.y)
 
     let hot = isHot(name)
 
-    let particle = UIState.scene.getObjectByName(name)
-    
-    if(!particle) {
-	let geometry = new THREE.Geometry();
-	geometry.vertices.push(vertex)
-	let material = new THREE.PointsMaterial({ size: PARTICLE_SIZE, color: color })
-
-	particle = new THREE.Points( geometry, material )
-	particle.material.depthTest = false
-	particle.renderOrder = 1000
-
-	particle.name = name
-
-	UIState.scene.add(particle)
-    } else {
-	particle.geometry.vertices = [vertex]
-	particle.material.color.set(color)
-    }
-
-    if(underMouse(particle)) {
+     if(underMouse(point)) {
 	if(!hot) {
 	    if(UIState.active === null) {
 		UIState.hot[name] = true
@@ -167,39 +203,36 @@ function drawPoint(ident, point, color) {
     }
     
     if(hot) {
-	particle.material.color.set("yellow")
+	color = 'yellow'
     } 
+    
+    let gl = UIState.gl
+    let data = UIState.glData
 
+    let vertices = [
+	point.x, point.y, 0.0, 1.0
+    ]
+
+    data.set(vertices)
+
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+    gl.enableVertexAttribArray(a_Position)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 0, 0)
+
+    gl.drawArrays(gl.POINTS, 0, 1)
     
 }
 
 
 function drawLine(ident, p1, p2, color) {
-    let wp1 = NDCtoWorld(p1.x, p1.y)
-    let wp2 = NDCtoWorld(p2.x, p2.y)
 
     let name = "object_line_" + ident.toString()
     UIState.drawn[name] = true
 
     let hot = isHot(name)
-
-    let line = UIState.scene.getObjectByName(name)
-
-    if(!line) {
-	let g = new THREE.Geometry()
-	g.vertices.push(wp1, wp2)
-	let m = new THREE.MeshBasicMaterial( { color: color } )
-
-	line = new THREE.Line(g,m)
-	line.name = name
-	UIState.scene.add(line)
-	
-    } else {
-	line.geometry.vertices = [wp1, wp2]
-	line.material.color.set(color)
-    }
     
-    if(underMouse(line)) {
+    if(underMouse(p1)) {
 	if(!hot) {
 	    if(UIState.active === null) {
 		UIState.hot[name] = true
@@ -214,8 +247,27 @@ function drawLine(ident, p1, p2, color) {
     }
     
     if(hot) {
-	line.material.color.set("yellow")
+	color = "yellow"
     }
+
+    
+    let gl = UIState.gl
+    let data = UIState.glData
+
+    let vertices = [
+	p1.x, p1.y, 0.0, 1.0,
+	p2.x, p2.y, 0.0, 1.0
+    ]
+    
+    data.set(vertices)
+    
+
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+    gl.enableVertexAttribArray(a_Position)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 0, 0)
+
+    gl.drawArrays(gl.LINES, 0, 2)
 
 }
 
