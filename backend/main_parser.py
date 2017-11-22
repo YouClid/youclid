@@ -6,16 +6,15 @@ import json
 import primitives
 from pprint import pprint
 
-object_dict = {}
-
 polygons = {3: "Triangle",
             5: "Pentagon",
             6: "Hexagon",
             8: "Octagon"}
 
+
 class CaseInsensitiveDictionary(dict):
-    def __init__(self):
-        self.d = {}
+    def __init__(self, d={}):
+        self.d = d
 
     def __getitem__(self, key):
         if type(key) == str:
@@ -29,79 +28,135 @@ class CaseInsensitiveDictionary(dict):
         else:
             return self.d.__setitem__(key, value)
 
+    def __repr__(self):
+        return self.d.__repr__()
 
-def parse_text(arg):
-    with open(arg) as infile:
-        text = infile.readlines()
-    return text
+    def __str__(self):
+        return self.d.__str__()
+
+
+class _Step():
+    """This object will be returned from a call to the parse_step function
+    to represent that we are done parsing the current step
+    """
+    pass
+
+
+class _Clear():
+    """This object will be returned from a call to the parse_clear function
+    to represent that we need to clear the current step
+    """
+    pass
 
 
 def parse(text):
-    parsers = CaseInsensitiveDictionary()
-    parsers["line"] = parse_line
-    parsers["circle"] = parse_circle
-    parsers["point"] = parse_point
-    parsers["center"] = parse_center
-    parsers["polygon"] = parse_polygon
-    parsers["loc"] = parse_location
+    # All of our parser functions
+    parsers = CaseInsensitiveDictionary({
+                                         "line":  parse_line,
+                                         "circle": parse_circle,
+                                         "point": parse_point,
+                                         "center": parse_center,
+                                         "polygon": parse_polygon,
+                                         "loc": parse_location,
+                                         "step": parse_step,
+                                         "clear": parse_clear
+                                        })
 
-    # Dictionary to hold all of the objects that we create.
-    # The mapping is between names of the object and the object itself
+    # List of objects to be drawn at each step
     animations = []
+    # List of objects to be drawn for the current step
     curr_step = []
+    # All of the objects created
+    object_dict = {}
 
-    pattern = r'[^\\]?\[([\s\S]*?)\]'
+    # Regular expression to match any instance of our markup. The idea is as
+    # follows: First use a negative look behind to make sure the bracket that
+    # we're trying to match wasn't escaped, then match a bracket, then match
+    # as many characters as possible until the next unescaped bracket.
+    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
 
-    def_index = 0
+    # Iterate over all matches in the text
+    for match in re.finditer(regex, text):
+        # Get the dictionary of name and unnamed arguments
+        args_dict, args_list = _parse_match(match)
 
-    definitions_pattern = r'\[definitions\]'
-    definitions_re = re.compile(definitions_pattern, re.IGNORECASE)
+        try:
+            f = parsers[args_dict["type"]]
+        except KeyError as e:
+            # TODO Print a nice error message
+            raise e
+        # Call the appropriate parser function
+        obj = f(args_dict, args_list, object_dict)
 
-    for c, d in enumerate(text):
-        if definitions_re.match(d):
-            def_index = c
-            break
+        # Now we need to handle the return value
 
-    for e in text[def_index+1:]:
-        match = re.findall(pattern, e)
-        for i in match:
-            data = i.split(' ')
-            element_type = data[0]
-            arguments = data[1:]
-            obj = parsers[element_type](arguments, object_dict)
+        # If there is no return value, move on to the next call
+        if obj is None:
+            continue
+        # If we just parsed a step and there are things that were added
+        # TODO: Maybe we should add even if curr_step is empty?
+        elif type(obj) == _Step:
+            if len(curr_step > 0):
+                # Add all unique objects we touched to the current animation
+                animations.append([x for x in set(curr_step)])
+        # Otherwise, if we parsed a clear, reset curr_step
+        elif type(obj) == _Clear:
+            curr_step = []
+        # Otherwise, we created some object, so add them to the current step
+        # for display purposes
+        else:
+            curr_step.extend(e.name for e in obj)
 
-    for f in text[:def_index]:
-        match = re.findall(pattern, f)
-        for i in match:
-            data = i.split(' ')
-            element_type = data[0]
-            arguments = data[1:]
-            if element_type.lower() == 'step':
-                if(len(curr_step) > 0):
-                    animations.append(curr_step[:])
-            elif element_type.lower() == 'clear':
-                    curr_step = []
-            else:
-                obj = parsers[element_type](arguments, object_dict)
-                if obj is not None:
-                    for e in obj:
-                        if(e.name not in curr_step):
-                            curr_step.append(e.name)
-
+    # Ensure that we have something in the animations variable
     if(len(animations) == 0):
         animations.append(curr_step[:])
 
+    # Create the output from the dictionary of objects
     return create_output(object_dict, text, animations)
 
 
-def create_output(dict, text, animations):
+def _parse_match(match):
+    # Dictionary of named arguments
+    args_dict = {}
+    # List of non-named arguments (excluding the name)
+    args_list = []
+
+    # The entirety of the match
+    whole_match = match[1]
+    # Split the match up by spaces
+    partials = whole_match.split()
+
+    # The type will always be the first thing
+    args_dict['type'] = partials[0]
+
+    # Check to see if the second argument is a name
+    if len(partials) > 1 and '=' not in partials[1]:
+        args_dict['name'] = partials[1]
+        start_index = 2
+    else:
+        start_index = 1
+
+    # start_index represents the index of the start of keyword arguments
+    for keyword_arg in partials[start_index:]:
+        # Get the key and the value and put them in the dictionary
+        if '=' in keyword_arg:
+            key, value = keyword_arg.split('=')
+            args_dict[key] = value
+        # Otherwise, it's a non-named argument so add it to the list
+        else:
+            args_list.append(keyword_arg)
+
+    return args_dict, args_list
+
+
+def create_output(d, text, animations):
     output = {}
 
-    output['text'] = format_text(text, dict)
+    output['text'] = format_text(text)
     output['geometry'] = {}
     output['animations'] = animations
 
-    for k, v in dict.items():
+    for k, v in d.items():
         output['geometry'][v.name] = {
                                    'type': v.__class__.__name__,
                                    'id': v.name,
@@ -111,7 +166,7 @@ def create_output(dict, text, animations):
     return output
 
 
-def format_text(text, dict):
+def format_text(text):
     newtext = []
     for i in text:
         i = i.replace('[step]', '')
@@ -122,23 +177,14 @@ def format_text(text, dict):
     newtext = newtext[:-1]
     text = newtext
     text = ''.join(text)
-    #pattern = r'([^\\]?\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+
     pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(pattern, get_text, text)
-
-    # We need the name in the name field to be sorted, so we need to replace all
-    # of the unsorted versions with the sorted versions
-    #p = r"<span name=(.*?_.*?_.*?) "
-    #for m in re.findall(p, replaced):
-    #    t = m.split("_")
-    #    t[2] = ''.join(sorted(t[2]))
-    #    t = '_'.join(t)
-    #    replaced = re.sub(m, t, replaced)
 
     return replaced
 
 
-def get_text(match):
+def get_text(match, object_dict):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
     obj = object_dict.get(rotate_lex(match[1]))
@@ -239,43 +285,53 @@ def parse_center(args, obj):
     return ret
 
 
-def parse_polygon(args, obj):
-    n = ''.join(args)
-    name = ''.join(rotate_lex(n))
+def parse_polygon(keyword_args, list_args, obj_dict):
+    name = ''.join(rotate_lex(keyword_args['name']))
     point_list = []
     ret = []
 
     for p in name:
-        if obj.get(p) is None:
+        if obj_dict.get(p) is None:
             point_list.append(primitives.Point(p))
         else:
-            point_list.append(obj[p])
+            point_list.append(obj_dict[p])
 
-    if obj.get(name) is None:
+    if obj_dict.get(name) is None:
         polygon = primitives.Polygon(name)
         polygon.points = point_list
         ret = [polygon] + point_list
-        obj[name] = polygon
+        obj_dict[name] = polygon
     else:
-        polygon = obj.get(name)
+        polygon = obj_dict.get(name)
         ret.append(polygon)
         ret.extend(point_list)
 
     return ret
 
 
-def parse_location(args, obj):
-    """Parses the location for a particular object"""
-    name = args[0]
-    x = float(args[1])
-    y = float(args[2])
-    parse_point(name, obj)
-    o = obj[name]
+def parse_location(keyword_args, list_args, obj_dict):
+    """Parses the location for a particular point object"""
+    name = keyword_args["name"]
+    x = float(list_args[0])
+    y = float(list_args[1])
+    if obj_dict.get("name"):
+        o = obj_dict[name]
+    else:
+        o = primitives.Point(keyword_args["name"])
+        obj_dict[name] = o
 
     o.x = x
     o.y = y
 
     return None
+
+
+def parse_step(keyword_args, list_args, obj_dict):
+    return _Step()
+
+
+def parse_clear(keyword_args, list_args, obj_dict):
+    return _Clear()
 
 
 def generate_html(json_object):
@@ -307,11 +363,14 @@ if __name__ == "__main__":
     parser.add_argument("path", type=str, help="Path to .yc file")
     parser.add_argument("-o", "--output",  type=str, help="Path to output html file")
     args = parser.parse_args()
-    t = parse_text(args.path)
-    json_object = parse(t)
+
+    with open(args.path) as f:
+        text = f.read()
+
+    json_object = parse(text)
+
     if(args.output):
         with open(args.output, "w") as f:
             f.write(generate_html(json_object))
-
     else:
         print(json_object)
