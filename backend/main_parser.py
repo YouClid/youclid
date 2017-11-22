@@ -13,8 +13,8 @@ polygons = {3: "Triangle",
 
 
 class CaseInsensitiveDictionary(dict):
-    def __init__(self, d={}):
-        self.d = d
+    def __init__(self, d=None):
+        self.d = {} if d is None else d
 
     def __getitem__(self, key):
         if type(key) == str:
@@ -50,9 +50,8 @@ class _Clear():
 
 
 def parse(text):
-    # All of our parser functions
     parsers = CaseInsensitiveDictionary({
-                                         "line":  parse_line,
+                                         "line": parse_line,
                                          "circle": parse_circle,
                                          "point": parse_point,
                                          "center": parse_center,
@@ -62,9 +61,9 @@ def parse(text):
                                          "clear": parse_clear
                                         })
 
-    # List of objects to be drawn at each step
+    # A list of the objects that need to be drawn at each step
     animations = []
-    # List of objects to be drawn for the current step
+    # Ojbects that we've added at this step
     curr_step = []
     # All of the objects created
     object_dict = {}
@@ -158,10 +157,10 @@ def create_output(d, text, animations):
 
     for k, v in d.items():
         output['geometry'][v.name] = {
-                                   'type': v.__class__.__name__,
-                                   'id': v.name,
-                                   'data': v.__dict__()
-                                  }
+                                      'type': v.__class__.__name__,
+                                      'id': v.name,
+                                      'data': v.__dict__()
+                                     }
 
     return output
 
@@ -183,11 +182,19 @@ def format_text(text):
 
     return replaced
 
-
-def get_text(match, object_dict):
+def get_text(match):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
     obj = object_dict.get(rotate_lex(match[1]))
+    # This code is absolutely, and unequivocally, the dumbest thing. There
+    # is absolutely no reason why we need to get doing disgusting things like
+    # this, but, here we are writing anyways. This MUST get removed at some
+    # point because there is a better way to do this.
+    # Since sometimes we care about the ordering of the points, and sometimes
+    # we don't, we might not get the object we want from doing a sort based
+    # upon ordering, so sort it like a normal person would and check that.
+    if obj is None:
+        obj = object_dict.get(''.join(sorted(match[1])))
     if (match[0].lower() == "polygon"):
         obj_type = polygons.get(len(obj.points), "Polygon")
     else:
@@ -223,30 +230,86 @@ def parse_line(args, obj):
 
 
 def parse_circle(args, obj):
-    n = ''.join(args)
-    name = rotate_lex(n)
-    point_list = []
+
+    # Variables to hold the properties of a circle
+    circle = None
+    center = None
+    radius = 0
+    name = None
+
+    # Objects that we have created in this parse function, for display purposes
     ret = []
 
-    for p in name:
-        if obj.get(p) is None:
-            point = primitives.Point(p)
-            obj[p] = point
-            point_list.append(point)
+    # For each argument
+    for arg in args:
+        # Split on space, get the type of the argument and the value, but
+        # first make sure that we're parsing an argument with an equal sign,
+        # ie: not just a circle with a name, or other keywords that we might
+        # end up using
+        if "=" not in arg:
+            continue
+        arg_type, arg_value = arg.split("=")
+        # For each argument type that we support, parse it
+        if arg_type == "center":
+            # If the cetner object does not exist, make it
+            if obj.get(arg_value) is None:
+                center = primitives.Point(arg_value)
+                obj[arg_value] = center
+                ret.append(center)
+            # Otherwise, get it
+            else:
+                center = obj[arg_value]
+        elif arg_type == "radius":
+            # Get the radius as a number
+            radius = int(arg_value)
+        elif arg_type == "name":
+            name = arg_value
+            # If the user is specifying a name, look to see if we have the
+            # circle already, otherwise create a new one
+            if obj.get(arg_value) is None:
+                circle = primitives.Circle(arg_value)
+                obj[arg_value] = circle
+                ret.append(circle)
+            else:
+                circle = obj[arg_value]
+
+    # If the user did not specify a name when creating the circle, since it's
+    # defaulted to be None, this will be True
+    if name is None:
+        name = ''.join(sorted(args[0]))
+        point_list = []
+
+        # If there is not a circle with this name already
+        if obj.get(name) is None:
+            # Treat each letter as a point
+            for p in name:
+                # Create each point object if it does not exist
+                if obj.get(p) is None:
+                    point = primitives.Point(p)
+                    obj[p] = point
+                    point_list.append(point)
+                else:
+                    point_list.append(obj[p])
+            # Create the circle and assign the points
+            circle = primitives.Circle(name)
+            circle.p1 = point_list[0]
+            circle.p2 = point_list[1]
+            circle.p3 = point_list[2]
+
+            obj[name] = circle
+        # Otherwise, just grab this circle
         else:
-            point_list.append(obj[p])
+            circle = obj.get(name)
 
-    if obj.get(name) is None:
-        circle = primitives.Circle(name)
-        circle.p1 = point_list[0]
-        circle.p2 = point_list[1]
-        circle.p3 = point_list[2]
-        obj[name] = circle
-    else:
-        circle = obj.get(name)
+        # Add any points that we've created to our return list
+        ret.extend(point_list)
 
+    # Set the radius and the center
+    circle.radius = radius
+    circle.center = center
+
+    # Add the circle we created to the return list
     ret.append(circle)
-    ret.extend(point_list)
 
     return ret
 
@@ -346,8 +409,10 @@ def generate_html(json_object):
 
     return html
 
+
 def rotate(l, n):
     return l[-n:] + l[:-n]
+
 
 def rotate_lex(l):
     ind = l.index(min(l))
