@@ -130,6 +130,8 @@ def _parse_match(match):
 
     # Check to see if the second argument is a name
     if len(partials) > 1 and '=' not in partials[1]:
+        # TODO: Maybe the first argument isn't a name and they don't specify
+        # the name as a keyword argument; ie, we need to default to something
         args_dict['name'] = partials[1]
         start_index = 2
     else:
@@ -182,7 +184,8 @@ def format_text(text):
 
     return replaced
 
-def get_text(match):
+
+def get_text(match, object_dict):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
     obj = object_dict.get(rotate_lex(match[1]))
@@ -203,39 +206,39 @@ def get_text(match):
     return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, obj_type, match[1])
 
 
-def parse_line(args, obj):
-    name = rotate_lex(args[0])
+def parse_line(keyword_args, list_args, obj_dict):
+    name = rotate_lex(keyword_args["name"])
     point_list = []
     ret = []
 
     for p in name:
-        if obj.get(p) is None:
+        if obj_dict.get(p) is None:
             point = primitives.Point(p)
             point_list.append(point)
-            obj[p] = point
+            obj_dict[p] = point
         else:
-            point_list.append(obj[p])
+            point_list.append(obj_dict[p])
 
-    if obj.get(name) is None:
+    if obj_dict.get(name) is None:
         line = primitives.Line(name)
         line.p1 = point_list[0]
         line.p2 = point_list[1]
-        obj[name] = line
+        obj_dict[name] = line
     else:
-        line = obj.get(name)
+        line = obj_dict.get(name)
 
     ret.extend((line, line.p1, line.p2))
 
     return ret
 
 
-def parse_circle(args, obj):
+def parse_circle(keyword_args, list_args, obj_dict):
 
     # Variables to hold the properties of a circle
     circle = None
     center = None
     radius = 0
-    name = None
+    name = keyword_args["name"]
 
     # Objects that we have created in this parse function, for display purposes
     ret = []
@@ -314,35 +317,34 @@ def parse_circle(args, obj):
     return ret
 
 
-def parse_point(args, obj):
-    args = ''.join(args)
-    name = args
+def parse_point(keyword_args, list_args, obj_dict):
+    name = keyword_args["name"]
     ret = []
-    if obj.get(name) is None:
+    if obj_dict.get(name) is None:
         point = primitives.Point(name)
         ret = [point]
-        obj[name] = point
+        obj_dict[name] = point
     else:
-        point = obj.get(name)
+        point = obj_dict.get(name)
 
     ret.append(point)
     return ret
 
 
-def parse_center(args, obj):
+def parse_center(keyword_args, list_args, obj_dict):
     # ASSUME CIRCLE ALREADY EXISTS
-    name = args[0]
-    circle = args[1].split("=")[1]
+    name = keyword_args["name"]
+    circle = keyword_args["center"]
     ret = []
 
-    if obj.get(name):
-        point = obj.get(name)
+    if obj_dict.get(name):
+        point = obj_dict.get(name)
     else:
         point = primitives.Point(name=name)
         ret = [point]
-        obj[name] = point
+        obj_dict[name] = point
 
-    circle = obj[circle]
+    circle = obj_dict[circle]
     circle.center = point
     ret.append(point)
     return ret
