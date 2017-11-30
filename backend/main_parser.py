@@ -11,10 +11,13 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
+obj_dict = {}
 
 class CaseInsensitiveDictionary(dict):
     def __init__(self, d=None):
-        self.d = {} if d is None else d
+        self.d = {}
+        if d is not None:
+            self.d = {key.lower() if type(key) is str else key: d[key] for key in d}
 
     def __getitem__(self, key):
         if type(key) == str:
@@ -65,8 +68,6 @@ def parse(text):
     animations = []
     # Ojbects that we've added at this step
     curr_step = []
-    # All of the objects created
-    object_dict = {}
 
     # Regular expression to match any instance of our markup. The idea is as
     # follows: First use a negative look behind to make sure the bracket that
@@ -85,7 +86,7 @@ def parse(text):
             # TODO Print a nice error message
             raise e
         # Call the appropriate parser function
-        obj = f(args_dict, args_list, object_dict)
+        obj = f(args_dict, args_list)
 
         # Now we need to handle the return value
 
@@ -95,7 +96,7 @@ def parse(text):
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
         elif type(obj) == _Step:
-            if len(curr_step > 0):
+            if len(curr_step) > 0:
                 # Add all unique objects we touched to the current animation
                 animations.append([x for x in set(curr_step)])
         # Otherwise, if we parsed a clear, reset curr_step
@@ -111,7 +112,7 @@ def parse(text):
         animations.append(curr_step[:])
 
     # Create the output from the dictionary of objects
-    return create_output(object_dict, text, animations)
+    return create_output(obj_dict, text, animations)
 
 
 def _parse_match(match):
@@ -169,6 +170,7 @@ def create_output(d, text, animations):
 
 def format_text(text):
     newtext = []
+    text = text.split('\n')
     for i in text:
         i = i.replace('[step]', '')
         i = i.replace('[definitions]', '')
@@ -177,7 +179,7 @@ def format_text(text):
             newtext.append(i)
     newtext = newtext[:-1]
     text = newtext
-    text = ''.join(text)
+    text = '\n'.join(text)
 
     pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(pattern, get_text, text)
@@ -185,10 +187,10 @@ def format_text(text):
     return replaced
 
 
-def get_text(match, object_dict):
+def get_text(match):
     match = match.group()
     match = match.replace("[", "").replace("]", "").split(" ")
-    obj = object_dict.get(rotate_lex(match[1]))
+    obj = obj_dict.get(rotate_lex(match[1]))
     # This code is absolutely, and unequivocally, the dumbest thing. There
     # is absolutely no reason why we need to get doing disgusting things like
     # this, but, here we are writing anyways. This MUST get removed at some
@@ -197,7 +199,7 @@ def get_text(match, object_dict):
     # we don't, we might not get the object we want from doing a sort based
     # upon ordering, so sort it like a normal person would and check that.
     if obj is None:
-        obj = object_dict.get(''.join(sorted(match[1])))
+        obj = obj_dict.get(''.join(sorted(match[1])))
     if (match[0].lower() == "polygon"):
         obj_type = polygons.get(len(obj.points), "Polygon")
     else:
@@ -206,7 +208,7 @@ def get_text(match, object_dict):
     return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, obj_type, match[1])
 
 
-def parse_line(keyword_args, list_args, obj_dict):
+def parse_line(keyword_args, list_args):
     name = rotate_lex(keyword_args["name"])
     point_list = []
     ret = []
@@ -232,92 +234,67 @@ def parse_line(keyword_args, list_args, obj_dict):
     return ret
 
 
-def parse_circle(keyword_args, list_args, obj_dict):
-
-    # Variables to hold the properties of a circle
-    circle = None
-    center = None
-    radius = 0
-    name = keyword_args["name"]
+def parse_circle(keyword_args, list_args):
+    """Creates a circle object from the given parameters"""
 
     # Objects that we have created in this parse function, for display purposes
     ret = []
+    name = keyword_args["name"]
 
-    # For each argument
-    for arg in args:
-        # Split on space, get the type of the argument and the value, but
-        # first make sure that we're parsing an argument with an equal sign,
-        # ie: not just a circle with a name, or other keywords that we might
-        # end up using
-        if "=" not in arg:
-            continue
-        arg_type, arg_value = arg.split("=")
-        # For each argument type that we support, parse it
-        if arg_type == "center":
-            # If the cetner object does not exist, make it
-            if obj.get(arg_value) is None:
-                center = primitives.Point(arg_value)
-                obj[arg_value] = center
-                ret.append(center)
-            # Otherwise, get it
-            else:
-                center = obj[arg_value]
-        elif arg_type == "radius":
-            # Get the radius as a number
-            radius = int(arg_value)
-        elif arg_type == "name":
-            name = arg_value
-            # If the user is specifying a name, look to see if we have the
-            # circle already, otherwise create a new one
-            if obj.get(arg_value) is None:
-                circle = primitives.Circle(arg_value)
-                obj[arg_value] = circle
-                ret.append(circle)
-            else:
-                circle = obj[arg_value]
+    circle = obj_dict.get(name)
 
-    # If the user did not specify a name when creating the circle, since it's
-    # defaulted to be None, this will be True
-    if name is None:
-        name = ''.join(sorted(args[0]))
-        point_list = []
+    if circle is not None:
+        # TODO: We need to figure out what to do here. IE: do we just update
+        # parameters? What if the update affects other objects? Do we not
+        # update anything?
+        # TODO: Parse the other list_args
+        pass
+    else:
+        circle = primitives.Circle(name)
+        obj_dict[name] = circle
+        ret.append(circle)
+        # TODO: JANKY WORKAROUND! MUST BE CHANGED
+        if len(name) == 3:
+            p1 = obj_dict.get(name[0])
+            # TODO: Call parse point?
+            if p1 is None:
+                p1 = primitives.Point(name[0])
+                obj_dict[name[0]] = p1
+                ret.append(p1)
+            p2 = obj_dict.get(name[1])
+            # TODO: Call parse point?
+            if p2 is None:
+                p2 = primitives.Point(name[1])
+                obj_dict[name[1]] = p2
+                ret.append(p2)
+            p3 = obj_dict.get(name[2])
+            # TODO: Call parse point?
+            if p3 is None:
+                p3 = primitives.Point(name[2])
+                obj_dict[name[2]] = p3
+                ret.append(p3)
+            circle.p1 = p1
+            circle.p2 = p2
+            circle.p3 = p3
 
-        # If there is not a circle with this name already
-        if obj.get(name) is None:
-            # Treat each letter as a point
-            for p in name:
-                # Create each point object if it does not exist
-                if obj.get(p) is None:
-                    point = primitives.Point(p)
-                    obj[p] = point
-                    point_list.append(point)
-                else:
-                    point_list.append(obj[p])
-            # Create the circle and assign the points
-            circle = primitives.Circle(name)
-            circle.p1 = point_list[0]
-            circle.p2 = point_list[1]
-            circle.p3 = point_list[2]
+    center = keyword_args.get("center")
+    if center is not None:
+        center = obj_dict.get("center")
+        if center is None:
+            center = primitives.Point(keyword_args.get("center"))
+            obj_dict[keyword_args.get("center")] = center
+            ret.append(center)
+        circle.center = center
 
-            obj[name] = circle
-        # Otherwise, just grab this circle
-        else:
-            circle = obj.get(name)
-
-        # Add any points that we've created to our return list
-        ret.extend(point_list)
-
-    # Set the radius and the center
-    circle.radius = radius
-    circle.center = center
-
-    # Add the circle we created to the return list
-    ret.append(circle)
+    radius = keyword_args.get("radius")
+    if radius is not None:
+        # TODO: Support a line as the radius, not just a value?
+        circle.radius = float(radius)
 
     return ret
 
 
-def parse_point(keyword_args, list_args, obj_dict):
+def parse_point(keyword_args, list_args):
     name = keyword_args["name"]
     ret = []
     if obj_dict.get(name) is None:
@@ -331,10 +308,10 @@ def parse_point(keyword_args, list_args, obj_dict):
     return ret
 
 
-def parse_center(keyword_args, list_args, obj_dict):
+def parse_center(keyword_args, list_args):
     # ASSUME CIRCLE ALREADY EXISTS
     name = keyword_args["name"]
-    circle = keyword_args["center"]
+    circle = keyword_args["circle"]
     ret = []
 
     if obj_dict.get(name):
@@ -350,7 +327,7 @@ def parse_center(keyword_args, list_args, obj_dict):
     return ret
 
 
-def parse_polygon(keyword_args, list_args, obj_dict):
+def parse_polygon(keyword_args, list_args):
     name = ''.join(rotate_lex(keyword_args['name']))
     point_list = []
     ret = []
@@ -374,7 +351,7 @@ def parse_polygon(keyword_args, list_args, obj_dict):
     return ret
 
 
-def parse_location(keyword_args, list_args, obj_dict):
+def parse_location(keyword_args, list_args):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
     x = float(list_args[0])
@@ -391,11 +368,11 @@ def parse_location(keyword_args, list_args, obj_dict):
     return None
 
 
-def parse_step(keyword_args, list_args, obj_dict):
+def parse_step(keyword_args, list_args):
     return _Step()
 
 
-def parse_clear(keyword_args, list_args, obj_dict):
+def parse_clear(keyword_args, list_args):
     return _Clear()
 
 
