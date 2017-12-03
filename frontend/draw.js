@@ -135,16 +135,42 @@ function dist(p1, p2) {
 
 // NDC stands for normalized device coordinates
 function NDCtoWorld(x, y) {
-    let ndcVec = new THREE.Vector2(x, y)
-    let plane = new THREE.Plane(new THREE.Vector3(0,0,1))
-    let raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera( ndcVec, UIState.camera )
-    let pos = raycaster.ray.intersectPlane(plane)
-    return pos
+    // World is now represented in NDC
+    return {x:x, y:y}
 }
 
-function underMouse(point) {
-    return dist(UIState.mouse, point) < 0.06
+function pointUnderMouse(point) {
+    let sz = 5.0/(2*UIState.size)
+    let center = {x:point.x+(sz/2), y:point.y+(sz/2)}
+    return dist(UIState.mouse, center) < 0.06
+}
+
+function lineUnderMouse(p0, p1) {
+    let mouse = UIState.mouse
+    let n = sub(p1, p0)
+    let a = p0
+    let a_to_m = sub(mouse, a)
+    let coeff = dot(n, a_to_m)/normsq(n)
+    if(coeff < 0 || coeff > 1) {
+	return false
+    }
+    let d = dist(a_to_m, scale(n, coeff))
+    return d < 0.05
+}
+
+function polyUnderMouse(points) {
+    if(points.length < 2) {
+	return false
+    }
+    for(let i = 0; i<points.length; i++) {
+	let next = (i+1)%points.length
+	let p0 = points[i]
+	let p1 = points[next]
+	if(lineUnderMouse(p0, p1)) {
+	    return true
+	}
+    }
+    return false
 }
 
 
@@ -154,6 +180,10 @@ function removeOldObjects() {
     let remove = objects.filter((o) => !drawn[o.name])
     remove.forEach((o) => UIState.scene.remove(o))
 
+}
+
+function flatten(arr) {
+    return [].concat.apply([], arr);
 }
 
 
@@ -177,6 +207,48 @@ function onMouseMove( event ) {
     }
 }
 
+/*************************************
+
+        Geometric Predicates
+
+*************************************/
+
+
+function v2(x, y) {
+    return {x:x, y:y}
+}
+
+function dot(v1, v2) {
+    return (v1.x*v2.x)+(v1.y*v2.y)
+}
+
+function add(v1, v2) {
+    return {
+	x: v1.x+v2.x,
+	y: v1.y+v2.y
+    }
+}
+
+function sub(v1, v2) {
+    return {
+	x: v1.x-v2.x,
+	y: v1.y-v2.y
+    }
+}
+
+function normsq(v) {
+    return dot(v,v)
+}
+
+function norm(v) {
+    return Math.sqrt(normsq(v))
+}
+
+function scale(v, c) {
+    return v2(v.x*c, v.y*c)
+}
+
+
 
 /*************************************
 
@@ -193,7 +265,7 @@ function drawPoint(ident, point, color) {
 
     let hot = isHot(name)
 
-     if(underMouse(point)) {
+     if(pointUnderMouse(point)) {
 	if(!hot) {
 	    if(UIState.active === null) {
 		UIState.hot[name] = true
@@ -212,7 +284,7 @@ function drawPoint(ident, point, color) {
     } 
     
     let vertices = [
-	point.x, point.y, 0.0, 1.0
+	point.x, point.y, -0.1, 1.0
     ]
     vertices = vertices.concat(color)
 
@@ -239,7 +311,7 @@ function drawLine(ident, p1, p2, color) {
 
     let hot = isHot(name)
     
-    if(underMouse(p1)) {
+    if(lineUnderMouse(p1, p2)) {
 	if(!hot) {
 	    if(UIState.active === null) {
 		UIState.hot[name] = true
@@ -289,52 +361,125 @@ function drawLine(ident, p1, p2, color) {
 
 }
 
-function makeCircle(ident, p1, p2, p3, isWorld) {
-    if(!isWorld) {
-	p1 = NDCtoWorld(p1.x, p1.y, camera)
-	p2 = NDCtoWorld(p2.x, p2.y, camera)
-	p3 = NDCtoWorld(p3.x, p3.y, camera)
+function getPoints(center, radius) {
+    let points = []
+    let theta = 0
+    let inc = 0.05
+    let tau = 2*Math.PI
+    while(theta <= tau) {
+	let x = radius*Math.cos(theta)
+	let y = radius*Math.sin(theta)
+	points.push(add(v2(x, y), center))
+	theta += inc
     }
-    let m1 = (p1.y-p2.y)/(p1.x-p2.x)
-    let m2 = (p3.y-p2.y)/(p3.x-p2.x)
+    let x = radius*Math.cos(0)
+    let y = radius*Math.sin(0)
+    points.push(add(v2(x, y), center))
+    return points
+}
 
-    let ma = -1.0*(1.0/m1)
-    let mb = -1.0*(1.0/m2)
+function drawCircle(ident, center, radius, color) {
 
-    let xa = 0.5*(p1.x+p2.x)
-    let ya = 0.5*(p1.y+p2.y)
-    let xb = 0.5*(p2.x+p3.x)
-    let yb = 0.5*(p2.y+p3.y)
+    let name = "object_line_" + ident.toString()
+    UIState.drawn[name] = true
 
-    let center = new THREE.Vector3()
+    let hot = isHot(name)
 
-    center.x = ((ma*xa)-(mb*xb)+yb-ya)/(ma-mb)
-    center.y = (mb*(center.x-xb))+yb
-    center.z = 0
+    let points = getPoints(center, radius)
+    
+    if(polyUnderMouse(points)) {
+	if(!hot) {
+	    if(UIState.active === null) {
+		UIState.hot[name] = true
+		hot = true
+	    }
+	}
+    } else {
+	if(hot) {
+	    UIState.hot[name] = false
+	    hot = false
+	}
+    }
+    
+    if(hot) {
+	color = [1.0, 1.0, 0, 1.0] // Yellow
+    }
 
-    let worldCenter, worldPoint
+    
+    let gl = UIState.gl
+    let data = UIState.glData
+
+    let FSIZE = data.BYTES_PER_ELEMENT
+
+    let vertices = points.map((p) => {
+	return [p.x, p.y, 0.0, 1.0].concat(color)
+    })
+    
+    data.set(flatten(vertices))
+
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+    gl.enableVertexAttribArray(a_Position)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+    gl.enableVertexAttribArray(a_Color)
+    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
+
+    gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
+
+}
 
 
-    worldCenter = center
-    worldPoint = p1
-    // worldCenter = NDCtoWorld(center.x, center.y, camera)
-    // worldPoint  = NDCtoWorld(p1.x, p1.y, camera)
+function drawPoly(ident, points, color) {
 
+    let name = "object_line_" + ident.toString()
+    UIState.drawn[name] = true
 
-    let radius = dist(worldCenter, worldPoint)
+    let hot = isHot(name)
+    
+    if(polyUnderMouse(points)) {
+	if(!hot) {
+	    if(UIState.active === null) {
+		UIState.hot[name] = true
+		hot = true
+	    }
+	}
+    } else {
+	if(hot) {
+	    UIState.hot[name] = false
+	    hot = false
+	}
+    }
+    
+    if(hot) {
+	color = [1.0, 1.0, 0, 1.0] // Yellow
+    }
 
-    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0x009900 } );
-    let circleGeom = new THREE.CircleGeometry(radius, 100);
-    circleGeom.vertices.shift()
-    circleGeom.vertices.push(circleGeom.vertices[0])
-    var circle = new THREE.Line( circleGeom, circleMaterial );
-    circle.position.set(worldCenter.x, worldCenter.y, worldCenter.z)
+    
+    let gl = UIState.gl
+    let data = UIState.glData
 
-    let namestart = "object_circle_";
-    circle.name = namestart.concat(ident.toString());
+    let FSIZE = data.BYTES_PER_ELEMENT
 
-    return circle
+    points.push(points[0])
 
+    let vertices = points.map((p) => {
+	return [p.x, p.y, 0.0, 1.0].concat(color)
+    })
+    
+    data.set(flatten(vertices))
+
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+    gl.enableVertexAttribArray(a_Position)
+    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+    gl.enableVertexAttribArray(a_Color)
+    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
+
+    gl.drawArrays(gl.LINE_STRIP, 0, points.length)
 
 }
 
