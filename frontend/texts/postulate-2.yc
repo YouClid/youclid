@@ -1,0 +1,14 @@
+Let [point A] be the given point, and [line BC] the given straigt line. It is required to place a straight [line AL] equal to the given straight [line BC] with one end at the [point A]. Join the straight [line AB] from the [point A] to the [point B], and construct the equilateral [polygon DAB]. Produce the straight [line AE] and straight [line BF] in a straight line with [line DA] and [line DB]. Describe the [circle CGH] with [center B circle=CGH], and again, descibe the [circle GKL] with [center D circle=GKL]. Since the [point B] is the center of the circle CGH, therefore, [line BC] equals [line BG]. Again, since the [point D] is the center of the circle GKL, therefore, [line DL] equals [line DG]. And in these, [line DA] equals [line DB], therefore, the remainder [line AL] equals the remainder [line BG]. But [line BC] was also proved equal to [line BG], therefore each of the straight lines [line AL] and [line BC] equals [line BG]. And things which equal the same thing also equal one another, therefore, [line AL] also equals [line BC]. Therefore, the straight [line AL] equal to the given straight [line BC] has been placed with one end at the given [point A].
+
+[definitions]
+
+[loc B 0 0]
+[loc C 0 .2]
+[loc D -.1 0]
+[loc A -.05 -0.0866]
+[loc H -.2 0]
+[loc G .2 0]
+[loc K -.4 0]
+[loc F .4 0]
+[loc L .05 -.25981]
+[loc E .1 -.34641]
