@@ -8,7 +8,7 @@ Let [point A] be the given point, and [line BC] the given straigt line. It is re
 [loc A -.05 -0.0866]
 [loc H -.2 0]
 [loc G .2 0]
-[loc K -.4 0]
+[loc K -.6 0]
 [loc F .4 0]
 [loc L .05 -.25981]
 [loc E .1 -.34641]
