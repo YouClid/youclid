@@ -13,8 +13,8 @@ Similarly we can prove that neither is any other point except [point F].
 Therefore the [point F] is the center of the [circle ABC].[step]
 
 [definitions]
-[loc A -0.25 -0.968]
-[loc B 0.25 -0.968]
+[loc A -0.25 -0.433]
+[loc B 0.25 -0.433]
 [loc C 0 0.5]
 [loc D 0 -0.3]
 [loc E 0 -0.5]
