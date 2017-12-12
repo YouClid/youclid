@@ -30,52 +30,45 @@ Specifications
 
 1.  All text that is desired to be parsed MUST be enclosed by BRACKETS. The
     first character MUST be the OPEN BRACKET character, and the last character
-    MUST be the CLOSED BRACKET character. All keywords MUST be enclosed by
-    BRACKETS to be interpreted by the parser.
-2.  Text that is not enclosed by BRACKETS will be treated as normal text.
-3.  In the event that a BRACKET is to be interpreted literally in the text, it
-    MUST be escaped by a BACKSLASH character.
+    MUST be the CLOSED BRACKET character. All keywords MUST be enclosed by the BRACKETS
+    to be interpreted by the parser
+2.  Text that is not enclosed by the BRACKETS will be treated as normal text.
+3.  In the event that a BRACKET is to be interpreted literally in the text,
+    it MUST be escaped by a BACKSLASH character.
 4.  Words inside BRACKETS MUST be separated by a single space.
-5.  The first word inside BRACKETS MUST represent the type of the object to be
-    drawn and MUST be one of the following:
-        - line
-        - circle
-        - center
-        - point
-        - polygon
-        - loc
-        - step
-        - clear
-        - definitions
-6.  The second word inside BRACKETS MUST represent the name of the object and
-    SHALL be the name of the points that define that object, each represented
-    by a single character.
-7.  For the "circle" keyword, the third word inside BRACKETS MUST be
-    "circle=ABC" where ABC MUST be the name of a circle object.
-8.  The "definitions" keyword MUST be used before the "loc" keyword. All "loc"
-    keywords MUST follow immediately after the "definitions" keyword.
-9.  For the "loc" keyword, the third word inside BRACKETS MUST be a floating
-    point number that represents the x coordinate of the point between -1.0 and
-    1.0 inclusive.
-10.  For the "loc" keyword, the forth word inside BRACKETS MUST be a floating
-    point number that represents the y coordinate of the point between -1.0 and
-    1.0 inclusive.
-11. For each point specified, either explicitly by the "point" keyword, or
-    implicitly by using a "line", "circle", "center", or "polygon" keyword,
-    there MUST be a corresponding "loc" keyword to provide coordinates for
-    that point.
-12. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object
-    not be added to the text. For example, if the text was "Let line AB be a
-    given finite straight line", the markup should be "Let [line AB] be a given
-    finite straight line" and not "Let line [line AB] be a given finite
-    straight line", as the later will result in the word "line" being
-    displayed twice.
-13. The user MAY specify steps in the markup, which will represent groups of
-    elements to be displayed together in the frontend. This allows the user to
-    create animated steps in the frontend construction. All elements created
-    between two [step] commands will be displayed together, as will all
-    elements between the start of the file and the first [step] command, as
-    well as all elements between the final step command and the end of the
-    file.
-14. The user MAY use the "clear" keyword as a way to remove all visualization
-    from the screen.
+5.  The first word inside BRACKETS MUST represent the type of the object 
+    and MUST be one of the following:
+        - Line
+        - Circle
+        - Center
+        - Point
+        - Polygon
+        - Loc
+        - Step
+        - Clear
+        - Definitions
+6.  In order to be referenced, an object MUST have a name parameter assigned.
+7.  The second word inside BRACKETS MAY represent the name of the object and
+    SHALL be the name of the points that define that object, each represented by a single character.
+8.  If an name is defined through a keyword, the name SHALL NOT be parsed into points.
+9.  All arguments to an object MUST be keyword arguments, excluding the name and type.
+10. For the “center” keyword, the third word inside the BRACKETS MUST be “circle=ABC” 
+    where ABC MUST be the name of the circle object.
+11. For the “loc” keyword, the third word inside BRACKETS MUST be a floating point
+    number that represents the x coordinate of the point between -1.0 and 1.0 inclusive.
+12. For the “loc” keyword, the fourth word inside BRACKETS MUST be a floating point number
+    that represents the y coordinate of the point between -1.0 and 1.0 inclusive.
+13. For each point specified, either explicitly by the “point” keyword, or implicitly 
+    by using a “line”, “circle”, “center”, or “polygon” keyword, there MUST be a corresponding
+    “loc” keyword to provide coordinates for that point.
+14. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object not be added to the text.
+     For example, if the text was “Let line AB a given finite straight line”, the markup should be
+    “Let [line AB] be a given finite straight line” and not “Let line [line AB] be a give finite straight line”,
+    as the latter will result in the word “line” being  displayed twice.
+15. The user MAY specify steps in the markup which will represent groups of elements to be displayed
+    together in the frontend. This allows the user to create animated steps in the frontend construction.
+     All elements created between two [step] commands will be displayed together, and in every subsequent [step] command.
+16. The user MAY use the “clear” keyword as a way to remove all visualization from the screen.
+17. The user MAY use the “hidden” keyword to not have the object be added to the text.
+18. The user MAY use the “text” keyword to replace the default text that will be placed for the object.
+    For example, “[Line AB text=”line 1”]” Will place the text “line 1”, instead of “Line AB” in the output text.
