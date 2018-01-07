@@ -2,7 +2,7 @@ import unittest
 import youclidbackend
 
 
-class TestStringMethods(unittest.TestCase):
+class TestParser(unittest.TestCase):
 
     def test_extract(self):
         """Ensure that we extract the correct things"""
