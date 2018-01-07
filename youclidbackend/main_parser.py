@@ -3,7 +3,7 @@
 import argparse
 import re
 import json
-import primitives
+from . import primitives
 from pprint import pprint
 
 polygons = {3: "Triangle",
@@ -51,6 +51,13 @@ class _Clear():
     """
     pass
 
+def extract(text):
+    # Regular expression to match any instance of our markup. The idea is as
+    # follows: First use a negative look behind to make sure the bracket that
+    # we're trying to match wasn't escaped, then match a bracket, then match
+    # as many characters as possible until the next unescaped bracket.
+    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
+    return re.finditer(regex, text)
 
 def parse(text):
     parsers = CaseInsensitiveDictionary({
@@ -69,16 +76,10 @@ def parse(text):
     # Ojbects that we've added at this step
     curr_step = []
 
-    # Regular expression to match any instance of our markup. The idea is as
-    # follows: First use a negative look behind to make sure the bracket that
-    # we're trying to match wasn't escaped, then match a bracket, then match
-    # as many characters as possible until the next unescaped bracket.
-    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
-
     # Iterate over all matches in the text
-    for match in re.finditer(regex, text):
+    for match in extract(text):
         # Get the dictionary of name and unnamed arguments
-        args_dict, args_list = _parse_match(match)
+        args_dict, args_list = _parse_match(match[1])
 
         try:
             f = parsers[args_dict["type"]]
@@ -115,14 +116,12 @@ def parse(text):
     return create_output(obj_dict, text, animations)
 
 
-def _parse_match(match):
+def _parse_match(whole_match):
     # Dictionary of named arguments
     args_dict = {}
     # List of non-named arguments (excluding the name)
     args_list = []
 
-    # The entirety of the match
-    whole_match = match[1]
     # Split the match up by spaces
     partials = whole_match.split()
 
