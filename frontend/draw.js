@@ -42,10 +42,12 @@ function init() {
 
     let canvas = document.createElement('canvas')
     document.body.appendChild( canvas )
+
     canvas.width = UIState.size
     canvas.height = UIState.size
-    
+
     let gl = canvas.getContext('webgl')
+    
     let program = initShaders(gl, vertexShader, fragmentShader)
     gl.program = program
     gl.useProgram(program)
@@ -55,12 +57,13 @@ function init() {
     UIState.glData = new Float32Array(1024)
 
     UIState.gl = gl
-    
     UIState.canvasRect = canvas.getBoundingClientRect()
 
+    gl.lineWidth(1.5)
 
     // Register listeners
     document.addEventListener( 'mousemove', onMouseMove, false );
+    window.addEventListener( 'resize', onResize, false );
     
     mainLoop()
 }
@@ -77,7 +80,7 @@ function mainLoop() {
 	UIState.drawn[prop] = false
     }
 
-    requestAnimationFrame(mainLoop)
+    // requestAnimationFrame(mainLoop)
 }
 
 function isHot(name) {
@@ -204,7 +207,22 @@ function onMouseMove( event ) {
     if(xgood && ygood) {
 	UIState.mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
 	UIState.mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
+
+	mainLoop()
     }
+}
+
+function onResize( event ) {
+    UIState.canvasRect = UIState.gl.canvas.getBoundingClientRect()
+    UIState.size = Math.min(window.innerWidth*0.65, window.innerHeight)
+    let realToCSSPixels = window.devicePixelRatio
+    let drawSize = math.floor(UIState.size * realToCSSPixels)
+    UIState.gl.canvas.clientWidth  =  UIState.size
+    UIState.gl.canvas.clientHeight =  UIState.size
+    UIState.gl.canvas.width  =  drawSize
+    UIState.gl.canvas.height =  drawSize
+    UIState.gl.viewport(0, 0, UIState.size, UIState.size)
+    mainLoop()
 }
 
 /*************************************
@@ -331,6 +349,7 @@ function drawLine(ident, p1, p2, color) {
 
     
     let gl = UIState.gl
+    
     let data = UIState.glData
 
     let FSIZE = data.BYTES_PER_ELEMENT
@@ -407,6 +426,11 @@ function drawCircle(ident, center, radius, color) {
 
     
     let gl = UIState.gl
+
+    if(UIState.glData.length < (points.length * 8)) {
+	UIState.glData = new Float32Array(points.length * 8)
+    }
+    
     let data = UIState.glData
 
     let FSIZE = data.BYTES_PER_ELEMENT
@@ -458,6 +482,11 @@ function drawPoly(ident, points, color) {
 
     
     let gl = UIState.gl
+
+    if(UIState.glData.length < (points.length * 8)) {
+	UIState.glData = new Float32Array(points.length * 8)
+    }
+	
     let data = UIState.glData
 
     let FSIZE = data.BYTES_PER_ELEMENT
