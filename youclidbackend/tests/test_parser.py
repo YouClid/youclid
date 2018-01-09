@@ -131,24 +131,35 @@ class TestParser(unittest.TestCase):
                                      })
 
     def test_parse_line(self):
+        """Test the line parser function"""
         pass
 
     def test_parse_circle(self):
+        """Test the circle parser function"""
         pass
 
     def test_parse_center(self):
+        """Test the center parser function"""
         pass
 
     def test_parse_polygon(self):
+        """Test the polygon parser function"""
         pass
 
     def test_parse_location(self):
+        """Test the location parser function"""
         pass
 
     def test_parse_step(self):
+        """Test the step parser function"""
         pass
 
     def test_parse_clear(self):
+        """Test the clear parser function"""
+        pass
+
+    def test_create_output(self):
+        """Test the function that creates the intermediate representation"""
         pass
 
 
