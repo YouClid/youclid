@@ -5,10 +5,68 @@ import youclidbackend
 class TestParser(unittest.TestCase):
 
     def test_extract(self):
-        """Ensure that we extract the correct things"""
-        pass
+        """Ensure that the parser extracts just our markup"""
+
+        # Test basic extraction
+        text = "[point A]"
+        extracted = [x.group(0) for x in
+                     list(youclidbackend.main_parser.extract(text))]
+        self.assertEqual(extracted, ['[point A]'])
+
+        # Test multiple elements on the same line
+        text = "[point A][circle ABC]"
+        extracted = [x.group(0) for x in
+                     list(youclidbackend.main_parser.extract(text))]
+        self.assertEqual(extracted, ["[point A]", "[circle ABC]"])
+
+        # Test text interspersed with markup
+        text = "[point A]"\
+               "[circle ABC]"\
+               "This is some text with a reference to [point A]."\
+               "This is some text with a reference to [circle name=ABC]."\
+               "[step]"
+        extracted = [x.group(0) for x in
+                     list(youclidbackend.main_parser.extract(text))]
+        self.assertEqual(extracted, ["[point A]",
+                                     "[circle ABC]",
+                                     "[point A]",
+                                     "[circle name=ABC]",
+                                     "[step]"])
+
+        # Test what should be none of our markup
+        text = "\[This should just be some text\]"
+        extracted = list(youclidbackend.main_parser.extract(text))
+        self.assertEqual(extracted, [])
+
+        # Test everything that we support
+        text = "\[This should just be some text\]"\
+               "[circle ABC] [center D circle=ABC]"\
+               "[line AB]"\
+               "[point D]"\
+               "[polygon ABCD]"\
+               "[loc A 0 0]"\
+               "[step]"\
+               "[clear]"
+        extracted = [x.group(0) for x in
+                     list(youclidbackend.main_parser.extract(text))]
+        self.assertEqual(extracted, ["[circle ABC]",
+                                     "[center D circle=ABC]",
+                                     "[line AB]",
+                                     "[point D]",
+                                     "[polygon ABCD]",
+                                     "[loc A 0 0]",
+                                     "[step]",
+                                     "[clear]"])
+
+        # Test using a ] in an element name
+        text = "[circle name=myname\]]"
+        extracted = [x.group(0) for x in
+                     list(youclidbackend.main_parser.extract(text))]
+        self.assertEqual(extracted, ["[circle name=myname\]]"])
 
     def test_parse_match(self):
+        """TODO: Is this needed? Maybe just test that we call the
+        right function?"""
         pass
 
     def test_parse_point(self):
