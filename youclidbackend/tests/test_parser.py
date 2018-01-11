@@ -67,11 +67,6 @@ class TestParser(unittest.TestCase):
     def test_parse_match(self):
         """TODO: Is this needed? Maybe just test that we call the
         right function?"""
-        pass
-
-    def test_parse_point(self):
-        """Test the point parser function"""
-
         # Test basic single letter name
         text = "[point A]"
         for match in youclidbackend.main_parser.extract(text):
@@ -120,6 +115,7 @@ class TestParser(unittest.TestCase):
                                       'type': 'point'
                                      })
 
+        """
         # Test keyword argument for name with multiple letters
         text = "[point name=\"mypoint with spaces\"]"
         for match in youclidbackend.main_parser.extract(text):
@@ -129,6 +125,72 @@ class TestParser(unittest.TestCase):
                                       'name': 'mypoint with spaces',
                                       'type': 'point'
                                      })
+        """
+
+        # Test non-keyword arguments
+        text = "[point A hidden somethingelse]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden", "somethingelse"])
+            self.assertEqual(kwargs, {
+                                      'name': 'A',
+                                      'type': 'point'
+                                     })
+
+        # Test the line extraction
+        text = "[line AB]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'AB',
+                                      'type': 'line'
+                                     })
+
+        # Test line extraction with a name
+        text = "[line AB name=test]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'test',
+                                      'type': 'line'
+                                     })
+
+        text = "[line name=test]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'test',
+                                      'type': 'line'
+                                     })
+
+        # TODO: I'm not sure if this is how we will do this; it may change
+        text = "[line name=test p1=A p2=B]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'test',
+                                      'type': 'line',
+                                      'p1': 'A',
+                                      'p2': 'B'
+                                     })
+
+        # Test non-keyword arguments
+        text = "[line AB hidden]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'AB',
+                                      'type': 'line'
+                                     })
+
+    def test_parse_point(self):
+        """Test the point parser function"""
+        pass
 
     def test_parse_line(self):
         """Test the line parser function"""
@@ -158,8 +220,8 @@ class TestParser(unittest.TestCase):
         """Test the clear parser function"""
         pass
 
-    def test_create_output(self):
-        """Test the function that creates the intermediate representation"""
+    def test_intermediate_representation(self):
+        """Test that we generate the correct intermediate representation"""
         pass
 
 
