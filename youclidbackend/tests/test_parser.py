@@ -65,8 +65,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(extracted, ["[circle name=myname\]]"])
 
     def test_parse_match(self):
-        """TODO: Is this needed? Maybe just test that we call the
-        right function?"""
+        """Test that we extract attributes of vaious elements correctly"""
+
         # Test basic single letter name
         text = "[point A]"
         for match in youclidbackend.main_parser.extract(text):
@@ -156,7 +156,6 @@ class TestParser(unittest.TestCase):
                                       'name': 'test',
                                       'type': 'line'
                                      })
-
         text = "[line name=test]"
         for match in youclidbackend.main_parser.extract(text):
             kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
@@ -222,6 +221,10 @@ class TestParser(unittest.TestCase):
 
     def test_intermediate_representation(self):
         """Test that we generate the correct intermediate representation"""
+        pass
+
+    def test_html_generation(self):
+        """TODO: Maybe we want to do this?"""
         pass
 
 
