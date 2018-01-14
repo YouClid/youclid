@@ -115,8 +115,6 @@ class TestParser(unittest.TestCase):
                                       'type': 'point'
                                      })
 
-        # TODO: Uncomment this
-        """
         # Test keyword argument for name with multiple letters
         text = "[point name=\"mypoint with spaces\"]"
         for match in youclidbackend.main_parser.extract(text):
@@ -126,7 +124,6 @@ class TestParser(unittest.TestCase):
                                       'name': 'mypoint with spaces',
                                       'type': 'point'
                                      })
-        """
 
         # Test non-keyword arguments
         text = "[point A hidden somethingelse]"
@@ -198,6 +195,15 @@ class TestParser(unittest.TestCase):
                                       'type': 'circle'
                                      })
 
+        text = "[circle name=ABC]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'ABC',
+                                      'type': 'circle'
+                                     })
+
         # Test circle extraction with center
         text = "[circle ABC center=D]"
         for match in youclidbackend.main_parser.extract(text):
@@ -218,12 +224,8 @@ class TestParser(unittest.TestCase):
                                       'name': 'ABC',
                                       'type': 'circle',
                                       'center': 'E',
-                                      'radius': '10'  # TODO: Make this an int?
+                                      'radius': '10'
                                      })
-            # TODO: One of the arguments for not making the radius an int is
-            # that it could allow us to do something line radius=AB, and not
-            # give it a specific value, although making numbers an int and
-            # keeping the letters as a string is obviously an option too
 
         # Test circle extraction with center and radius and named keyword
         text = "[circle name=XYZ center=L radius=1]"
@@ -237,8 +239,6 @@ class TestParser(unittest.TestCase):
                                       'radius': '1'
                                      })
 
-        # TODO: Uncomment this
-        """
         # Test circle extraction spaces in name
         text = "[circle name=\"My circle\" center=\"My point\" radius=1]"
         for match in youclidbackend.main_parser.extract(text):
@@ -250,7 +250,145 @@ class TestParser(unittest.TestCase):
                                       'center': 'My point',
                                       'radius': '1'
                                      })
-        """
+
+        # Test circle extraction with center and radius and named keyword
+        text = "[circle name=XYZ hidden]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'XYZ',
+                                      'type': 'circle'
+                                     })
+
+        # Test circle extraction with center and radius and named keyword, with
+        # the order of hidden and name switched
+        # TODO: This unittest breaks, presumably because it thinks that the
+        # name is "hidden"
+        text = "[circle hidden name=XYZ]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'XYZ',
+                                      'type': 'circle'
+                                     })
+
+        # Test center extraction
+        text = "[center A circle=BCD]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'A',
+                                      'type': 'center',
+                                      'circle': 'BCD'
+                                     })
+
+        # Test center extraction
+        text = "[center A hidden circle=BCD]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'A',
+                                      'type': 'center',
+                                      'circle': 'BCD'
+                                     })
+
+        # Test center extraction with named keyword argument
+        text = "[center name=\"Center BCD\" circle=BCD]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'Center BCD',
+                                      'type': 'center',
+                                      'circle': 'BCD'
+                                     })
+
+        # Test basic polygon extraction
+        text = "[polygon ABCD]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'ABCD',
+                                      'type': 'polygon'
+                                     })
+
+        # Test basic polygon extraction with keyword name
+        text = "[polygon name=EFGH]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'EFGH',
+                                      'type': 'polygon'
+                                     })
+
+        # Test basic polygon extraction with keyword name
+        text = "[polygon name=vbce hidden]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'vbce',
+                                      'type': 'polygon'
+                                     })
+
+        # Test basic polygon extraction with keyword name and spaces in name
+        text = "[polygon name=\"My polygon\" hidden]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ["hidden"])
+            self.assertEqual(kwargs, {
+                                      'name': 'My polygon',
+                                      'type': 'polygon'
+                                     })
+
+        text = "[loc A 0 0]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ['0', '0'])
+            self.assertEqual(kwargs, {
+                                      'name': 'A',
+                                      'type': 'loc'
+                                     })
+
+        text = "[loc test 2 2]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ['2', '2'])
+            self.assertEqual(kwargs, {
+                                      'name': 'test',
+                                      'type': 'loc'
+                                     })
+
+        text = "[loc \"Name with spaces\" 2 2]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, ['2', '2'])
+            self.assertEqual(kwargs, {
+                                      'name': 'Name with spaces',
+                                      'type': 'loc'
+                                     })
+
+        text = "[step]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'type': 'step'
+                                     })
+
+        text = "[clear]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'type': 'clear'
+                                     })
 
     def test_parse_point(self):
         """Test the point parser function"""
