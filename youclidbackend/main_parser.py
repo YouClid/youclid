@@ -307,8 +307,7 @@ def parse_point(keyword_args, list_args):
         obj_dict[name] = point
     else:
         point = obj_dict.get(name)
-
-    ret.append(point)
+        ret.append(point)
     return ret
 
 

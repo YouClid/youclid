@@ -115,6 +115,17 @@ class TestParser(unittest.TestCase):
                                       'type': 'point'
                                      })
 
+        # Test keyword argument for name with an escaped bracket
+        # TODO: How do we handle this; does the name have the backslash in it?
+        text = "[point name=mypoint\]]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'mypoint]',
+                                      'type': 'point'
+                                     })
+
         # Test keyword argument for name with multiple letters
         text = "[point name=\"mypoint with spaces\"]"
         for match in youclidbackend.main_parser.extract(text):
@@ -264,7 +275,7 @@ class TestParser(unittest.TestCase):
         # Test circle extraction with center and radius and named keyword, with
         # the order of hidden and name switched
         # TODO: This unittest breaks, presumably because it thinks that the
-        # name is "hidden"
+        # name is "hidden"; do we do anything about this?
         text = "[circle hidden name=XYZ]"
         for match in youclidbackend.main_parser.extract(text):
             kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
@@ -392,7 +403,43 @@ class TestParser(unittest.TestCase):
 
     def test_parse_point(self):
         """Test the point parser function"""
-        pass
+
+        # [point A]
+        arglist = []
+        kwargs = {
+                  'name': 'A',
+                  'type': 'point'
+                 }
+        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
+                                                                arglist),
+                         [youclidbackend.primitives.Point("A")])
+
+        # [point A], with point A existing already
+        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
+                                                                arglist),
+                         [youclidbackend.primitives.Point("A")])
+
+        # [point mypoint]
+        arglist = []
+        kwargs = {
+                  'name': 'mypoint',
+                  'type': 'point'
+                 }
+        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
+                                                                arglist),
+                         [youclidbackend.primitives.Point("mypoint")])
+
+        # [point strange_char3cter!_in\[_here]
+        arglist = []
+        kwargs = {
+                  'name': 'strange_char3cter!_in\[_here',
+                  'type': 'point'
+                 }
+        # TODO: What do we do about a bracket in a name?
+        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
+                                                                arglist),
+                         [youclidbackend.primitives.Point(
+                            "strange_char3cter!_in\[_here")])
 
     def test_parse_line(self):
         """Test the line parser function"""
