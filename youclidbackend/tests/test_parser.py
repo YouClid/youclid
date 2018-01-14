@@ -115,6 +115,7 @@ class TestParser(unittest.TestCase):
                                       'type': 'point'
                                      })
 
+        # TODO: Uncomment this
         """
         # Test keyword argument for name with multiple letters
         text = "[point name=\"mypoint with spaces\"]"
@@ -186,6 +187,70 @@ class TestParser(unittest.TestCase):
                                       'name': 'AB',
                                       'type': 'line'
                                      })
+
+        # Test circle extraction
+        text = "[circle ABC]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'ABC',
+                                      'type': 'circle'
+                                     })
+
+        # Test circle extraction with center
+        text = "[circle ABC center=D]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'ABC',
+                                      'type': 'circle',
+                                      'center': 'D'
+                                     })
+
+        # Test circle extraction with center and radius
+        text = "[circle ABC center=E radius=10]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'ABC',
+                                      'type': 'circle',
+                                      'center': 'E',
+                                      'radius': '10'  # TODO: Make this an int?
+                                     })
+            # TODO: One of the arguments for not making the radius an int is
+            # that it could allow us to do something line radius=AB, and not
+            # give it a specific value, although making numbers an int and
+            # keeping the letters as a string is obviously an option too
+
+        # Test circle extraction with center and radius and named keyword
+        text = "[circle name=XYZ center=L radius=1]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'XYZ',
+                                      'type': 'circle',
+                                      'center': 'L',
+                                      'radius': '1'
+                                     })
+
+        # TODO: Uncomment this
+        """
+        # Test circle extraction spaces in name
+        text = "[circle name=\"My circle\" center=\"My point\" radius=1]"
+        for match in youclidbackend.main_parser.extract(text):
+            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
+            self.assertEqual(arglist, [])
+            self.assertEqual(kwargs, {
+                                      'name': 'My circle',
+                                      'type': 'circle',
+                                      'center': 'My point',
+                                      'radius': '1'
+                                     })
+        """
 
     def test_parse_point(self):
         """Test the point parser function"""
