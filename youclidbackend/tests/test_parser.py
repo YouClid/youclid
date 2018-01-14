@@ -404,6 +404,10 @@ class TestParser(unittest.TestCase):
     def test_parse_point(self):
         """Test the point parser function"""
 
+        # Reset the object dictionary, since there are tests that could have
+        # been run before this one
+        youclidbackend.main_parser.obj_dict = {}
+
         # [point A]
         arglist = []
         kwargs = {
@@ -443,7 +447,87 @@ class TestParser(unittest.TestCase):
 
     def test_parse_line(self):
         """Test the line parser function"""
-        pass
+
+        # Reset the object dictionary, since there are tests that could have
+        # been run before this one
+        youclidbackend.main_parser.obj_dict = {}
+
+        # [line AB] with nothing existing
+        arglist = []
+        kwargs = {
+                  'name': 'AB',
+                  'type': 'line'
+                 }
+        line_AB = youclidbackend.primitives.Line("AB")
+        point_A = youclidbackend.primitives.Point("A")
+        point_B = youclidbackend.primitives.Point("B")
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_AB, point_A, point_B])
+
+        # [line AB] with everything existing
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_AB, point_A, point_B])
+
+        # [line name=my_line p1=A p2=B] with A and B existing
+        arglist = []
+        kwargs = {
+                  'name': 'my_line',
+                  'type': 'line',
+                  'p1': 'A',
+                  'p2': 'B'
+                 }
+        # TODO: Is this how we want to do this? Do we want to pass the objects?
+        line_my_line = youclidbackend.primitives.Line("my_line",
+                                                      p1="A",
+                                                      p2="B")
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_my_line, point_A, point_B])
+
+        # [line name=your_line p1=B p2=D] with nothing existing
+        arglist = []
+        kwargs = {
+                  'name': 'my_line',
+                  'type': 'line',
+                  'p1': 'B',
+                  'p2': 'D'
+                 }
+        line_your_line = youclidbackend.primitives.Line("your_line",
+                                                        p1="B",
+                                                        p2="D")
+        point_D = youclidbackend.primitives.Point("D")
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_my_line, point_B, point_D])
+
+        # [line AB hidden] with everything existing
+        arglist = ["hidden"]
+        kwargs = {
+                  'name': 'my_line',
+                  'type': 'line',
+                  'p1': 'A',
+                  'p2': 'B'
+                 }
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_AB, point_A, point_B])
+
+        # [line XY hidden] with nothing existing
+        arglist = ["hidden"]
+        kwargs = {
+                  'name': 'XY',
+                  'type': 'line',
+                  'p1': 'X',
+                  'p2': 'Y'
+                 }
+        point_X = youclidbackend.primitives.Point("X")
+        point_Y = youclidbackend.primitives.Point("Y")
+        line_XY = youclidbackend.primitives.Line("XY")
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
+                                                               arglist),
+                         [line_XY, point_X, point_Y])
 
     def test_parse_circle(self):
         """Test the circle parser function"""
