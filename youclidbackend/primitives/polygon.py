@@ -5,7 +5,7 @@ class Polygon:
         self.points = None
 
     def __str__(self):
-        ret =  "Polygon %s(" % (str(self.name))
+        ret = "Polygon %s(" % (str(self.name))
         for i in self.points:
             ret += str(i) + ", "
         ret = ret[:-3]
@@ -13,7 +13,7 @@ class Polygon:
         return ret
 
     def __repr__(self):
-        ret =  "Polygon %s(" % (str(self.name))
+        ret = "Polygon %s(" % (str(self.name))
         for i in self.points:
             ret += str(i) + ", "
         ret = ret[:-3]

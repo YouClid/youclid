@@ -13,11 +13,13 @@ polygons = {3: "Triangle",
 
 obj_dict = {}
 
+
 class CaseInsensitiveDictionary(dict):
     def __init__(self, d=None):
         self.d = {}
         if d is not None:
-            self.d = {key.lower() if type(key) is str else key: d[key] for key in d}
+            self.d = {key.lower() if type(key) is str else key: d[key]
+                      for key in d}
 
     def __getitem__(self, key):
         if type(key) == str:
@@ -51,6 +53,7 @@ class _Clear():
     """
     pass
 
+
 def extract(text):
     # Regular expression to match any instance of our markup. The idea is as
     # follows: First use a negative look behind to make sure the bracket that
@@ -58,6 +61,7 @@ def extract(text):
     # as many characters as possible until the next unescaped bracket.
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     return re.finditer(regex, text)
+
 
 def parse(text):
     parsers = CaseInsensitiveDictionary({
@@ -204,7 +208,8 @@ def get_text(match):
     else:
         obj_type = match[0]
     span_name = "text_%s_%s" % (type(obj).__name__.lower(), obj.name)
-    return " <span name=%s style='background-color: #dddddd'>%s %s</span>" % (span_name, obj_type, match[1])
+    return (" <span name=%s style='background-color: #dddddd'>%s %s</span>" %
+            (span_name, obj_type, match[1]))
 
 
 def parse_line(keyword_args, list_args):
@@ -402,9 +407,13 @@ def rotate_lex(l):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate html from .yc files")
+    parser = argparse.ArgumentParser(
+        description="Generate html from .yc files")
     parser.add_argument("path", type=str, help="Path to .yc file")
-    parser.add_argument("-o", "--output",  type=str, help="Path to output html file")
+    parser.add_argument("-o",
+                        "--output",
+                        type=str,
+                        help="Path to output html file")
     args = parser.parse_args()
 
     with open(args.path) as f:
