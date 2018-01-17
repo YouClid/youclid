@@ -83,7 +83,7 @@ def parse(text):
     # Iterate over all matches in the text
     for match in extract(text):
         # Get the dictionary of name and unnamed arguments
-        args_dict, args_list = _parse_match(match[1])
+        args_dict = _parse_match(match[1])
 
         try:
             f = parsers[args_dict["type"]]
@@ -91,7 +91,7 @@ def parse(text):
             # TODO Print a nice error message
             raise e
         # Call the appropriate parser function
-        obj = f(args_dict, args_list)
+        obj = f(args_dict)
 
         # Now we need to handle the return value
 
@@ -123,8 +123,6 @@ def parse(text):
 def _parse_match(whole_match):
     # Dictionary of named arguments
     args_dict = {}
-    # List of non-named arguments (excluding the name)
-    args_list = []
 
     # Split the match up by spaces
     partials = whole_match.split()
@@ -149,9 +147,10 @@ def _parse_match(whole_match):
             args_dict[key] = value
         # Otherwise, it's a non-named argument so add it to the list
         else:
-            args_list.append(keyword_arg)
+            # TODO: We need to do something about the loc keyword
+            args_dict[keyword_arg] = True
 
-    return args_dict, args_list
+    return args_dict
 
 
 def create_output(d, text, animations):
@@ -212,7 +211,7 @@ def get_text(match):
             (span_name, obj_type, match[1]))
 
 
-def parse_line(keyword_args, list_args):
+def parse_line(keyword_args):
     name = rotate_lex(keyword_args["name"])
     point_list = []
     ret = []
@@ -238,7 +237,7 @@ def parse_line(keyword_args, list_args):
     return ret
 
 
-def parse_circle(keyword_args, list_args):
+def parse_circle(keyword_args):
     """Creates a circle object from the given parameters"""
 
     # Objects that we have created in this parse function, for display purposes
@@ -251,7 +250,6 @@ def parse_circle(keyword_args, list_args):
         # TODO: We need to figure out what to do here. IE: do we just update
         # parameters? What if the update affects other objects? Do we not
         # update anything?
-        # TODO: Parse the other list_args
         pass
     else:
         circle = primitives.Circle(name)
@@ -298,7 +296,7 @@ def parse_circle(keyword_args, list_args):
     return ret
 
 
-def parse_point(keyword_args, list_args):
+def parse_point(keyword_args):
     name = keyword_args["name"]
     ret = []
     if obj_dict.get(name) is None:
@@ -311,7 +309,7 @@ def parse_point(keyword_args, list_args):
     return ret
 
 
-def parse_center(keyword_args, list_args):
+def parse_center(keyword_args):
     # ASSUME CIRCLE ALREADY EXISTS
     name = keyword_args["name"]
     circle = keyword_args["circle"]
@@ -330,7 +328,7 @@ def parse_center(keyword_args, list_args):
     return ret
 
 
-def parse_polygon(keyword_args, list_args):
+def parse_polygon(keyword_args):
     name = ''.join(rotate_lex(keyword_args['name']))
     point_list = []
     ret = []
@@ -354,7 +352,7 @@ def parse_polygon(keyword_args, list_args):
     return ret
 
 
-def parse_location(keyword_args, list_args):
+def parse_location(keyword_args):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
     x = float(list_args[0])
@@ -371,11 +369,11 @@ def parse_location(keyword_args, list_args):
     return None
 
 
-def parse_step(keyword_args, list_args):
+def parse_step(keyword_args):
     return _Step()
 
 
-def parse_clear(keyword_args, list_args):
+def parse_clear(keyword_args):
     return _Clear()
 
 

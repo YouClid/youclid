@@ -1,23 +1,28 @@
 import unittest
+import inspect
 import youclidbackend
 
 
 class TestParser(unittest.TestCase):
+
+    def subtest_extract(self, text, parse_list):
+        with self.subTest(text=text, parse_list=parse_list):
+            extracted = [x.group(0) for x in
+                         list(youclidbackend.main_parser.extract(text))]
+            self.assertEqual(extracted, parse_list)
 
     def test_extract(self):
         """Ensure that the parser extracts just our markup"""
 
         # Test basic extraction
         text = "[point A]"
-        extracted = [x.group(0) for x in
-                     list(youclidbackend.main_parser.extract(text))]
-        self.assertEqual(extracted, ['[point A]'])
+        parse_list = ['[point A]']
+        self.subtest_extract(text, parse_list)
 
         # Test multiple elements on the same line
         text = "[point A][circle ABC]"
-        extracted = [x.group(0) for x in
-                     list(youclidbackend.main_parser.extract(text))]
-        self.assertEqual(extracted, ["[point A]", "[circle ABC]"])
+        parse_list = ["[point A]", "[circle ABC]"]
+        self.subtest_extract(text, parse_list)
 
         # Test text interspersed with markup
         text = "[point A]"\
@@ -25,18 +30,17 @@ class TestParser(unittest.TestCase):
                "This is some text with a reference to [point A]."\
                "This is some text with a reference to [circle name=ABC]."\
                "[step]"
-        extracted = [x.group(0) for x in
-                     list(youclidbackend.main_parser.extract(text))]
-        self.assertEqual(extracted, ["[point A]",
-                                     "[circle ABC]",
-                                     "[point A]",
-                                     "[circle name=ABC]",
-                                     "[step]"])
+        parse_list = ["[point A]",
+                      "[circle ABC]",
+                      "[point A]",
+                      "[circle name=ABC]",
+                      "[step]"]
+        self.subtest_extract(text, parse_list)
 
         # Test what should be none of our markup
         text = "\[This should just be some text\]"
-        extracted = list(youclidbackend.main_parser.extract(text))
-        self.assertEqual(extracted, [])
+        parse_list = []
+        self.subtest_extract(text, parse_list)
 
         # Test everything that we support
         text = "\[This should just be some text\]"\
@@ -47,359 +51,310 @@ class TestParser(unittest.TestCase):
                "[loc A 0 0]"\
                "[step]"\
                "[clear]"
-        extracted = [x.group(0) for x in
-                     list(youclidbackend.main_parser.extract(text))]
-        self.assertEqual(extracted, ["[circle ABC]",
-                                     "[center D circle=ABC]",
-                                     "[line AB]",
-                                     "[point D]",
-                                     "[polygon ABCD]",
-                                     "[loc A 0 0]",
-                                     "[step]",
-                                     "[clear]"])
+        parse_list = ["[circle ABC]",
+                      "[center D circle=ABC]",
+                      "[line AB]",
+                      "[point D]",
+                      "[polygon ABCD]",
+                      "[loc A 0 0]",
+                      "[step]",
+                      "[clear]"]
+        self.subtest_extract(text, parse_list)
 
         # Test using a ] in an element name
         text = "[circle name=myname\]]"
-        extracted = [x.group(0) for x in
-                     list(youclidbackend.main_parser.extract(text))]
-        self.assertEqual(extracted, ["[circle name=myname\]]"])
+        parse_list = ["[circle name=myname\]]"]
+        self.subtest_extract(text, parse_list)
+
+    def subtest_parse_match(self, text, kwargs):
+        for match in youclidbackend.main_parser.extract(text):
+            with self.subTest(text=text, kwargs=kwargs):
+                parsed = youclidbackend.main_parser._parse_match(match[1])
+                self.assertEqual(parsed, kwargs)
 
     def test_parse_match(self):
         """Test that we extract attributes of vaious elements correctly"""
 
         # Test basic single letter name
         text = "[point A]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
+
         text = "[point B]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'B',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'B',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
+
         # Test multiple character name
         text = "[point hello]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'hello',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'hello',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Keyword argument tests
 
         # Test keyword argument for name with single letter
         text = "[point name=A]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
+
         # Test keyword argument for name with multiple letters
         text = "[point name=mypoint]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'mypoint',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'mypoint',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test keyword argument for name with an escaped bracket
         # TODO: How do we handle this; does the name have the backslash in it?
         text = "[point name=mypoint\]]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'mypoint]',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'mypoint]',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test keyword argument for name with multiple letters
         text = "[point name=\"mypoint with spaces\"]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'mypoint with spaces',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'mypoint with spaces',
+                  'type': 'point'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test non-keyword arguments
         text = "[point A hidden somethingelse]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden", "somethingelse"])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'point'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'point',
+                  'hidden': True,
+                  'somethingelse': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test the line extraction
         text = "[line AB]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'AB',
-                                      'type': 'line'
-                                     })
+        kwargs = {
+                  'name': 'AB',
+                  'type': 'line'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test line extraction with a name
         text = "[line AB name=test]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'test',
-                                      'type': 'line'
-                                     })
+        kwargs = {
+                  'name': 'test',
+                  'type': 'line'
+                 }
+        self.subtest_parse_match(text, kwargs)
+
         text = "[line name=test]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'test',
-                                      'type': 'line'
-                                     })
+        kwargs = {
+                  'name': 'test',
+                  'type': 'line'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # TODO: I'm not sure if this is how we will do this; it may change
         text = "[line name=test p1=A p2=B]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'test',
-                                      'type': 'line',
-                                      'p1': 'A',
-                                      'p2': 'B'
-                                     })
+        kwargs = {
+                  'name': 'test',
+                  'type': 'line',
+                  'p1': 'A',
+                  'p2': 'B'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test non-keyword arguments
         text = "[line AB hidden]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'AB',
-                                      'type': 'line'
-                                     })
+        kwargs = {
+                  'name': 'AB',
+                  'type': 'line',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction
         text = "[circle ABC]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'ABC',
-                                      'type': 'circle'
-                                     })
+        kwargs = {
+                  'name': 'ABC',
+                  'type': 'circle'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         text = "[circle name=ABC]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'ABC',
-                                      'type': 'circle'
-                                     })
+        kwargs = {
+                  'name': 'ABC',
+                  'type': 'circle'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center
         text = "[circle ABC center=D]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'ABC',
-                                      'type': 'circle',
-                                      'center': 'D'
-                                     })
+        kwargs = {
+                  'name': 'ABC',
+                  'type': 'circle',
+                  'center': 'D'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius
         text = "[circle ABC center=E radius=10]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'ABC',
-                                      'type': 'circle',
-                                      'center': 'E',
-                                      'radius': '10'
-                                     })
+        kwargs = {
+                  'name': 'ABC',
+                  'type': 'circle',
+                  'center': 'E',
+                  'radius': '10'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius and named keyword
         text = "[circle name=XYZ center=L radius=1]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'XYZ',
-                                      'type': 'circle',
-                                      'center': 'L',
-                                      'radius': '1'
-                                     })
+        kwargs = {
+                  'name': 'XYZ',
+                  'type': 'circle',
+                  'center': 'L',
+                  'radius': '1'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction spaces in name
         text = "[circle name=\"My circle\" center=\"My point\" radius=1]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'My circle',
-                                      'type': 'circle',
-                                      'center': 'My point',
-                                      'radius': '1'
-                                     })
+        kwargs = {
+                  'name': 'My circle',
+                  'type': 'circle',
+                  'center': 'My point',
+                  'radius': '1'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius and named keyword
         text = "[circle name=XYZ hidden]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'XYZ',
-                                      'type': 'circle'
-                                     })
+        kwargs = {
+                  'name': 'XYZ',
+                  'type': 'circle',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius and named keyword, with
         # the order of hidden and name switched
         # TODO: This unittest breaks, presumably because it thinks that the
         # name is "hidden"; do we do anything about this?
         text = "[circle hidden name=XYZ]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'XYZ',
-                                      'type': 'circle'
-                                     })
+        kwargs = {
+                  'name': 'XYZ',
+                  'type': 'circle',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test center extraction
         text = "[center A circle=BCD]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'center',
-                                      'circle': 'BCD'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'center',
+                  'circle': 'BCD'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test center extraction
         text = "[center A hidden circle=BCD]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'center',
-                                      'circle': 'BCD'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'center',
+                  'circle': 'BCD',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test center extraction with named keyword argument
         text = "[center name=\"Center BCD\" circle=BCD]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'Center BCD',
-                                      'type': 'center',
-                                      'circle': 'BCD'
-                                     })
+        kwargs = {
+                  'name': 'Center BCD',
+                  'type': 'center',
+                  'circle': 'BCD'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction
         text = "[polygon ABCD]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'ABCD',
-                                      'type': 'polygon'
-                                     })
+        kwargs = {
+                  'name': 'ABCD',
+                  'type': 'polygon'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name
         text = "[polygon name=EFGH]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'name': 'EFGH',
-                                      'type': 'polygon'
-                                     })
+        kwargs = {
+                  'name': 'EFGH',
+                  'type': 'polygon'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name
         text = "[polygon name=vbce hidden]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'vbce',
-                                      'type': 'polygon'
-                                     })
+        kwargs = {
+                  'name': 'vbce',
+                  'type': 'polygon',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name and spaces in name
         text = "[polygon name=\"My polygon\" hidden]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ["hidden"])
-            self.assertEqual(kwargs, {
-                                      'name': 'My polygon',
-                                      'type': 'polygon'
-                                     })
+        kwargs = {
+                  'name': 'My polygon',
+                  'type': 'polygon',
+                  'hidden': True
+                 }
+        self.subtest_parse_match(text, kwargs)
 
+        # TODO: These next 3 tests are broken
         text = "[loc A 0 0]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ['0', '0'])
-            self.assertEqual(kwargs, {
-                                      'name': 'A',
-                                      'type': 'loc'
-                                     })
+        kwargs = {
+                  'name': 'A',
+                  'type': 'loc'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         text = "[loc test 2 2]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ['2', '2'])
-            self.assertEqual(kwargs, {
-                                      'name': 'test',
-                                      'type': 'loc'
-                                     })
+        kwargs = {
+                  'name': 'test',
+                  'type': 'loc'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         text = "[loc \"Name with spaces\" 2 2]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, ['2', '2'])
-            self.assertEqual(kwargs, {
-                                      'name': 'Name with spaces',
-                                      'type': 'loc'
-                                     })
+        kwargs = {
+                  'name': 'Name with spaces',
+                  'type': 'loc'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         text = "[step]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'type': 'step'
-                                     })
+        kwargs = {
+                  'type': 'step'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
         text = "[clear]"
-        for match in youclidbackend.main_parser.extract(text):
-            kwargs, arglist = youclidbackend.main_parser._parse_match(match[1])
-            self.assertEqual(arglist, [])
-            self.assertEqual(kwargs, {
-                                      'type': 'clear'
-                                     })
+        kwargs = {
+                  'type': 'clear'
+                 }
+        self.subtest_parse_match(text, kwargs)
 
     def test_parse_point(self):
         """Test the point parser function"""
@@ -409,41 +364,34 @@ class TestParser(unittest.TestCase):
         youclidbackend.main_parser.obj_dict = {}
 
         # [point A]
-        arglist = []
         kwargs = {
                   'name': 'A',
                   'type': 'point'
                  }
-        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
-                                                                arglist),
-                         [youclidbackend.primitives.Point("A")])
+        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
+                              [youclidbackend.primitives.Point("A")])
 
         # [point A], with point A existing already
-        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
-                                                                arglist),
-                         [youclidbackend.primitives.Point("A")])
+        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
+                              [youclidbackend.primitives.Point("A")])
 
         # [point mypoint]
-        arglist = []
         kwargs = {
                   'name': 'mypoint',
                   'type': 'point'
                  }
-        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
-                                                                arglist),
-                         [youclidbackend.primitives.Point("mypoint")])
+        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
+                              [youclidbackend.primitives.Point("mypoint")])
 
         # [point strange_char3cter!_in\[_here]
-        arglist = []
         kwargs = {
                   'name': 'strange_char3cter!_in\[_here',
                   'type': 'point'
                  }
         # TODO: What do we do about a bracket in a name?
-        self.assertEqual(youclidbackend.main_parser.parse_point(kwargs,
-                                                                arglist),
-                         [youclidbackend.primitives.Point(
-                            "strange_char3cter!_in\[_here")])
+        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
+                              [youclidbackend.primitives.Point(
+                               "strange_char3cter!_in\[_here")])
 
     def test_parse_line(self):
         """Test the line parser function"""
@@ -453,7 +401,6 @@ class TestParser(unittest.TestCase):
         youclidbackend.main_parser.obj_dict = {}
 
         # [line AB] with nothing existing
-        arglist = []
         kwargs = {
                   'name': 'AB',
                   'type': 'line'
@@ -461,17 +408,14 @@ class TestParser(unittest.TestCase):
         line_AB = youclidbackend.primitives.Line("AB")
         point_A = youclidbackend.primitives.Point("A")
         point_B = youclidbackend.primitives.Point("B")
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_AB, point_A, point_B])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_AB, point_A, point_B])
 
         # [line AB] with everything existing
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_AB, point_A, point_B])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_AB, point_A, point_B])
 
         # [line name=my_line p1=A p2=B] with A and B existing
-        arglist = []
         kwargs = {
                   'name': 'my_line',
                   'type': 'line',
@@ -482,12 +426,10 @@ class TestParser(unittest.TestCase):
         line_my_line = youclidbackend.primitives.Line("my_line",
                                                       p1="A",
                                                       p2="B")
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_my_line, point_A, point_B])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_my_line, point_A, point_B])
 
         # [line name=your_line p1=B p2=D] with nothing existing
-        arglist = []
         kwargs = {
                   'name': 'my_line',
                   'type': 'line',
@@ -498,36 +440,33 @@ class TestParser(unittest.TestCase):
                                                         p1="B",
                                                         p2="D")
         point_D = youclidbackend.primitives.Point("D")
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_my_line, point_B, point_D])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_your_line, point_B, point_D])
 
         # [line AB hidden] with everything existing
-        arglist = ["hidden"]
         kwargs = {
                   'name': 'my_line',
                   'type': 'line',
                   'p1': 'A',
-                  'p2': 'B'
+                  'p2': 'B',
+                  'hidden': True
                  }
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_AB, point_A, point_B])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_AB, point_A, point_B])
 
         # [line XY hidden] with nothing existing
-        arglist = ["hidden"]
         kwargs = {
                   'name': 'XY',
                   'type': 'line',
                   'p1': 'X',
-                  'p2': 'Y'
+                  'p2': 'Y',
+                  'hidden': True
                  }
         point_X = youclidbackend.primitives.Point("X")
         point_Y = youclidbackend.primitives.Point("Y")
         line_XY = youclidbackend.primitives.Line("XY")
-        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs,
-                                                               arglist),
-                         [line_XY, point_X, point_Y])
+        self.assertCountEqual(youclidbackend.main_parser.parse_line(kwargs),
+                              [line_XY, point_X, point_Y])
 
     def test_parse_circle(self):
         """Test the circle parser function"""
