@@ -1,5 +1,4 @@
 import unittest
-import inspect
 import youclidbackend
 
 
@@ -356,6 +355,15 @@ class TestParser(unittest.TestCase):
                  }
         self.subtest_parse_match(text, kwargs)
 
+    def subtest_count_equal(self, parse_output, expected_list):
+        """Wrapper around the assertCountEqual using a subtest
+        Ensure that the output from each parser function is what we expect
+        the output to be
+        """
+        with self.subTest(parse_output=parse_output,
+                          expected_list=expected_list):
+            self.assertCountEqual(parse_output, expected_list)
+
     def test_parse_point(self):
         """Test the point parser function"""
 
@@ -368,20 +376,23 @@ class TestParser(unittest.TestCase):
                   'name': 'A',
                   'type': 'point'
                  }
-        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
-                              [youclidbackend.primitives.Point("A")])
+        parse_output = youclidbackend.main_parser.parse_point(kwargs)
+        self.subtest_count_equal(parse_output,
+                                 [youclidbackend.primitives.Point("A")])
 
         # [point A], with point A existing already
-        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
-                              [youclidbackend.primitives.Point("A")])
+        parse_output = youclidbackend.main_parser.parse_point(kwargs)
+        self.subtest_count_equal(parse_output,
+                                 [youclidbackend.primitives.Point("A")])
 
         # [point mypoint]
         kwargs = {
                   'name': 'mypoint',
                   'type': 'point'
                  }
-        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
-                              [youclidbackend.primitives.Point("mypoint")])
+        parse_output = youclidbackend.main_parser.parse_point(kwargs)
+        self.subtest_count_equal(parse_output,
+                                 [youclidbackend.primitives.Point("mypoint")])
 
         # [point strange_char3cter!_in\[_here]
         kwargs = {
@@ -389,9 +400,10 @@ class TestParser(unittest.TestCase):
                   'type': 'point'
                  }
         # TODO: What do we do about a bracket in a name?
-        self.assertCountEqual(youclidbackend.main_parser.parse_point(kwargs),
-                              [youclidbackend.primitives.Point(
-                               "strange_char3cter!_in\[_here")])
+        parse_output = youclidbackend.main_parser.parse_point(kwargs)
+        self.subtest_count_equal(parse_output,
+                                 [youclidbackend.primitives.Point(
+                                    "strange_char3cter!_in\[_here")])
 
     def test_parse_line(self):
         """Test the line parser function"""
