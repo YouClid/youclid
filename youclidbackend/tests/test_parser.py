@@ -66,23 +66,22 @@ class TestParser(unittest.TestCase):
         self.subtest_extract(text, parse_list)
 
     def subtest_parse_match(self, text, kwargs):
-        for match in youclidbackend.main_parser.extract(text):
-            with self.subTest(text=text, kwargs=kwargs):
-                parsed = youclidbackend.main_parser._parse_match(match[1])
-                self.assertEqual(parsed, kwargs)
+        with self.subTest(text=text, kwargs=kwargs):
+            parsed = youclidbackend.main_parser._parse_match(text)
+            self.assertEqual(parsed, kwargs)
 
     def test_parse_match(self):
         """Test that we extract attributes of vaious elements correctly"""
 
         # Test basic single letter name
-        text = "[point A]"
+        text = "point A"
         kwargs = {
                   'name': 'A',
                   'type': 'point'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[point B]"
+        text = "point B"
         kwargs = {
                   'name': 'B',
                   'type': 'point'
@@ -90,7 +89,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test multiple character name
-        text = "[point hello]"
+        text = "point hello"
         kwargs = {
                   'name': 'hello',
                   'type': 'point'
@@ -100,7 +99,7 @@ class TestParser(unittest.TestCase):
         # Keyword argument tests
 
         # Test keyword argument for name with single letter
-        text = "[point name=A]"
+        text = "point name=A"
         kwargs = {
                   'name': 'A',
                   'type': 'point'
@@ -108,7 +107,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test keyword argument for name with multiple letters
-        text = "[point name=mypoint]"
+        text = "point name=mypoint"
         kwargs = {
                   'name': 'mypoint',
                   'type': 'point'
@@ -117,7 +116,7 @@ class TestParser(unittest.TestCase):
 
         # Test keyword argument for name with an escaped bracket
         # TODO: How do we handle this; does the name have the backslash in it?
-        text = "[point name=mypoint\]]"
+        text = "point name=mypoint\]"
         kwargs = {
                   'name': 'mypoint]',
                   'type': 'point'
@@ -125,7 +124,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test keyword argument for name with multiple letters
-        text = "[point name=\"mypoint with spaces\"]"
+        text = "point name=\"mypoint with spaces\""
         kwargs = {
                   'name': 'mypoint with spaces',
                   'type': 'point'
@@ -133,7 +132,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test non-keyword arguments
-        text = "[point A hidden somethingelse]"
+        text = "point A hidden somethingelse"
         kwargs = {
                   'name': 'A',
                   'type': 'point',
@@ -143,7 +142,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test the line extraction
-        text = "[line AB]"
+        text = "line AB"
         kwargs = {
                   'name': 'AB',
                   'type': 'line'
@@ -151,14 +150,14 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test line extraction with a name
-        text = "[line AB name=test]"
+        text = "line AB name=test"
         kwargs = {
                   'name': 'test',
                   'type': 'line'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[line name=test]"
+        text = "line name=test"
         kwargs = {
                   'name': 'test',
                   'type': 'line'
@@ -166,7 +165,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # TODO: I'm not sure if this is how we will do this; it may change
-        text = "[line name=test p1=A p2=B]"
+        text = "line name=test p1=A p2=B"
         kwargs = {
                   'name': 'test',
                   'type': 'line',
@@ -176,7 +175,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test non-keyword arguments
-        text = "[line AB hidden]"
+        text = "line AB hidden"
         kwargs = {
                   'name': 'AB',
                   'type': 'line',
@@ -185,14 +184,14 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction
-        text = "[circle ABC]"
+        text = "circle ABC"
         kwargs = {
                   'name': 'ABC',
                   'type': 'circle'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[circle name=ABC]"
+        text = "circle name=ABC"
         kwargs = {
                   'name': 'ABC',
                   'type': 'circle'
@@ -200,7 +199,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center
-        text = "[circle ABC center=D]"
+        text = "circle ABC center=D"
         kwargs = {
                   'name': 'ABC',
                   'type': 'circle',
@@ -209,7 +208,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius
-        text = "[circle ABC center=E radius=10]"
+        text = "circle ABC center=E radius=10"
         kwargs = {
                   'name': 'ABC',
                   'type': 'circle',
@@ -219,7 +218,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius and named keyword
-        text = "[circle name=XYZ center=L radius=1]"
+        text = "circle name=XYZ center=L radius=1"
         kwargs = {
                   'name': 'XYZ',
                   'type': 'circle',
@@ -229,7 +228,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction spaces in name
-        text = "[circle name=\"My circle\" center=\"My point\" radius=1]"
+        text = "circle name=\"My circle\" center=\"My point\" radius=1"
         kwargs = {
                   'name': 'My circle',
                   'type': 'circle',
@@ -239,7 +238,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test circle extraction with center and radius and named keyword
-        text = "[circle name=XYZ hidden]"
+        text = "circle name=XYZ hidden"
         kwargs = {
                   'name': 'XYZ',
                   'type': 'circle',
@@ -251,7 +250,7 @@ class TestParser(unittest.TestCase):
         # the order of hidden and name switched
         # TODO: This unittest breaks, presumably because it thinks that the
         # name is "hidden"; do we do anything about this?
-        text = "[circle hidden name=XYZ]"
+        text = "circle hidden name=XYZ"
         kwargs = {
                   'name': 'XYZ',
                   'type': 'circle',
@@ -260,7 +259,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test center extraction
-        text = "[center A circle=BCD]"
+        text = "center A circle=BCD"
         kwargs = {
                   'name': 'A',
                   'type': 'center',
@@ -269,7 +268,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test center extraction
-        text = "[center A hidden circle=BCD]"
+        text = "center A hidden circle=BCD"
         kwargs = {
                   'name': 'A',
                   'type': 'center',
@@ -279,7 +278,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test center extraction with named keyword argument
-        text = "[center name=\"Center BCD\" circle=BCD]"
+        text = "center name=\"Center BCD\" circle=BCD"
         kwargs = {
                   'name': 'Center BCD',
                   'type': 'center',
@@ -288,7 +287,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction
-        text = "[polygon ABCD]"
+        text = "polygon ABCD"
         kwargs = {
                   'name': 'ABCD',
                   'type': 'polygon'
@@ -296,7 +295,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name
-        text = "[polygon name=EFGH]"
+        text = "polygon name=EFGH"
         kwargs = {
                   'name': 'EFGH',
                   'type': 'polygon'
@@ -304,7 +303,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name
-        text = "[polygon name=vbce hidden]"
+        text = "polygon name=vbce hidden"
         kwargs = {
                   'name': 'vbce',
                   'type': 'polygon',
@@ -313,7 +312,7 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # Test basic polygon extraction with keyword name and spaces in name
-        text = "[polygon name=\"My polygon\" hidden]"
+        text = "polygon name=\"My polygon\" hidden"
         kwargs = {
                   'name': 'My polygon',
                   'type': 'polygon',
@@ -322,34 +321,34 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # TODO: These next 3 tests are broken
-        text = "[loc A 0 0]"
+        text = "loc A 0 0"
         kwargs = {
                   'name': 'A',
                   'type': 'loc'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[loc test 2 2]"
+        text = "loc test 2 2"
         kwargs = {
                   'name': 'test',
                   'type': 'loc'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[loc \"Name with spaces\" 2 2]"
+        text = "loc \"Name with spaces\" 2 2"
         kwargs = {
                   'name': 'Name with spaces',
                   'type': 'loc'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[step]"
+        text = "step"
         kwargs = {
                   'type': 'step'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "[clear]"
+        text = "clear"
         kwargs = {
                   'type': 'clear'
                  }
