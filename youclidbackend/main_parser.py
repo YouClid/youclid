@@ -44,14 +44,16 @@ class _Step():
     """This object will be returned from a call to the parse_step function
     to represent that we are done parsing the current step
     """
-    pass
+    def __eq__(self, other):
+        return type(other) == _Step
 
 
 class _Clear():
     """This object will be returned from a call to the parse_clear function
     to represent that we need to clear the current step
     """
-    pass
+    def __eq__(self, other):
+        return type(other) == _Step
 
 
 def extract(text):
@@ -100,12 +102,12 @@ def parse(text):
             continue
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
-        elif type(obj) == _Step:
+        elif type(obj[0]) == _Step:
             if len(curr_step) > 0:
                 # Add all unique objects we touched to the current animation
                 animations.append([x for x in set(curr_step)])
         # Otherwise, if we parsed a clear, reset curr_step
-        elif type(obj) == _Clear:
+        elif type(obj[0]) == _Clear:
             curr_step = []
         # Otherwise, we created some object, so add them to the current step
         # for display purposes
@@ -370,11 +372,11 @@ def parse_location(keyword_args):
 
 
 def parse_step(keyword_args):
-    return _Step()
+    return [_Step()]
 
 
 def parse_clear(keyword_args):
-    return _Clear()
+    return [_Clear()]
 
 
 def generate_html(json_object):

@@ -503,11 +503,21 @@ class TestParser(unittest.TestCase):
 
     def test_parse_step(self):
         """Test the step parser function"""
-        pass
+        kwargs = {
+                  'type': 'step'
+                 }
+        step = youclidbackend.main_parser._Step()
+        parser_output = youclidbackend.main_parser.parse_step(kwargs)
+        self.subtest_count_equal(parser_output, [step])
 
     def test_parse_clear(self):
         """Test the clear parser function"""
-        pass
+        kwargs = {
+                  'type': 'clear'
+                 }
+        clear = youclidbackend.main_parser._Clear()
+        parser_output = youclidbackend.main_parser.parse_clear(kwargs)
+        self.subtest_count_equal(parser_output, [clear])
 
     def test_intermediate_representation(self):
         """Test that we generate the correct intermediate representation"""
