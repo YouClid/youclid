@@ -487,7 +487,38 @@ class TestParser(unittest.TestCase):
 
     def test_parse_circle(self):
         """Test the circle parser function"""
-        pass
+
+        youclidbackend.main_parser.obj_dict = {}
+
+        kwargs = {
+                  'name': 'ABC',
+                  'type': 'circle'
+                 }
+
+        circle_ABC = youclidbackend.primitives.Circle("ABC")
+        point_A = youclidbackend.primitives.Point("A")
+        point_B = youclidbackend.primitives.Point("B")
+        point_C = youclidbackend.primitives.Point("C")
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_ABC, point_A, point_B, point_C])
+
+        kwargs = {
+                  'name': 'my_circle',
+                  'type': 'circle',
+                  'p1': 'A',
+                  'p2': 'B',
+                  'p3': 'C',
+                 }
+
+        circle_my_circle = youclidbackend.primitives.Circle("my_circle",
+                                                        p1="A",
+                                                        p2="B",
+                                                        p3="C")
+
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_my_circle, point_A, point_B, point_C])
 
     def test_parse_center(self):
         """Test the center parser function"""
