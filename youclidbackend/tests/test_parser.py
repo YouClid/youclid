@@ -488,8 +488,11 @@ class TestParser(unittest.TestCase):
     def test_parse_circle(self):
         """Test the circle parser function"""
 
+        # Reset the object dictionary, since there are tests that could have
+        # been run before this one
         youclidbackend.main_parser.obj_dict = {}
 
+        # [circle ABC] with nothing existing
         kwargs = {
                   'name': 'ABC',
                   'type': 'circle'
@@ -503,6 +506,12 @@ class TestParser(unittest.TestCase):
         self.subtest_count_equal(parser_output,
                                  [circle_ABC, point_A, point_B, point_C])
 
+        # [circle ABC] with everything existing
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_ABC, point_A, point_B, point_C])
+
+        # [circle name=my_circle p1=A p2=B p3=C] with A, B, and C existing
         kwargs = {
                   'name': 'my_circle',
                   'type': 'circle',
@@ -519,6 +528,58 @@ class TestParser(unittest.TestCase):
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
                                  [circle_my_circle, point_A, point_B, point_C])
+
+        # [circle name=your_circle p1=D p2=E p3=F] with nothing existing
+        kwargs = {
+                  'name': 'your_circle',
+                  'type': 'circle',
+                  'p1': 'C',
+                  'p2': 'D',
+                  'p3': 'E',
+                 }
+
+        circle_your_circle = youclidbackend.primitives.Circle("your_circle",
+                                                        p1="C",
+                                                        p2="D",
+                                                        p3="E")
+
+        point_D = youclidbackend.primitives.Point("D")
+        point_E = youclidbackend.primitives.Point("E")
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_your_circle, point_C, point_D, point_E])
+
+        # [circle ABC hidden] with everything existing
+        kwargs = {
+                  'name': 'my_circle',
+                  'type': 'circle',
+                  'p1': 'A',
+                  'p2': 'B',
+                  'p3': 'C',
+                  'hidden': True
+                 }
+
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_ABC, point_A, point_B, point_C])
+
+        # [circle XYZ hidden] with nothing existing
+        kwargs = {
+                  'name': 'XYZ',
+                  'type': 'circle',
+                  'p1': 'X',
+                  'p2': 'Y',
+                  'p3': 'Z',
+                  'hidden': True
+                 }
+
+        circle_XYZ = youclidbackend.primitives.Circle("XYZ")
+        point_X = youclidbackend.primitives.Point("X")
+        point_Y = youclidbackend.primitives.Point("Y")
+        point_Z = youclidbackend.primitives.Point("Z")
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_XYZ, point_X, point_Y, point_Z])
 
     def test_parse_center(self):
         """Test the center parser function"""
