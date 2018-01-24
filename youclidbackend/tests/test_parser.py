@@ -47,7 +47,7 @@ class TestParser(unittest.TestCase):
                "[line AB]"\
                "[point D]"\
                "[polygon ABCD]"\
-               "[loc A 0 0]"\
+               "[loc A x=0 y=0]"\
                "[step]"\
                "[clear]"
         parse_list = ["[circle ABC]",
@@ -55,7 +55,7 @@ class TestParser(unittest.TestCase):
                       "[line AB]",
                       "[point D]",
                       "[polygon ABCD]",
-                      "[loc A 0 0]",
+                      "[loc A x=0 y=0]",
                       "[step]",
                       "[clear]"]
         self.subtest_extract(text, parse_list)
@@ -321,24 +321,30 @@ class TestParser(unittest.TestCase):
         self.subtest_parse_match(text, kwargs)
 
         # TODO: These next 3 tests are broken
-        text = "loc A 0 0"
+        text = "loc A x=0 y=0"
         kwargs = {
                   'name': 'A',
-                  'type': 'loc'
+                  'type': 'loc',
+                  'x': '0',
+                  'y': '0'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "loc test 2 2"
+        text = "loc test x=2 y=2"
         kwargs = {
                   'name': 'test',
-                  'type': 'loc'
+                  'type': 'loc',
+                  'x': '2',
+                  'y': '2'
                  }
         self.subtest_parse_match(text, kwargs)
 
-        text = "loc \"Name with spaces\" 2 2"
+        text = "loc \"Name with spaces\" x=2 y=2"
         kwargs = {
                   'name': 'Name with spaces',
-                  'type': 'loc'
+                  'type': 'loc',
+                  'x': '2',
+                  'y': '2'
                  }
         self.subtest_parse_match(text, kwargs)
 
@@ -591,7 +597,60 @@ class TestParser(unittest.TestCase):
 
     def test_parse_location(self):
         """Test the location parser function"""
-        pass
+
+        # Reset the object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+
+        # Test implicit point generation
+        kwargs = {
+                  'name': 'A',
+                  'type': 'loc',
+                  'x': '0',
+                  'y': '0'
+                 }
+        pointA = youclidbackend.main_parser.parse_location(kwargs)
+        realPointA = youclidbackend.primitives.Point("A")
+        realPointA.x = 0
+        realPointA.y = 0
+
+        self.assertEqual(pointA, realPointA)
+
+        kwargs = {
+                  'name': 'A',
+                  'type': 'loc',
+                  'x': '2',
+                  'y': '3'
+                 }
+        realPointA.x = 2
+        realPointA.y = 3
+        pointA = youclidbackend.main_parser.parse_location(kwargs)
+
+        self.assertEqual(pointA, realPointA)
+
+        kwargs = {
+                  'name': 'A',
+                  'type': 'loc',
+                  'x': '2.5',
+                  'y': '3'
+                 }
+        realPointA.x = 2.5
+        realPointA.y = 3
+        pointA = youclidbackend.main_parser.parse_location(kwargs)
+
+        self.assertEqual(pointA, realPointA)
+
+        # Equality should hold regardless of name
+        kwargs = {
+                  'name': 'location',
+                  'type': 'loc',
+                  'x': '2.5',
+                  'y': '3'
+                 }
+        realPointA.x = 2.5
+        realPointA.y = 3
+        pointA = youclidbackend.main_parser.parse_location(kwargs)
+
+        self.assertEqual(pointA, realPointA)
 
     def test_parse_step(self):
         """Test the step parser function"""

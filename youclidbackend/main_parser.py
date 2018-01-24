@@ -357,18 +357,19 @@ def parse_polygon(keyword_args):
 def parse_location(keyword_args):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
-    x = float(list_args[0])
-    y = float(list_args[1])
+    x = float(keyword_args["x"])
+    y = float(keyword_args["y"])
     if obj_dict.get("name"):
         o = obj_dict[name]
     else:
         o = primitives.Point(keyword_args["name"])
         obj_dict[name] = o
+    ret = o
 
     o.x = x
     o.y = y
 
-    return None
+    return ret
 
 
 def parse_step(keyword_args):
