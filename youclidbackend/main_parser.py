@@ -53,7 +53,7 @@ class _Clear():
     to represent that we need to clear the current step
     """
     def __eq__(self, other):
-        return type(other) == _Step
+        return type(other) == _Clear
 
 
 def extract(text):
