@@ -589,7 +589,28 @@ class TestParser(unittest.TestCase):
 
     def test_parse_center(self):
         """Test the center parser function"""
-        pass
+
+        # [center X circle=ABC] with existing center point X
+        kwargs = {
+                  'name': 'X',
+                  'type': 'center',
+                  'circle': 'ABC'
+                 }
+
+        point_X = youclidbackend.primitives.Point("X")
+        parser_output = youclidbackend.main_parser.parse_center(kwargs)
+        self.subtest_count_equal(parser_output, [point_X])
+
+        # [center W circle=XYZ] with non-existing center point W
+        kwargs = {
+                  'name': 'W',
+                  'type': 'center',
+                  'circle': 'XYZ'
+                 }
+
+        point_W = youclidbackend.primitives.Point("W")
+        parser_output = youclidbackend.main_parser.parse_center(kwargs)
+        self.subtest_count_equal(parser_output, [point_W])
 
     def test_parse_polygon(self):
         """Test the polygon parser function"""
