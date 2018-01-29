@@ -587,6 +587,8 @@ class TestParser(unittest.TestCase):
     def test_parse_center(self):
         """Test the center parser function"""
 
+        youclidbackend.main_parser.obj_dict = {}
+
         # [center X circle=ABC] with existing center point X
         kwargs = {
                   'name': 'X',
@@ -594,6 +596,10 @@ class TestParser(unittest.TestCase):
                   'circle': 'ABC'
                  }
 
+        circle_ABC = youclidbackend.main_parser.parse_circle(
+                                                             {'name': 'ABC',
+                                                              'type': 'circle'}
+                                                            )
         point_X = youclidbackend.primitives.Point("X")
         parser_output = youclidbackend.main_parser.parse_center(kwargs)
         self.subtest_count_equal(parser_output, [point_X])
@@ -605,6 +611,10 @@ class TestParser(unittest.TestCase):
                   'circle': 'XYZ'
                  }
 
+        circle_XYZ = youclidbackend.main_parser.parse_circle(
+                                                             {'name': 'XYZ',
+                                                              'type': 'circle'}
+                                                            )
         point_W = youclidbackend.primitives.Point("W")
         parser_output = youclidbackend.main_parser.parse_center(kwargs)
         self.subtest_count_equal(parser_output, [point_W])

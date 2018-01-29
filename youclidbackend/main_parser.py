@@ -321,7 +321,6 @@ def parse_center(keyword_args):
         point = obj_dict.get(name)
     else:
         point = primitives.Point(name=name)
-        ret = [point]
         obj_dict[name] = point
 
     circle = obj_dict[circle]
