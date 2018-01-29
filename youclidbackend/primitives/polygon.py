@@ -15,7 +15,7 @@ class Polygon:
     def __repr__(self):
         if self.points is None:
             return "Polygon %s(None)" % (str(self.name))
-        p = ', '.join(x for x in self.points)
+        p = ', '.join(str(x) for x in self.points)
         return "Polygon %s(%s)" % (str(self.name), p)
 
     def __eq__(self, other):
