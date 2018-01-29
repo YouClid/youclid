@@ -13,12 +13,10 @@ class Polygon:
         return ret
 
     def __repr__(self):
-        ret = "Polygon %s(" % (str(self.name))
-        for i in self.points:
-            ret += str(i) + ", "
-        ret = ret[:-3]
-        ret += ")"
-        return ret
+        if self.points is None:
+            return "Polygon %s(None)" % (str(self.name))
+        p = ', '.join(x for x in self.points)
+        return "Polygon %s(%s)" % (str(self.name), p)
 
     def __eq__(self, other):
         if isinstance(other, Polygon):
