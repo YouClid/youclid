@@ -617,7 +617,7 @@ class TestParser(unittest.TestCase):
 
         # [polygon ABC] with nothing existing
         kwargs = {
-                  'name': 'ABC'
+                  'name': 'ABC',
                   'type': 'polygon'
                  }
 
@@ -640,7 +640,7 @@ class TestParser(unittest.TestCase):
                   'type': 'polygon',
                   'p1': 'A',
                   'p2': 'B',
-                  'p3': 'C',
+                  'p3': 'C'
                  }
 
         polygon_my_polygon = youclidbackend.primitives.Polygon("my_polygon",
@@ -658,7 +658,7 @@ class TestParser(unittest.TestCase):
                   'type': 'polygon',
                   'p1': 'C',
                   'p2': 'D',
-                  'p3': 'E',
+                  'p3': 'E'
                  }
 
         polygon_your_polygon = youclidbackend.primitives.Polygon("your_polygon",
