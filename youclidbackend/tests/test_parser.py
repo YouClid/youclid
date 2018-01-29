@@ -654,11 +654,11 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_my_polygon = youclidbackend.primitives.Polygon("my_polygon",
-                                                        points="A","B","C")
+                                            points=[point_A, point_B, point_C])
 
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
-                                 [polygon_my_polygon, point_A, point_B, point_C])
+                               [polygon_my_polygon, point_A, point_B, point_C])
 
         # [polygon name=your_polygon p1=C p2=D p3=E] with one point existing
         kwargs = {
@@ -670,13 +670,13 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_your_polygon = youclidbackend.primitives.Polygon("your_polygon",
-                                                        points="C","D","E")
+                                            points=[point_C, point_D, point_E])
 
         point_D = youclidbackend.primitives.Point("D")
         point_E = youclidbackend.primitives.Point("E")
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
-                                 [polygon_your_polygon, point_C, point_D, point_E])
+                             [polygon_your_polygon, point_C, point_D, point_E])
 
         # [polygon name=my_polygon p1=A p2=B p3=C hidden] with everything existing
         kwargs = {
@@ -730,7 +730,7 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_square = youclidbackend.primitives.Polygon("square",
-                                                        points="C","D","X","Y")
+                                   points=[point_C, point_D, point_X, point_Y])
 
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
