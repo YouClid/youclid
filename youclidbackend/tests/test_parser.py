@@ -654,6 +654,10 @@ class TestParser(unittest.TestCase):
 
     def test_parse_step(self):
         """Test the step parser function"""
+
+        # Reset the object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+
         kwargs = {
                   'type': 'step'
                  }
@@ -663,6 +667,10 @@ class TestParser(unittest.TestCase):
 
     def test_parse_clear(self):
         """Test the clear parser function"""
+
+        # Reset the object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+
         kwargs = {
                   'type': 'clear'
                  }
@@ -672,7 +680,80 @@ class TestParser(unittest.TestCase):
 
     def test_intermediate_representation(self):
         """Test that we generate the correct intermediate representation"""
-        pass
+
+        # Reset the object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+        text = "[point A]"
+        result = youclidbackend.main_parser.parse(text)
+        expected = {
+                    'text': '',
+                    'geometry': {
+                                 'A': {
+                                       'type': 'Point',
+                                       'id': 'A',
+                                       'data': {
+                                                'x': None,
+                                                'y': None
+                                               }
+                                      }
+                               },
+                    'animations': [['A']]
+                   }
+        self.assertEqual(result, expected)
+
+        youclidbackend.main_parser.obj_dict = {}
+        text = "This is a point [point A]"
+        result = youclidbackend.main_parser.parse(text)
+        expected = {
+                    'text': '',
+                    'geometry': {
+                                 'A': {
+                                       'type': 'Point',
+                                       'id': 'A',
+                                       'data': {
+                                                'x': None,
+                                                'y': None
+                                               }
+                                      }
+                               },
+                    'animations': [['A']]
+                   }
+        self.assertEqual(result['geometry'], expected['geometry'])
+
+        youclidbackend.main_parser.obj_dict = {}
+        text = "[point A][line AB]"
+        result = youclidbackend.main_parser.parse(text)
+        expected = {
+                    'text': '',
+                    'geometry': {
+                                 'A': {
+                                       'type': 'Point',
+                                       'id': 'A',
+                                       'data': {
+                                                'x': None,
+                                                'y': None
+                                               }
+                                      },
+                                'B': {
+                                      'type': 'Point',
+                                      'id': 'B',
+                                      'data': {
+                                               'x': None,
+                                               'y': None
+                                              }
+                                     },
+                                'AB': {
+                                       'type': "Line",
+                                       'id': "AB",
+                                       'data': {
+                                                'p1': "A",
+                                                "p2": "B"
+                                               }
+                                      }
+                               },
+                    'animations': [['A']]
+                   }
+        self.assertEqual(result['geometry'], expected['geometry'])
 
     def test_html_generation(self):
         """TODO: Maybe we want to do this?"""
