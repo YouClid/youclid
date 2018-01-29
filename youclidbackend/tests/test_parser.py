@@ -654,9 +654,7 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_my_polygon = youclidbackend.primitives.Polygon("my_polygon",
-                                                        p1="A",
-                                                        p2="B",
-                                                        p3="C")
+                                                        points="A","B","C")
 
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
@@ -672,9 +670,7 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_your_polygon = youclidbackend.primitives.Polygon("your_polygon",
-                                                        p1="C",
-                                                        p2="D",
-                                                        p3="E")
+                                                        points="C","D","E")
 
         point_D = youclidbackend.primitives.Point("D")
         point_E = youclidbackend.primitives.Point("E")
@@ -734,10 +730,7 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_square = youclidbackend.primitives.Polygon("square",
-                                                        p1="C",
-                                                        p2="D",
-                                                        p3="X",
-                                                        p4="Y")
+                                                        points="C","D","X","Y")
 
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
