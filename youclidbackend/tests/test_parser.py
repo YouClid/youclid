@@ -535,7 +535,7 @@ class TestParser(unittest.TestCase):
         self.subtest_count_equal(parser_output,
                                  [circle_my_circle, point_A, point_B, point_C])
 
-        # [circle name=your_circle p1=D p2=E p3=F] with nothing existing
+        # [circle name=your_circle p1=C p2=D p3=E] with one point existing
         kwargs = {
                   'name': 'your_circle',
                   'type': 'circle',
@@ -555,7 +555,7 @@ class TestParser(unittest.TestCase):
         self.subtest_count_equal(parser_output,
                                  [circle_your_circle, point_C, point_D, point_E])
 
-        # [circle ABC hidden] with everything existing
+        # [circle name=my_circle p1=A p2=B p3=C hidden] with everything existing
         kwargs = {
                   'name': 'my_circle',
                   'type': 'circle',
@@ -567,15 +567,12 @@ class TestParser(unittest.TestCase):
 
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
-                                 [circle_ABC, point_A, point_B, point_C])
+                                 [circle_my_circle, point_A, point_B, point_C])
 
         # [circle XYZ hidden] with nothing existing
         kwargs = {
                   'name': 'XYZ',
                   'type': 'circle',
-                  'p1': 'X',
-                  'p2': 'Y',
-                  'p3': 'Z',
                   'hidden': True
                  }
 
@@ -589,11 +586,153 @@ class TestParser(unittest.TestCase):
 
     def test_parse_center(self):
         """Test the center parser function"""
-        pass
+
+        # [center X circle=ABC] with existing center point X
+        kwargs = {
+                  'name': 'X',
+                  'type': 'center',
+                  'circle': 'ABC'
+                 }
+
+        point_X = youclidbackend.primitives.Point("X")
+        parser_output = youclidbackend.main_parser.parse_center(kwargs)
+        self.subtest_count_equal(parser_output, [point_X])
+
+        # [center W circle=XYZ] with non-existing center point W
+        kwargs = {
+                  'name': 'W',
+                  'type': 'center',
+                  'circle': 'XYZ'
+                 }
+
+        point_W = youclidbackend.primitives.Point("W")
+        parser_output = youclidbackend.main_parser.parse_center(kwargs)
+        self.subtest_count_equal(parser_output, [point_W])
 
     def test_parse_polygon(self):
         """Test the polygon parser function"""
-        pass
+
+        # Reset the object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+
+        # [polygon ABC] with nothing existing
+        kwargs = {
+                  'name': 'ABC'
+                  'type': 'polygon'
+                 }
+
+        polygon_ABC = youclidbackend.primitives.Polygon("ABC")
+        point_A = youclidbackend.primitives.Point("A")
+        point_B = youclidbackend.primitives.Point("B")
+        point_C = youclidbackend.primitives.Point("C")
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_ABC, point_A, point_B, point_C])
+
+        # [polygon ABC] with everything existing
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_ABC, point_A, point_B, point_C])
+
+        # [polygon name=my_polygon p1=A p2=B p3=C] with A, B, and C existing
+        kwargs = {
+                  'name': 'my_polygon',
+                  'type': 'polygon',
+                  'p1': 'A',
+                  'p2': 'B',
+                  'p3': 'C',
+                 }
+
+        polygon_my_polygon = youclidbackend.primitives.Polygon("my_polygon",
+                                                        p1="A",
+                                                        p2="B",
+                                                        p3="C")
+
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_my_polygon, point_A, point_B, point_C])
+
+        # [polygon name=your_polygon p1=C p2=D p3=E] with one point existing
+        kwargs = {
+                  'name': 'your_polygon',
+                  'type': 'polygon',
+                  'p1': 'C',
+                  'p2': 'D',
+                  'p3': 'E',
+                 }
+
+        polygon_your_polygon = youclidbackend.primitives.Polygon("your_polygon",
+                                                        p1="C",
+                                                        p2="D",
+                                                        p3="E")
+
+        point_D = youclidbackend.primitives.Point("D")
+        point_E = youclidbackend.primitives.Point("E")
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_your_polygon, point_C, point_D, point_E])
+
+        # [polygon name=my_polygon p1=A p2=B p3=C hidden] with everything existing
+        kwargs = {
+                  'name': 'my_polygon',
+                  'type': 'polygon',
+                  'p1': 'A',
+                  'p2': 'B',
+                  'p3': 'C',
+                  'hidden': True
+                 }
+
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [my_polygon, point_A, point_B, point_C])
+
+        # [polygon XYZ hidden] with nothing existing
+        kwargs = {
+                  'name': 'XYZ',
+                  'type': 'polygon',
+                  'hidden': True
+                 }
+
+        polygon_XYZ = youclidbackend.primitives.Polygon("XYZ")
+        point_X = youclidbackend.primitives.Point("X")
+        point_Y = youclidbackend.primitives.Point("Y")
+        point_Z = youclidbackend.primitives.Point("Z")
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_XYZ, point_X, point_Y, point_Z])
+
+        # [polygon ABCD] with 4 points
+        kwargs = {
+                  'name': 'ABCD',
+                  'type': 'polygon'
+                 }
+
+        polygon_ABCD = youclidbackend.primitives.Polygon("ABCD")
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_ABCD, point_A, point_B, point_C,
+                                  point_D])
+
+        # [polygon name=square p1=C p2=D p3=X p4=Y] with 4 points in new format
+        kwargs = {
+                  'name': 'square',
+                  'type': 'polygon',
+                  'p1': 'C',
+                  'p2': 'D',
+                  'p3': 'X',
+                  'p4': 'Y'
+                 }
+
+        polygon_square = youclidbackend.primitives.Polygon("square",
+                                                        p1="C",
+                                                        p2="D",
+                                                        p3="X",
+                                                        p4="Y")
+
+        parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [polygon_square, point_C, point_D, point_X,
+                                  point_Y])
 
     def test_parse_location(self):
         """Test the location parser function"""
