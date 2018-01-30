@@ -3,7 +3,7 @@
 import argparse
 import re
 import json
-from . import primitives
+from youclidbackend import primitives
 from pprint import pprint
 
 polygons = {3: "Triangle",
@@ -252,7 +252,7 @@ def parse_circle(keyword_args):
         # TODO: We need to figure out what to do here. IE: do we just update
         # parameters? What if the update affects other objects? Do we not
         # update anything?
-        pass
+        return [circle]
     else:
         circle = primitives.Circle(name)
         obj_dict[name] = circle
@@ -368,7 +368,7 @@ def parse_location(keyword_args):
     o.x = x
     o.y = y
 
-    return ret
+    return [ret]
 
 
 def parse_step(keyword_args):
