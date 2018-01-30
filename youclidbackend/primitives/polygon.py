@@ -29,6 +29,5 @@ class Polygon:
 
     def __dict__(self):
         ret_dict = {}
-        for i in range(len(self.points)):
-            ret_dict["p"+str(i+1)] = self.points[i].name
+        ret_dict["points"] = [x.name for x in self.points]
         return ret_dict
