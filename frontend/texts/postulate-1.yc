@@ -12,8 +12,8 @@ Therefore the [polygon ABC] is equilateral, and it has been constructed on the g
 [clear]
 [polygon ABC] [step]
 
-[loc A -0.25 0]
-[loc B 0.25 0]
-[loc C 0 0.433]
-[loc D -0.75 0]
-[loc E 0.75 0]
+[loc A x=-0.25 y=0]
+[loc B x=0.25 y=0]
+[loc C x=0 y=0.433]
+[loc D x=-0.75 y=0]
+[loc E x=0.75 y=0]
