@@ -320,7 +320,6 @@ class TestParser(unittest.TestCase):
                  }
         self.subtest_parse_match(text, kwargs)
 
-        # TODO: These next 3 tests are broken
         text = "loc A x=0 y=0"
         kwargs = {
                   'name': 'A',
@@ -508,6 +507,9 @@ class TestParser(unittest.TestCase):
         point_A = youclidbackend.primitives.Point("A")
         point_B = youclidbackend.primitives.Point("B")
         point_C = youclidbackend.primitives.Point("C")
+        circle_ABC.p1 = point_A
+        circle_ABC.p2 = point_B
+        circle_ABC.p3 = point_C
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
                                  [circle_ABC, point_A, point_B, point_C])
@@ -527,9 +529,9 @@ class TestParser(unittest.TestCase):
                  }
 
         circle_my_circle = youclidbackend.primitives.Circle("my_circle",
-                                                        p1="A",
-                                                        p2="B",
-                                                        p3="C")
+                                                            p1="A",
+                                                            p2="B",
+                                                            p3="C")
 
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
@@ -545,17 +547,21 @@ class TestParser(unittest.TestCase):
                  }
 
         circle_your_circle = youclidbackend.primitives.Circle("your_circle",
-                                                        p1="C",
-                                                        p2="D",
-                                                        p3="E")
+                                                              p1="C",
+                                                              p2="D",
+                                                              p3="E")
 
         point_D = youclidbackend.primitives.Point("D")
         point_E = youclidbackend.primitives.Point("E")
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
-                                 [circle_your_circle, point_C, point_D, point_E])
+                                 [circle_your_circle,
+                                  point_C,
+                                  point_D,
+                                  point_E])
 
-        # [circle name=my_circle p1=A p2=B p3=C hidden] with everything existing
+        # [circle name=my_circle p1=A p2=B p3=C hidden] with
+        # everything existing
         kwargs = {
                   'name': 'my_circle',
                   'type': 'circle',

@@ -252,7 +252,7 @@ def parse_circle(keyword_args):
         # TODO: We need to figure out what to do here. IE: do we just update
         # parameters? What if the update affects other objects? Do we not
         # update anything?
-        return [circle]
+        return [circle, circle.p1, circle.p2, circle.p3]
     else:
         circle = primitives.Circle(name)
         obj_dict[name] = circle
@@ -264,19 +264,20 @@ def parse_circle(keyword_args):
             if p1 is None:
                 p1 = primitives.Point(name[0])
                 obj_dict[name[0]] = p1
-                ret.append(p1)
+            ret.append(p1)
             p2 = obj_dict.get(name[1])
             # TODO: Call parse point?
             if p2 is None:
                 p2 = primitives.Point(name[1])
                 obj_dict[name[1]] = p2
-                ret.append(p2)
+            ret.append(p2)
             p3 = obj_dict.get(name[2])
             # TODO: Call parse point?
             if p3 is None:
                 p3 = primitives.Point(name[2])
                 obj_dict[name[2]] = p3
-                ret.append(p3)
+            ret.append(p3)
+
             circle.p1 = p1
             circle.p2 = p2
             circle.p3 = p3
