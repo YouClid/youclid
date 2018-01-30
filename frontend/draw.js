@@ -83,6 +83,11 @@ class Visual {
 
     }
 
+    setRender(render) {
+	this.render = render
+	this.update()
+    }
+    
     isHot(name) {
 	let hot = this.hot[name]
 	return hot ? true : false

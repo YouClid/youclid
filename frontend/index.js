@@ -4,13 +4,9 @@ let visual = null
 function init() {
     let render = makeRender(geometry, anim_index)
 
-    if(!visual) {
-	visual = new Visual(render)
-    }
-    else {
-	visual.render = render
-	visual.update()
-    }
+    visual = new Visual(render)
+
+    document.addEventListener( 'keydown', onKeyDown)
 }
 
 function makeRender(geometry, step) {
@@ -215,10 +211,10 @@ function onTouchEnd( event ) {
 function onKeyDown( event ) {
     if(event.keyCode == 37) {
 	anim_index = anim_index === 0 ? anim_index : anim_index - 1
-	init()
+	visual.setRender(makeRender(geometry, anim_index))
     }
     else if(event.keyCode == 39) {
 	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
-	init()
+	visual.setRender(makeRender(geometry, anim_index))
     }
 }
