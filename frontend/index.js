@@ -1,4 +1,17 @@
+let anim_index = 0
+let visual = null
 
+function init() {
+    let render = makeRender(geometry, anim_index)
+
+    if(!visual) {
+	visual = new Visual(render)
+    }
+    else {
+	visual.render = render
+	visual.update()
+    }
+}
 
 function makeRender(geometry, step) {
     let toDraw = geometry.animations[step]
@@ -15,6 +28,12 @@ function makeRender(geometry, step) {
 	    }
 	    else {
 		obj.data.center = objects[obj.data.center].data
+	    }
+	}
+	else if(obj.type === "Polygon") {
+	    obj.data.points = []
+	    for(let i in obj.data) {
+		obj.data.points.push(objects[obj.data[i]])
 	    }
 	}
     }
@@ -39,8 +58,7 @@ function makeRender(geometry, step) {
 		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, red)
 		break;
 	    case "Polygon":
-		let points = 
-		visual.drawPolygon(geo.id, )
+		visual.drawPolygon(geo.id, geo.points, red)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -197,8 +215,10 @@ function onTouchEnd( event ) {
 function onKeyDown( event ) {
     if(event.keyCode == 37) {
 	anim_index = anim_index === 0 ? anim_index : anim_index - 1
+	init()
     }
     else if(event.keyCode == 39) {
-	anim_index = anim_index === scenes.length-1 ? anim_index : anim_index + 1
+	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
+	init()
     }
 }
