@@ -21,7 +21,6 @@ void main() {
 
 class Visual {
     constructor(renderFunc) {
-	console.log("got here")
 	this.mouse = {x:1000, y:10000}
 	this.mousedown = false
 	this.mouseup = true
