@@ -201,8 +201,9 @@ def get_text(match):
         return ""
     if(args_dict.get('text', False)):
         return output.format(text=args_dict['text'])
-    if (args_dict['type'] == "polygon"):
-        args_dict['type'] = polygons.get(len(args_dict["points"]), "Polygon")
+    if (args_dict['type'] == "Polygon"):
+        length = len(args_dict['points']) if args_dict.get('points', False) else len(args_dict['name'])
+        args_dict['type'] = polygons.get(length, "Polygon")
     obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
     return output.format(text=obj_text)
 
