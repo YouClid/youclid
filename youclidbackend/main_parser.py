@@ -209,7 +209,7 @@ def get_text(match):
     else:
         obj_type = match[0]
     span_name = "text_%s_%s" % (type(obj).__name__.lower(), obj.name)
-    return (" <span name=%s style='background-color: #dddddd'>%s %s</span>" %
+    return (" <span name=%s class='GeoElement'>%s %s</span>" %
             (span_name, obj_type, match[1]))
 
 
