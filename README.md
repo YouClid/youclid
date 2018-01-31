@@ -67,8 +67,8 @@ mkdir -p ~/.vim/after/syntax
 ```
 Next, run the following commands to create symlinks to our relevant syntax files, replacing the `/path/to/youclid` with the absolute path to the directory where you cloned our repository
 ```
-ln -s /path/to/youclid/colors/.vim/ftdetect/yc.vim ~/.vim/ftdetect/yc.vim
-ln -s /path/to/youclid/colors/.vim/after/syntax/yc.vim ~/.vim/after/syntax/yc.vim
+ln -s /path/to/youclid/colors/vim/ftdetect/yc.vim ~/.vim/ftdetect/yc.vim
+ln -s /path/to/youclid/colors/vim/after/syntax/yc.vim ~/.vim/after/syntax/yc.vim
 ```
 
 The syntax file should pull colors from your vim color scheme.
@@ -85,6 +85,6 @@ mkdir -p ~/.atom/packages
 ```
 Next, run the following commands to create symlinks to our package, replacing `/path/to/youclid` with the absolute path to the directory where you cloned our repository
 ```
-ln -s /path/to/youclid/colors/language-youclid ~/.atom/packages/language-youclid
+ln -s /path/to/youclid/colors/atom/language-youclid ~/.atom/packages/language-youclid
 ```
 If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
