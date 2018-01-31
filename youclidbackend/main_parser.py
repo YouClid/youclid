@@ -130,7 +130,7 @@ def _parse_match(whole_match):
     partials = whole_match.split()
 
     # The type will always be the first thing
-    args_dict['type'] = partials[0]
+    args_dict['type'] = partials[0].title()
 
     # Check to see if the second argument is a name
     if len(partials) > 1 and '=' not in partials[1]:
@@ -185,32 +185,26 @@ def format_text(text):
     text = newtext
     text = '\n'.join(text)
 
-    pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(pattern, get_text, text)
+    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
+    #pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    replaced = re.sub(regex, get_text, text)
 
     return replaced
 
 
 def get_text(match):
-    match = match.group()
-    match = match.replace("[", "").replace("]", "").split(" ")
-    obj = obj_dict.get(rotate_lex(match[1]))
-    # This code is absolutely, and unequivocally, the dumbest thing. There
-    # is absolutely no reason why we need to get doing disgusting things like
-    # this, but, here we are writing anyways. This MUST get removed at some
-    # point because there is a better way to do this.
-    # Since sometimes we care about the ordering of the points, and sometimes
-    # we don't, we might not get the object we want from doing a sort based
-    # upon ordering, so sort it like a normal person would and check that.
-    if obj is None:
-        obj = obj_dict.get(''.join(sorted(match[1])))
-    if (match[0].lower() == "polygon"):
-        obj_type = polygons.get(len(obj.points), "Polygon")
-    else:
-        obj_type = match[0]
-    span_name = "text_%s_%s" % (type(obj).__name__.lower(), obj.name)
-    return (" <span name=%s style='background-color: #dddddd'>%s %s</span>" %
-            (span_name, obj_type, match[1]))
+    match = match[1]
+    args_dict = _parse_match(match)
+    span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
+    output = " <span name=%s style='background-color: #dddddd'>{text}</span>" % span_name
+    if (args_dict.get('hidden', False)):
+        return ""
+    if(args_dict.get('text', False)):
+        return output.format(text=args_dict['text'])
+    if (args_dict['type'] == "polygon"):
+        args_dict['type'] = polygons.get(len(args_dict["points"]), "Polygon")
+    obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
+    return output.format(text=obj_text)
 
 
 def parse_line(keyword_args):
