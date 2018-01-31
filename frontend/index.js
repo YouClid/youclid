@@ -26,12 +26,6 @@ function makeRender(geometry, step) {
 		obj.data.center = objects[obj.data.center].data
 	    }
 	}
-	else if(obj.type === "Polygon") {
-	    obj.data.points = []
-	    for(let i in obj.data) {
-		obj.data.points.push(objects[obj.data[i]])
-	    }
-	}
     }
     
     return function(visual) {
@@ -54,7 +48,7 @@ function makeRender(geometry, step) {
 		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, red)
 		break;
 	    case "Polygon":
-		visual.drawPolygon(geo.id, geo.points, red)
+		visual.drawPolygon(geo.id, geo.points.map((p) => objects[p].data), red)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
