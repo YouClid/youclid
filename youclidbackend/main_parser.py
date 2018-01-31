@@ -64,6 +64,8 @@ def extract(text):
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     return re.finditer(regex, text)
 
+def random_color():
+    pass
 
 def parse(text):
     parsers = CaseInsensitiveDictionary({
@@ -94,15 +96,14 @@ def parse(text):
             raise e
         # Call the appropriate parser function
         obj = f(args_dict)
+        obj.color = args_dict['color'] if args_dict.get('color', False) else random_color()
 
         # Now we need to handle the return value
 
         # If there is no return value, move on to the next call
-        if obj is None:
-            continue
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
-        elif type(obj[0]) == _Step:
+        if type(obj[0]) == _Step:
             if len(curr_step) > 0:
                 # Add all unique objects we touched to the current animation
                 animations.append([x for x in set(curr_step)])
