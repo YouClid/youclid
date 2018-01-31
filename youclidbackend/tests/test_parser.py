@@ -250,7 +250,7 @@ class TestParser(unittest.TestCase):
         # the order of hidden and name switched
         # TODO: This unittest breaks, presumably because it thinks that the
         # name is "hidden"; do we do anything about this?
-        text = "circle hidden name=XYZ"
+        text = "circle name=XYZ hidden"
         kwargs = {
                   'name': 'XYZ',
                   'type': 'circle',
@@ -424,6 +424,8 @@ class TestParser(unittest.TestCase):
         line_AB = youclidbackend.primitives.Line("AB")
         point_A = youclidbackend.primitives.Point("A")
         point_B = youclidbackend.primitives.Point("B")
+        line_AB.p1 = point_A
+        line_AB.p2 = point_B
         parser_output = youclidbackend.main_parser.parse_line(kwargs)
         self.subtest_count_equal(parser_output,
                                  [line_AB, point_A, point_B])
@@ -463,7 +465,7 @@ class TestParser(unittest.TestCase):
         self.subtest_count_equal(parser_output
                                  [line_your_line, point_B, point_D])
 
-        # [line AB hidden] with everything existing
+        # [line AB hidden name=my_line] with everything existing
         kwargs = {
                   'name': 'my_line',
                   'type': 'line',
@@ -486,6 +488,8 @@ class TestParser(unittest.TestCase):
         point_X = youclidbackend.primitives.Point("X")
         point_Y = youclidbackend.primitives.Point("Y")
         line_XY = youclidbackend.primitives.Line("XY")
+        line_XY.p1 = point_X
+        line_XY.p2 = point_Y
         parser_output = youclidbackend.main_parser.parse_line(kwargs)
         self.subtest_count_equal(parser_output,
                                  [line_XY, point_X, point_Y])
@@ -586,6 +590,9 @@ class TestParser(unittest.TestCase):
         point_X = youclidbackend.primitives.Point("X")
         point_Y = youclidbackend.primitives.Point("Y")
         point_Z = youclidbackend.primitives.Point("Z")
+        circle_XYZ.p1 = point_X
+        circle_XYZ.p2 = point_Y
+        circle_XYZ.p3 = point_Z
         parser_output = youclidbackend.main_parser.parse_circle(kwargs)
         self.subtest_count_equal(parser_output,
                                  [circle_XYZ, point_X, point_Y, point_Z])
@@ -641,6 +648,7 @@ class TestParser(unittest.TestCase):
         point_A = youclidbackend.primitives.Point("A")
         point_B = youclidbackend.primitives.Point("B")
         point_C = youclidbackend.primitives.Point("C")
+        polygon_ABC.points = [point_A, point_B, point_C]
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
                                  [polygon_ABC, point_A, point_B, point_C])
@@ -660,11 +668,17 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_my_polygon = youclidbackend.primitives.Polygon("my_polygon",
-                                            points=[point_A, point_B, point_C])
+                                                               points=[
+                                                                point_A,
+                                                                point_B,
+                                                                point_C])
 
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
-                               [polygon_my_polygon, point_A, point_B, point_C])
+                                 [polygon_my_polygon,
+                                  point_A,
+                                  point_B,
+                                  point_C])
 
         # [polygon name=your_polygon p1=C p2=D p3=E] with one point existing
         kwargs = {
@@ -675,16 +689,21 @@ class TestParser(unittest.TestCase):
                   'p3': 'E'
                  }
 
-        polygon_your_polygon = youclidbackend.primitives.Polygon("your_polygon",
-                                            points=[point_C, point_D, point_E])
-
         point_D = youclidbackend.primitives.Point("D")
         point_E = youclidbackend.primitives.Point("E")
+        polygon_your_polygon = youclidbackend.primitives.Polygon(
+                                "your_polygon",
+                                points=[point_C, point_D, point_E])
+
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
-                             [polygon_your_polygon, point_C, point_D, point_E])
+                                 [polygon_your_polygon,
+                                  point_C,
+                                  point_D,
+                                  point_E])
 
-        # [polygon name=my_polygon p1=A p2=B p3=C hidden] with everything existing
+        # [polygon name=my_polygon p1=A p2=B p3=C hidden] with
+        # everything existing
         kwargs = {
                   'name': 'my_polygon',
                   'type': 'polygon',
@@ -709,6 +728,7 @@ class TestParser(unittest.TestCase):
         point_X = youclidbackend.primitives.Point("X")
         point_Y = youclidbackend.primitives.Point("Y")
         point_Z = youclidbackend.primitives.Point("Z")
+        polygon_XYZ.points = [point_X, point_Y, point_Z]
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
                                  [polygon_XYZ, point_X, point_Y, point_Z])
@@ -720,6 +740,7 @@ class TestParser(unittest.TestCase):
                  }
 
         polygon_ABCD = youclidbackend.primitives.Polygon("ABCD")
+        polygon_ABCD.points = [point_A, point_B, point_C, point_D]
         parser_output = youclidbackend.main_parser.parse_polygon(kwargs)
         self.subtest_count_equal(parser_output,
                                  [polygon_ABCD, point_A, point_B, point_C,
@@ -761,7 +782,7 @@ class TestParser(unittest.TestCase):
         realPointA.x = 0
         realPointA.y = 0
 
-        self.assertEqual(pointA, realPointA)
+        self.assertEqual(pointA, [realPointA])
 
         kwargs = {
                   'name': 'A',
@@ -773,7 +794,7 @@ class TestParser(unittest.TestCase):
         realPointA.y = 3
         pointA = youclidbackend.main_parser.parse_location(kwargs)
 
-        self.assertEqual(pointA, realPointA)
+        self.assertEqual(pointA, [realPointA])
 
         kwargs = {
                   'name': 'A',
@@ -785,7 +806,7 @@ class TestParser(unittest.TestCase):
         realPointA.y = 3
         pointA = youclidbackend.main_parser.parse_location(kwargs)
 
-        self.assertEqual(pointA, realPointA)
+        self.assertEqual(pointA, [realPointA])
 
         # Equality should hold regardless of name
         kwargs = {
@@ -798,7 +819,7 @@ class TestParser(unittest.TestCase):
         realPointA.y = 3
         pointA = youclidbackend.main_parser.parse_location(kwargs)
 
-        self.assertEqual(pointA, realPointA)
+        self.assertEqual(pointA, [realPointA])
 
     def test_parse_step(self):
         """Test the step parser function"""
@@ -882,22 +903,22 @@ class TestParser(unittest.TestCase):
                                                 'y': None
                                                }
                                       },
-                                'B': {
-                                      'type': 'Point',
-                                      'id': 'B',
-                                      'data': {
-                                               'x': None,
-                                               'y': None
-                                              }
-                                     },
-                                'AB': {
-                                       'type': "Line",
-                                       'id': "AB",
+                                 'B': {
+                                       'type': 'Point',
+                                       'id': 'B',
                                        'data': {
-                                                'p1': "A",
-                                                "p2": "B"
+                                                'x': None,
+                                                'y': None
                                                }
-                                      }
+                                      },
+                                 'AB': {
+                                        'type': "Line",
+                                        'id': "AB",
+                                        'data': {
+                                                 'p1': "A",
+                                                 "p2": "B"
+                                                }
+                                       }
                                },
                     'animations': [['A']]
                    }
