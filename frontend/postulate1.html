@@ -4,7 +4,7 @@
 		<meta charset=utf-8>
 		<title>YouClid</title>
 		<link rel="stylesheet" href="default.css">
-		<script src="js/three.js"></script>
+		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
 		  
@@ -44,8 +44,8 @@
                 "p1": "B",
                 "p2": "C",
                 "p3": "D",
-                "center": "A",
-                "radius": null
+                "radius": null,
+                "center": "A"
             }
         },
         "C": {
@@ -71,8 +71,8 @@
                 "p1": "A",
                 "p2": "C",
                 "p3": "E",
-                "center": "B",
-                "radius": null
+                "radius": null,
+                "center": "B"
             }
         },
         "E": {
@@ -103,53 +103,55 @@
             "type": "Polygon",
             "id": "ABC",
             "data": {
-                "p1": "A",
-                "p2": "B",
-                "p3": "C"
+                "points": [
+                    "A",
+                    "B",
+                    "C"
+                ]
             }
         }
     },
     "animations": [
         [
-            "AB",
             "A",
-            "B"
+            "B",
+            "AB"
         ],
         [
-            "AB",
-            "C",
             "B",
+            "C",
+            "AB",
             "A",
             "D",
             "BCD"
         ],
         [
-            "AB",
-            "C",
             "E",
-            "ACE",
             "B",
+            "C",
+            "AB",
             "A",
             "D",
+            "ACE",
             "BCD"
         ],
         [
-            "AB",
             "BC",
-            "C",
             "E",
-            "ACE",
             "B",
+            "C",
+            "AB",
             "A",
             "D",
-            "BCD",
-            "AC"
+            "AC",
+            "ACE",
+            "BCD"
         ],
         [
-            "C",
+            "ABC",
             "A",
             "B",
-            "ABC"
+            "C"
         ]
     ]
 }

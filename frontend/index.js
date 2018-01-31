@@ -23,11 +23,11 @@ function makeRender(geometry, step) {
 		obj.data.radius = circle.radius
 	    }
 	    else {
-		obj.data.center = objects[obj.data.center].data
+		// obj.data.center = objects[obj.data.center].data
 	    }
 	}
     }
-    
+    console.log(geometry)
     return function(visual) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
@@ -48,7 +48,7 @@ function makeRender(geometry, step) {
 		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, red)
 		break;
 	    case "Polygon":
-		visual.drawPolygon(geo.id, geo.points.map((p) => objects[p].data), red)
+		visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), red)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -122,66 +122,6 @@ function overTextRevert(event)  {
    }
 }
 
-
-function onMouseDown( event ) {
-    event.preventDefault();
-    mouse.x = ( event.clientX / size ) * 2 - 1;
-    mouse.y = - ( event.clientY / size ) * 2 + 1;
-    raycaster.setFromCamera( mouse, camera );
-    let intersects = raycaster.intersectObjects(scene.children);
-    if ( intersects.length > 0 ) {
-	current = intersects[0]
-	oldPos = current.point.clone()
-	originalCenter = current.object.position.clone()
-	// originalCenter = current.object.geometry.vertices[0].clone()
-    }
-}
-
-let changed = {text:[], objects:[]}
-let objectColors = {}
-
-function onMouseMove( event ) {
-    let xgood = event.clientX > canvasRect.left && event.clientX < canvasRect.right
-    let ygood = event.clientY > canvasRect.top  && event.clientY < canvasRect.bottom
-    let text = []
-    let objects = []
-
-    if(xgood && ygood) {
-	mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
-	mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
-	raycaster.setFromCamera( mouse, camera );
-	let intersects = raycaster.intersectObjects(scene.children);
-	for(let i = 0; i<intersects.length; i++) {
-	    let curr = intersects[i].object
-	    let oldColor = new THREE.Color(curr.material.color)
-	    if(!objectColors[curr.uuid]) {
-		objectColors[curr.uuid] = oldColor
-	    }
-	    objects.push(curr)
-            let idStr = curr.name.replace('object', 'text');
-	    let elements = document.getElementsByName(idStr)
-	    elements.forEach((element) => {
-		text.push(element)
-	    })
-		
-	    
-	}
-
-    }
-
-    changed.text.forEach((c) => c.style.backgroundColor = "#dddddd")
-    changed.objects.forEach((c) => c.material.color.setHex(objectColors[c.uuid].getHex()))
-
-    text.forEach((c) => c.style.backgroundColor = "yellow")
-    objects.forEach((c) => c.material.color.setHex( 0xfffa00 ))
-
-    changed.text = text
-    changed.objects = objects
-}
-
-function onMouseUp( event ) {
-    current = null;
-}
 
 function onTouchStart( event ) {
     event.preventDefault();
