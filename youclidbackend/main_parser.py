@@ -64,8 +64,10 @@ def extract(text):
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     return re.finditer(regex, text)
 
+
 def random_color():
     pass
+
 
 def parse(text):
     parsers = CaseInsensitiveDictionary({
@@ -96,7 +98,9 @@ def parse(text):
             raise e
         # Call the appropriate parser function
         obj = f(args_dict)
-        obj.color = args_dict['color'] if args_dict.get('color', False) else random_color()
+        obj.color = (args_dict['color'] if args_dict.get('color', False)
+                     else random_color())
+        obj.color = hex_to_rgba(obj.color)
 
         # Now we need to handle the return value
 
@@ -203,10 +207,12 @@ def get_text(match):
     if(args_dict.get('text', False)):
         return output.format(text=args_dict['text'])
     if (args_dict['type'] == "Polygon"):
-        length = len(args_dict['points']) if args_dict.get('points', False) else len(args_dict['name'])
+        length = (len(args_dict['points']) if args_dict.get('points', False)
+                  else len(args_dict['name']))
         args_dict['type'] = polygons.get(length, "Polygon")
     obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
     return output.format(text=obj_text)
+
 
 def parse_line(keyword_args):
     name = rotate_lex(keyword_args["name"])
@@ -390,6 +396,18 @@ def generate_html(json_object):
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
+
+
+def hex_to_rgba(s):
+    """Converts a string (like "#ffffffff") to an array of floats betweeen
+    0 and 1 representing the Red, Green, Blue, and Alpha components
+    """
+
+    # Remove the leading '#' character
+    line = s[1:]
+    # Return a list of each pair of hex digits divided by 255 (FF)
+    return list(map(lambda x: int(x, 16)/255,
+                    [line[i:i+2] for i in range(0, len(line), 2)]))
 
 
 def rotate_lex(l):
