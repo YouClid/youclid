@@ -5,7 +5,7 @@ class Polygon:
         self.points = None
 
     def __str__(self):
-        ret =  "Polygon %s(" % (str(self.name))
+        ret = "Polygon %s(" % (str(self.name))
         for i in self.points:
             ret += str(i) + ", "
         ret = ret[:-3]
@@ -13,12 +13,10 @@ class Polygon:
         return ret
 
     def __repr__(self):
-        ret =  "Polygon %s(" % (str(self.name))
-        for i in self.points:
-            ret += str(i) + ", "
-        ret = ret[:-3]
-        ret += ")"
-        return ret
+        if self.points is None:
+            return "Polygon %s(None)" % (str(self.name))
+        p = ', '.join(str(x) for x in self.points)
+        return "Polygon %s(%s)" % (str(self.name), p)
 
     def __eq__(self, other):
         if isinstance(other, Polygon):
@@ -31,6 +29,5 @@ class Polygon:
 
     def __dict__(self):
         ret_dict = {}
-        for i in range(len(self.points)):
-            ret_dict["p"+str(i+1)] = self.points[i].name
+        ret_dict["points"] = [x.name for x in self.points]
         return ret_dict

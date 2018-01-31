@@ -20,9 +20,10 @@ class Triangle:
 
     def __eq__(self, other):
         if isinstance(other, Triangle):
-            return ((self.p1 == other.p1 or self.p1 == other.p2 or self.p1 == other.p3) and
-                    (self.p2 == other.p1 or self.p2 == other.p2 or self.p2 == other.p3) and
-                    (self.p3 == other.p1 or self.p2 == other.p2 or self.p3 == other.p3))
+            mypoints = [self.p1, self.p2, self.p3]
+            otherpoints = [other.p1, other.p2, other.p3]
+            return (all([x in otherpoints for x in mypoints]) and
+                    all([x in mypoints for x in otherpoints]))
         else:
             return False
 
@@ -33,5 +34,5 @@ class Triangle:
         return {
                 'p1': self.p1.name if self.p1 is not None else None,
                 'p2': self.p2.name if self.p2 is not None else None,
-                'p3': self.p3.name if self.p3 is not None else None,
+                'p3': self.p3.name if self.p3 is not None else None
                }
