@@ -196,7 +196,7 @@ def get_text(match):
     match = match[1]
     args_dict = _parse_match(match)
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
-    output = " <span name=%s style='background-color: #dddddd'>{text}</span>" % span_name
+    output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
         return ""
     if(args_dict.get('text', False)):
@@ -205,7 +205,6 @@ def get_text(match):
         args_dict['type'] = polygons.get(len(args_dict["points"]), "Polygon")
     obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
     return output.format(text=obj_text)
-
 
 def parse_line(keyword_args):
     name = rotate_lex(keyword_args["name"])
