@@ -12,11 +12,10 @@ But the angle FDB is also right, therefore the angle FDB equals the angle GDB, t
 Similarly we can prove that neither is any other point except [point F].
 Therefore the [point F] is the center of the [circle ABC].[step]
 
-[definitions]
-[loc A -0.25 -0.433]
-[loc B 0.25 -0.433]
-[loc C 0 0.5]
-[loc D 0 -0.3]
-[loc E 0 -0.5]
-[loc F 0 0]
-[loc G 0.1 -0.05]
+[loc A x=-0.25 y=-0.433]
+[loc B x=0.25 y=-0.433]
+[loc C x=0 y=0.5]
+[loc D x=0 y=-0.3]
+[loc E x=0 y=-0.5]
+[loc F x=0 y=0]
+[loc G x=0.1 y=-0.05]

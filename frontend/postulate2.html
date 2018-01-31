@@ -4,202 +4,207 @@
 		<meta charset=utf-8>
 		<title>YouClid</title>
 		<link rel="stylesheet" href="default.css">
-		<script src="js/three.js"></script>
+		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
 		  
 		  window.onload = init
 
 		  geometry = {
+    "text": "Let  <span name=text_point_A class='GeoElement'>point A</span> be the given point, and  <span name=text_line_BC class='GeoElement'>line BC</span> the given straigt line. It is required to place a straight  <span name=text_line_AL class='GeoElement'>line AL</span> equal to the given straight  <span name=text_line_BC class='GeoElement'>line BC</span> with one end at the  <span name=text_point_A class='GeoElement'>point A</span>. Join the straight  <span name=text_line_AB class='GeoElement'>line AB</span> from the  <span name=text_point_A class='GeoElement'>point A</span> to the  <span name=text_point_B class='GeoElement'>point B</span>, and construct the equilateral  <span name=text_polygon_ABD class='GeoElement'>Triangle DAB</span>. Produce the straight  <span name=text_line_AE class='GeoElement'>line AE</span> and straight  <span name=text_line_BF class='GeoElement'>line BF</span> in a straight line with  <span name=text_line_AD class='GeoElement'>line DA</span> and  <span name=text_line_BD class='GeoElement'>line DB</span>. Describe the  <span name=text_circle_CGH class='GeoElement'>circle CGH</span> with  <span name=text_point_B class='GeoElement'>center B</span>, and again, descibe the  <span name=text_circle_GKL class='GeoElement'>circle GKL</span> with  <span name=text_point_D class='GeoElement'>center D</span>. Since the  <span name=text_point_B class='GeoElement'>point B</span> is the center of the circle CGH, therefore,  <span name=text_line_BC class='GeoElement'>line BC</span> equals  <span name=text_line_BG class='GeoElement'>line BG</span>. Again, since the  <span name=text_point_D class='GeoElement'>point D</span> is the center of the circle GKL, therefore,  <span name=text_line_DL class='GeoElement'>line DL</span> equals  <span name=text_line_DG class='GeoElement'>line DG</span>. And in these,  <span name=text_line_AD class='GeoElement'>line DA</span> equals  <span name=text_line_BD class='GeoElement'>line DB</span>, therefore, the remainder  <span name=text_line_AL class='GeoElement'>line AL</span> equals the remainder  <span name=text_line_BG class='GeoElement'>line BG</span>. But  <span name=text_line_BC class='GeoElement'>line BC</span> was also proved equal to  <span name=text_line_BG class='GeoElement'>line BG</span>, therefore each of the straight lines  <span name=text_line_AL class='GeoElement'>line AL</span> and  <span name=text_line_BC class='GeoElement'>line BC</span> equals  <span name=text_line_BG class='GeoElement'>line BG</span>. And things which equal the same thing also equal one another, therefore,  <span name=text_line_AL class='GeoElement'>line AL</span> also equals  <span name=text_line_BC class='GeoElement'>line BC</span>. Therefore, the straight  <span name=text_line_AL class='GeoElement'>line AL</span> equal to the given straight  <span name=text_line_BC class='GeoElement'>line BC</span> has been placed with one end at the given  <span name=text_point_A class='GeoElement'>point A</span>.\n",
     "geometry": {
-        "BF": {
-            "data": {
-                "p2": "F",
-                "p1": "B"
-            },
-            "type": "Line",
-            "id": "BF"
-        },
-        "AL": {
-            "data": {
-                "p2": "L",
-                "p1": "A"
-            },
-            "type": "Line",
-            "id": "AL"
-        },
         "A": {
+            "type": "Point",
+            "id": "A",
             "data": {
                 "x": -0.05,
                 "y": -0.0866
-            },
+            }
+        },
+        "B": {
             "type": "Point",
-            "id": "A"
-        },
-        "L": {
+            "id": "B",
             "data": {
-                "x": 0.05,
-                "y": -0.25981
-            },
-            "type": "Point",
-            "id": "L"
-        },
-        "AD": {
-            "data": {
-                "p2": "D",
-                "p1": "A"
-            },
-            "type": "Line",
-            "id": "AD"
-        },
-        "BD": {
-            "data": {
-                "p2": "D",
-                "p1": "B"
-            },
-            "type": "Line",
-            "id": "BD"
-        },
-        "AB": {
-            "data": {
-                "p2": "B",
-                "p1": "A"
-            },
-            "type": "Line",
-            "id": "AB"
-        },
-        "D": {
-            "data": {
-                "x": -0.1,
+                "x": 0.0,
                 "y": 0.0
-            },
-            "type": "Point",
-            "id": "D"
-        },
-        "K": {
-            "data": {
-                "x": -0.6,
-                "y": 0.0
-            },
-            "type": "Point",
-            "id": "K"
-        },
-        "G": {
-            "data": {
-                "x": 0.2,
-                "y": 0.0
-            },
-            "type": "Point",
-            "id": "G"
-        },
-        "ABD": {
-            "data": {
-                "p2": "B",
-                "p3": "D",
-                "p1": "A"
-            },
-            "type": "Polygon",
-            "id": "ABD"
-        },
-        "F": {
-            "data": {
-                "x": 0.4,
-                "y": 0.0
-            },
-            "type": "Point",
-            "id": "F"
+            }
         },
         "C": {
+            "type": "Point",
+            "id": "C",
             "data": {
                 "x": 0.0,
                 "y": 0.2
-            },
-            "type": "Point",
-            "id": "C"
-        },
-        "H": {
-            "data": {
-                "x": -0.2,
-                "y": 0.0
-            },
-            "type": "Point",
-            "id": "H"
-        },
-        "AE": {
-            "data": {
-                "p2": "E",
-                "p1": "A"
-            },
-            "type": "Line",
-            "id": "AE"
-        },
-        "CGH": {
-            "data": {
-                "p2": "G",
-                "p3": "H",
-                "center": "B",
-                "p1": "C"
-            },
-            "type": "Circle",
-            "id": "CGH"
-        },
-        "GKL": {
-            "data": {
-                "p2": "K",
-                "p3": "L",
-                "center": "D",
-                "p1": "G"
-            },
-            "type": "Circle",
-            "id": "GKL"
+            }
         },
         "BC": {
-            "data": {
-                "p2": "C",
-                "p1": "B"
-            },
             "type": "Line",
-            "id": "BC"
-        },
-        "DL": {
+            "id": "BC",
             "data": {
-                "p2": "L",
-                "p1": "D"
-            },
-            "type": "Line",
-            "id": "DL"
+                "p1": "B",
+                "p2": "C"
+            }
         },
-        "B": {
-            "data": {
-                "x": 0.0,
-                "y": 0.0
-            },
+        "L": {
             "type": "Point",
-            "id": "B"
-        },
-        "DG": {
+            "id": "L",
             "data": {
-                "p2": "G",
-                "p1": "D"
-            },
-            "type": "Line",
-            "id": "DG"
+                "x": 0.05,
+                "y": -0.25981
+            }
         },
-        "BG": {
-            "data": {
-                "p2": "G",
-                "p1": "B"
-            },
+        "AL": {
             "type": "Line",
-            "id": "BG"
+            "id": "AL",
+            "data": {
+                "p1": "A",
+                "p2": "L"
+            }
+        },
+        "AB": {
+            "type": "Line",
+            "id": "AB",
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
+        "ABD": {
+            "type": "Polygon",
+            "id": "ABD",
+            "data": {
+                "points": [
+                    "A",
+                    "B",
+                    "D"
+                ]
+            }
         },
         "E": {
+            "type": "Point",
+            "id": "E",
             "data": {
                 "x": 0.1,
                 "y": -0.34641
-            },
+            }
+        },
+        "AE": {
+            "type": "Line",
+            "id": "AE",
+            "data": {
+                "p1": "A",
+                "p2": "E"
+            }
+        },
+        "F": {
             "type": "Point",
-            "id": "E"
+            "id": "F",
+            "data": {
+                "x": 0.4,
+                "y": 0.0
+            }
+        },
+        "BF": {
+            "type": "Line",
+            "id": "BF",
+            "data": {
+                "p1": "B",
+                "p2": "F"
+            }
+        },
+        "D": {
+            "type": "Point",
+            "id": "D",
+            "data": {
+                "x": -0.1,
+                "y": 0.0
+            }
+        },
+        "AD": {
+            "type": "Line",
+            "id": "AD",
+            "data": {
+                "p1": "A",
+                "p2": "D"
+            }
+        },
+        "BD": {
+            "type": "Line",
+            "id": "BD",
+            "data": {
+                "p1": "B",
+                "p2": "D"
+            }
+        },
+        "CGH": {
+            "type": "Circle",
+            "id": "CGH",
+            "data": {
+                "p1": "C",
+                "p2": "G",
+                "p3": "H",
+                "radius": null,
+                "center": "B"
+            }
+        },
+        "G": {
+            "type": "Point",
+            "id": "G",
+            "data": {
+                "x": 0.2,
+                "y": 0.0
+            }
+        },
+        "H": {
+            "type": "Point",
+            "id": "H",
+            "data": {
+                "x": -0.2,
+                "y": 0.0
+            }
+        },
+        "GKL": {
+            "type": "Circle",
+            "id": "GKL",
+            "data": {
+                "p1": "G",
+                "p2": "K",
+                "p3": "L",
+                "radius": null,
+                "center": "D"
+            }
+        },
+        "K": {
+            "type": "Point",
+            "id": "K",
+            "data": {
+                "x": -0.6,
+                "y": 0.0
+            }
+        },
+        "BG": {
+            "type": "Line",
+            "id": "BG",
+            "data": {
+                "p1": "B",
+                "p2": "G"
+            }
+        },
+        "DL": {
+            "type": "Line",
+            "id": "DL",
+            "data": {
+                "p1": "D",
+                "p2": "L"
+            }
+        },
+        "DG": {
+            "type": "Line",
+            "id": "DG",
+            "data": {
+                "p1": "D",
+                "p2": "G"
+            }
         }
     },
     "animations": [
@@ -209,36 +214,116 @@
             "B",
             "C",
             "AL",
+            "A",
             "L",
+            "BC",
+            "B",
+            "C",
+            "A",
             "AB",
+            "A",
+            "B",
+            "A",
+            "B",
             "ABD",
+            "A",
+            "B",
             "D",
             "AE",
+            "A",
             "E",
             "BF",
+            "B",
             "F",
             "AD",
+            "A",
+            "D",
             "BD",
+            "B",
+            "D",
             "CGH",
+            "C",
             "G",
             "H",
+            "B",
             "GKL",
+            "G",
             "K",
+            "L",
+            "D",
+            "B",
+            "BC",
+            "B",
+            "C",
             "BG",
+            "B",
+            "G",
+            "D",
             "DL",
-            "DG"
+            "D",
+            "L",
+            "DG",
+            "D",
+            "G",
+            "AD",
+            "A",
+            "D",
+            "BD",
+            "B",
+            "D",
+            "AL",
+            "A",
+            "L",
+            "BG",
+            "B",
+            "G",
+            "BC",
+            "B",
+            "C",
+            "BG",
+            "B",
+            "G",
+            "AL",
+            "A",
+            "L",
+            "BC",
+            "B",
+            "C",
+            "BG",
+            "B",
+            "G",
+            "AL",
+            "A",
+            "L",
+            "BC",
+            "B",
+            "C",
+            "AL",
+            "A",
+            "L",
+            "BC",
+            "B",
+            "C",
+            "A",
+            "B",
+            "C",
+            "D",
+            "A",
+            "H",
+            "G",
+            "K",
+            "F",
+            "L",
+            "E"
         ]
-    ],
-    "text": "Let  <span name=text_point_A style='background-color: #dddddd'>point A</span> be the given point, and  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> the given straigt line. It is required to place a straight  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equal to the given straight  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> with one end at the  <span name=text_point_A style='background-color: #dddddd'>point A</span>. Join the straight  <span name=text_line_AB style='background-color: #dddddd'>line AB</span> from the  <span name=text_point_A style='background-color: #dddddd'>point A</span> to the  <span name=text_point_B style='background-color: #dddddd'>point B</span>, and construct the equilateral  <span name=text_polygon_ABD style='background-color: #dddddd'>Triangle DAB</span>. Produce the straight  <span name=text_line_AE style='background-color: #dddddd'>line AE</span> and straight  <span name=text_line_BF style='background-color: #dddddd'>line BF</span> in a straight line with  <span name=text_line_AD style='background-color: #dddddd'>line DA</span> and  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>. Describe the  <span name=text_circle_CGH style='background-color: #dddddd'>circle CGH</span> with  <span name=text_point_B style='background-color: #dddddd'>center B</span>, and again, descibe the  <span name=text_circle_GKL style='background-color: #dddddd'>circle GKL</span> with  <span name=text_point_D style='background-color: #dddddd'>center D</span>. Since the  <span name=text_point_B style='background-color: #dddddd'>point B</span> is the center of the circle CGH, therefore,  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. Again, since the  <span name=text_point_D style='background-color: #dddddd'>point D</span> is the center of the circle GKL, therefore,  <span name=text_line_DL style='background-color: #dddddd'>line DL</span> equals  <span name=text_line_DG style='background-color: #dddddd'>line DG</span>. And in these,  <span name=text_line_AD style='background-color: #dddddd'>line DA</span> equals  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>, therefore, the remainder  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equals the remainder  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. But  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> was also proved equal to  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>, therefore each of the straight lines  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> and  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. And things which equal the same thing also equal one another, therefore,  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> also equals  <span name=text_line_BC style='background-color: #dddddd'>line BC</span>. Therefore, the straight  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equal to the given straight  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> has been placed with one end at the given  <span name=text_point_A style='background-color: #dddddd'>point A</span>.\n\n\n"
+    ]
 }
 
 		</script>
 	</head>
 	<body>
 	  <div id="text">
-	    Let  <span name=text_point_A style='background-color: #dddddd'>point A</span> be the given point, and  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> the given straigt line. It is required to place a straight  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equal to the given straight  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> with one end at the  <span name=text_point_A style='background-color: #dddddd'>point A</span>. Join the straight  <span name=text_line_AB style='background-color: #dddddd'>line AB</span> from the  <span name=text_point_A style='background-color: #dddddd'>point A</span> to the  <span name=text_point_B style='background-color: #dddddd'>point B</span>, and construct the equilateral  <span name=text_polygon_ABD style='background-color: #dddddd'>Triangle DAB</span>. Produce the straight  <span name=text_line_AE style='background-color: #dddddd'>line AE</span> and straight  <span name=text_line_BF style='background-color: #dddddd'>line BF</span> in a straight line with  <span name=text_line_AD style='background-color: #dddddd'>line DA</span> and  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>. Describe the  <span name=text_circle_CGH style='background-color: #dddddd'>circle CGH</span> with  <span name=text_point_B style='background-color: #dddddd'>center B</span>, and again, descibe the  <span name=text_circle_GKL style='background-color: #dddddd'>circle GKL</span> with  <span name=text_point_D style='background-color: #dddddd'>center D</span>. Since the  <span name=text_point_B style='background-color: #dddddd'>point B</span> is the center of the circle CGH, therefore,  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. Again, since the  <span name=text_point_D style='background-color: #dddddd'>point D</span> is the center of the circle GKL, therefore,  <span name=text_line_DL style='background-color: #dddddd'>line DL</span> equals  <span name=text_line_DG style='background-color: #dddddd'>line DG</span>. And in these,  <span name=text_line_AD style='background-color: #dddddd'>line DA</span> equals  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>, therefore, the remainder  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equals the remainder  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. But  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> was also proved equal to  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>, therefore each of the straight lines  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> and  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals  <span name=text_line_BG style='background-color: #dddddd'>line BG</span>. And things which equal the same thing also equal one another, therefore,  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> also equals  <span name=text_line_BC style='background-color: #dddddd'>line BC</span>. Therefore, the straight  <span name=text_line_AL style='background-color: #dddddd'>line AL</span> equal to the given straight  <span name=text_line_BC style='background-color: #dddddd'>line BC</span> has been placed with one end at the given  <span name=text_point_A style='background-color: #dddddd'>point A</span>.<br>
-        <br>
-        <br>
+	    Let  <span name=text_point_A class='GeoElement'>point A</span> be the given point, and  <span name=text_line_BC class='GeoElement'>line BC</span> the given straigt line. It is required to place a straight  <span name=text_line_AL class='GeoElement'>line AL</span> equal to the given straight  <span name=text_line_BC class='GeoElement'>line BC</span> with one end at the  <span name=text_point_A class='GeoElement'>point A</span>. Join the straight  <span name=text_line_AB class='GeoElement'>line AB</span> from the  <span name=text_point_A class='GeoElement'>point A</span> to the  <span name=text_point_B class='GeoElement'>point B</span>, and construct the equilateral  <span name=text_polygon_ABD class='GeoElement'>Triangle DAB</span>. Produce the straight  <span name=text_line_AE class='GeoElement'>line AE</span> and straight  <span name=text_line_BF class='GeoElement'>line BF</span> in a straight line with  <span name=text_line_AD class='GeoElement'>line DA</span> and  <span name=text_line_BD class='GeoElement'>line DB</span>. Describe the  <span name=text_circle_CGH class='GeoElement'>circle CGH</span> with  <span name=text_point_B class='GeoElement'>center B</span>, and again, descibe the  <span name=text_circle_GKL class='GeoElement'>circle GKL</span> with  <span name=text_point_D class='GeoElement'>center D</span>. Since the  <span name=text_point_B class='GeoElement'>point B</span> is the center of the circle CGH, therefore,  <span name=text_line_BC class='GeoElement'>line BC</span> equals  <span name=text_line_BG class='GeoElement'>line BG</span>. Again, since the  <span name=text_point_D class='GeoElement'>point D</span> is the center of the circle GKL, therefore,  <span name=text_line_DL class='GeoElement'>line DL</span> equals  <span name=text_line_DG class='GeoElement'>line DG</span>. And in these,  <span name=text_line_AD class='GeoElement'>line DA</span> equals  <span name=text_line_BD class='GeoElement'>line DB</span>, therefore, the remainder  <span name=text_line_AL class='GeoElement'>line AL</span> equals the remainder  <span name=text_line_BG class='GeoElement'>line BG</span>. But  <span name=text_line_BC class='GeoElement'>line BC</span> was also proved equal to  <span name=text_line_BG class='GeoElement'>line BG</span>, therefore each of the straight lines  <span name=text_line_AL class='GeoElement'>line AL</span> and  <span name=text_line_BC class='GeoElement'>line BC</span> equals  <span name=text_line_BG class='GeoElement'>line BG</span>. And things which equal the same thing also equal one another, therefore,  <span name=text_line_AL class='GeoElement'>line AL</span> also equals  <span name=text_line_BC class='GeoElement'>line BC</span>. Therefore, the straight  <span name=text_line_AL class='GeoElement'>line AL</span> equal to the given straight  <span name=text_line_BC class='GeoElement'>line BC</span> has been placed with one end at the given  <span name=text_point_A class='GeoElement'>point A</span>.<br>
         
 	  </div>
 	</body>

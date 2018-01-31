@@ -4,15 +4,26 @@
 		<meta charset=utf-8>
 		<title>YouClid</title>
 		<link rel="stylesheet" href="default.css">
-		<script src="js/three.js"></script>
+		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
 		  
 		  window.onload = init
 
 		  geometry = {
-    "text": "Let  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span> be the given circle.\nIt is required to find the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.\nDraw a straight  <span name=text_line_AB style='background-color: #dddddd'>line AB</span> through it at random, and bisect it at the  <span name=text_point_D style='background-color: #dddddd'>point D</span>.\nDraw  <span name=text_line_CD style='background-color: #dddddd'>line DC</span> from  <span name=text_point_D style='background-color: #dddddd'>point D</span> at right angles to  <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, and draw it through to  <span name=text_point_E style='background-color: #dddddd'>point E</span>.\nBisect  <span name=text_line_CE style='background-color: #dddddd'>line CE</span> at  <span name=text_point_F style='background-color: #dddddd'>point F</span>.\nI say that  <span name=text_point_F style='background-color: #dddddd'>center F</span> is the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.\nFor suppose it is not, but, if possible, let  <span name=text_point_G style='background-color: #dddddd'>point G</span> be the center. Join  <span name=text_line_AG style='background-color: #dddddd'>line GA</span>,  <span name=text_line_DG style='background-color: #dddddd'>line GD</span>, and  <span name=text_line_BG style='background-color: #dddddd'>line GB</span>.\nThen, since  <span name=text_line_AD style='background-color: #dddddd'>line AD</span> equals  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>, and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> is common, the two sides  <span name=text_line_AD style='background-color: #dddddd'>line AD</span> and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> equal the two sides  <span name=text_line_BD style='background-color: #dddddd'>line BD</span> and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> respectively.\nAnd the base  <span name=text_line_AG style='background-color: #dddddd'>line GA</span> equals the base  <span name=text_line_BG style='background-color: #dddddd'>line GB</span>, for they are radii, therefore the angle ADG equals the angle GDB.\nBut, when a straight line standing on a straight line makes the adjacent angles equal to one another, each of the equal angles is right, therefore the angle GDB is right.\nBut the angle FDB is also right, therefore the angle FDB equals the angle GDB, the greater equals the less, which is impossible. Therefore  <span name=text_point_G style='background-color: #dddddd'>point G</span> is not the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.\nSimilarly we can prove that neither is any other point except  <span name=text_point_F style='background-color: #dddddd'>point F</span>.\nTherefore the  <span name=text_point_F style='background-color: #dddddd'>point F</span> is the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.\n\n",
+    "text": "Let  <span name=text_circle_ABC class='GeoElement'>circle ABC</span> be the given circle.\nIt is required to find the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.\nDraw a straight  <span name=text_line_AB class='GeoElement'>line AB</span> through it at random, and bisect it at the  <span name=text_point_D class='GeoElement'>point D</span>.\nDraw  <span name=text_line_CD class='GeoElement'>line DC</span> from  <span name=text_point_D class='GeoElement'>point D</span> at right angles to  <span name=text_line_AB class='GeoElement'>line AB</span>, and draw it through to  <span name=text_point_E class='GeoElement'>point E</span>.\nBisect  <span name=text_line_CE class='GeoElement'>line CE</span> at  <span name=text_point_F class='GeoElement'>point F</span>.\nI say that  <span name=text_point_F class='GeoElement'>center F</span> is the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.\nFor suppose it is not, but, if possible, let  <span name=text_point_G class='GeoElement'>point G</span> be the center. Join  <span name=text_line_AG class='GeoElement'>line GA</span>,  <span name=text_line_DG class='GeoElement'>line GD</span>, and  <span name=text_line_BG class='GeoElement'>line GB</span>.\nThen, since  <span name=text_line_AD class='GeoElement'>line AD</span> equals  <span name=text_line_BD class='GeoElement'>line DB</span>, and  <span name=text_line_DG class='GeoElement'>line DG</span> is common, the two sides  <span name=text_line_AD class='GeoElement'>line AD</span> and  <span name=text_line_DG class='GeoElement'>line DG</span> equal the two sides  <span name=text_line_BD class='GeoElement'>line BD</span> and  <span name=text_line_DG class='GeoElement'>line DG</span> respectively.\nAnd the base  <span name=text_line_AG class='GeoElement'>line GA</span> equals the base  <span name=text_line_BG class='GeoElement'>line GB</span>, for they are radii, therefore the angle ADG equals the angle GDB.\nBut, when a straight line standing on a straight line makes the adjacent angles equal to one another, each of the equal angles is right, therefore the angle GDB is right.\nBut the angle FDB is also right, therefore the angle FDB equals the angle GDB, the greater equals the less, which is impossible. Therefore  <span name=text_point_G class='GeoElement'>point G</span> is not the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.\nSimilarly we can prove that neither is any other point except  <span name=text_point_F class='GeoElement'>point F</span>.\nTherefore the  <span name=text_point_F class='GeoElement'>point F</span> is the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.\n",
     "geometry": {
+        "ABC": {
+            "type": "Circle",
+            "id": "ABC",
+            "data": {
+                "p1": "A",
+                "p2": "B",
+                "p3": "C",
+                "radius": null,
+                "center": "F"
+            }
+        },
         "A": {
             "type": "Point",
             "id": "A",
@@ -37,6 +48,14 @@
                 "y": 0.5
             }
         },
+        "AB": {
+            "type": "Line",
+            "id": "AB",
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
         "D": {
             "type": "Point",
             "id": "D",
@@ -45,12 +64,28 @@
                 "y": -0.3
             }
         },
+        "CD": {
+            "type": "Line",
+            "id": "CD",
+            "data": {
+                "p1": "C",
+                "p2": "D"
+            }
+        },
         "E": {
             "type": "Point",
             "id": "E",
             "data": {
                 "x": 0.0,
                 "y": -0.5
+            }
+        },
+        "CE": {
+            "type": "Line",
+            "id": "CE",
+            "data": {
+                "p1": "C",
+                "p2": "E"
             }
         },
         "F": {
@@ -67,40 +102,6 @@
             "data": {
                 "x": 0.1,
                 "y": -0.05
-            }
-        },
-        "ABC": {
-            "type": "Circle",
-            "id": "ABC",
-            "data": {
-                "p1": "A",
-                "p2": "B",
-                "p3": "C",
-                "center": "F"
-            }
-        },
-        "AB": {
-            "type": "Line",
-            "id": "AB",
-            "data": {
-                "p1": "A",
-                "p2": "B"
-            }
-        },
-        "CD": {
-            "type": "Line",
-            "id": "CD",
-            "data": {
-                "p1": "C",
-                "p2": "D"
-            }
-        },
-        "CE": {
-            "type": "Line",
-            "id": "CE",
-            "data": {
-                "p1": "C",
-                "p2": "E"
             }
         },
         "AG": {
@@ -146,22 +147,22 @@
     },
     "animations": [
         [
-            "ABC",
-            "A",
             "B",
             "C",
-            "AB",
-            "D",
-            "CD",
-            "E",
-            "CE",
-            "F",
             "G",
-            "AG",
-            "DG",
+            "CE",
             "BG",
+            "D",
+            "A",
+            "DG",
             "AD",
-            "BD"
+            "ABC",
+            "AB",
+            "CD",
+            "BD",
+            "F",
+            "AG",
+            "E"
         ]
     ]
 }
@@ -170,20 +171,19 @@
 	</head>
 	<body>
 	  <div id="text">
-	    Let  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span> be the given circle.<br>
-        It is required to find the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.<br>
-        Draw a straight  <span name=text_line_AB style='background-color: #dddddd'>line AB</span> through it at random, and bisect it at the  <span name=text_point_D style='background-color: #dddddd'>point D</span>.<br>
-        Draw  <span name=text_line_CD style='background-color: #dddddd'>line DC</span> from  <span name=text_point_D style='background-color: #dddddd'>point D</span> at right angles to  <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, and draw it through to  <span name=text_point_E style='background-color: #dddddd'>point E</span>.<br>
-        Bisect  <span name=text_line_CE style='background-color: #dddddd'>line CE</span> at  <span name=text_point_F style='background-color: #dddddd'>point F</span>.<br>
-        I say that  <span name=text_point_F style='background-color: #dddddd'>center F</span> is the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.<br>
-        For suppose it is not, but, if possible, let  <span name=text_point_G style='background-color: #dddddd'>point G</span> be the center. Join  <span name=text_line_AG style='background-color: #dddddd'>line GA</span>,  <span name=text_line_DG style='background-color: #dddddd'>line GD</span>, and  <span name=text_line_BG style='background-color: #dddddd'>line GB</span>.<br>
-        Then, since  <span name=text_line_AD style='background-color: #dddddd'>line AD</span> equals  <span name=text_line_BD style='background-color: #dddddd'>line DB</span>, and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> is common, the two sides  <span name=text_line_AD style='background-color: #dddddd'>line AD</span> and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> equal the two sides  <span name=text_line_BD style='background-color: #dddddd'>line BD</span> and  <span name=text_line_DG style='background-color: #dddddd'>line DG</span> respectively.<br>
-        And the base  <span name=text_line_AG style='background-color: #dddddd'>line GA</span> equals the base  <span name=text_line_BG style='background-color: #dddddd'>line GB</span>, for they are radii, therefore the angle ADG equals the angle GDB.<br>
+	    Let  <span name=text_circle_ABC class='GeoElement'>circle ABC</span> be the given circle.<br>
+        It is required to find the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.<br>
+        Draw a straight  <span name=text_line_AB class='GeoElement'>line AB</span> through it at random, and bisect it at the  <span name=text_point_D class='GeoElement'>point D</span>.<br>
+        Draw  <span name=text_line_CD class='GeoElement'>line DC</span> from  <span name=text_point_D class='GeoElement'>point D</span> at right angles to  <span name=text_line_AB class='GeoElement'>line AB</span>, and draw it through to  <span name=text_point_E class='GeoElement'>point E</span>.<br>
+        Bisect  <span name=text_line_CE class='GeoElement'>line CE</span> at  <span name=text_point_F class='GeoElement'>point F</span>.<br>
+        I say that  <span name=text_point_F class='GeoElement'>center F</span> is the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.<br>
+        For suppose it is not, but, if possible, let  <span name=text_point_G class='GeoElement'>point G</span> be the center. Join  <span name=text_line_AG class='GeoElement'>line GA</span>,  <span name=text_line_DG class='GeoElement'>line GD</span>, and  <span name=text_line_BG class='GeoElement'>line GB</span>.<br>
+        Then, since  <span name=text_line_AD class='GeoElement'>line AD</span> equals  <span name=text_line_BD class='GeoElement'>line DB</span>, and  <span name=text_line_DG class='GeoElement'>line DG</span> is common, the two sides  <span name=text_line_AD class='GeoElement'>line AD</span> and  <span name=text_line_DG class='GeoElement'>line DG</span> equal the two sides  <span name=text_line_BD class='GeoElement'>line BD</span> and  <span name=text_line_DG class='GeoElement'>line DG</span> respectively.<br>
+        And the base  <span name=text_line_AG class='GeoElement'>line GA</span> equals the base  <span name=text_line_BG class='GeoElement'>line GB</span>, for they are radii, therefore the angle ADG equals the angle GDB.<br>
         But, when a straight line standing on a straight line makes the adjacent angles equal to one another, each of the equal angles is right, therefore the angle GDB is right.<br>
-        But the angle FDB is also right, therefore the angle FDB equals the angle GDB, the greater equals the less, which is impossible. Therefore  <span name=text_point_G style='background-color: #dddddd'>point G</span> is not the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.<br>
-        Similarly we can prove that neither is any other point except  <span name=text_point_F style='background-color: #dddddd'>point F</span>.<br>
-        Therefore the  <span name=text_point_F style='background-color: #dddddd'>point F</span> is the center of the  <span name=text_circle_ABC style='background-color: #dddddd'>circle ABC</span>.<br>
-        <br>
+        But the angle FDB is also right, therefore the angle FDB equals the angle GDB, the greater equals the less, which is impossible. Therefore  <span name=text_point_G class='GeoElement'>point G</span> is not the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.<br>
+        Similarly we can prove that neither is any other point except  <span name=text_point_F class='GeoElement'>point F</span>.<br>
+        Therefore the  <span name=text_point_F class='GeoElement'>point F</span> is the center of the  <span name=text_circle_ABC class='GeoElement'>circle ABC</span>.<br>
         
 	  </div>
 	</body>
