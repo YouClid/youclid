@@ -4,6 +4,7 @@ import argparse
 import json
 import random
 import re
+import shlex
 from youclidbackend import primitives
 from pprint import pprint
 
@@ -138,44 +139,14 @@ def parse(text):
     return create_output(obj_dict, text, animations)
 
 def _tokenize(match):
-
-    match = match.split()
-    tokens = []
-    quotes = []
-    sqstart = False
-    dqstart = False
-    for token in match:
-        if token[0] == '"' and not sqstart:
-            dqstart = True
-        if token[0] == "'" and not dqstart:
-            sqstart = True
-        if token[-1] == '"' and dbstart:
-            if len(token) > 1 and not token[-2] == '\\':
-                quotes.append(token)
-                tokens.append(" ".join(quotes))
-                quotes = []
-                dbstart = False
-        if token[-1] == "'" and sbstart:
-            if len(token) > 1 and not token[-2] == '\\':
-                quotes.append(token)
-                tokens.append(" ".join(quotes))
-                quotes = []
-                sbstart = False
-        if sqstart or dqstart:
-            quotes.append(token)
-        else:
-            tokens.append(token)
-    return tokens
-
+    return shlex.split(match)
 
 def _parse_match(whole_match):
     # Dictionary of named arguments
     args_dict = {}
 
     # Split the match up by spaces
-    #partials = whole_match.split()
     partials = _tokenize(whole_match)
-
     # The type will always be the first thing
     args_dict['type'] = partials[0]
 
