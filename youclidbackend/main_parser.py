@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import argparse
-import re
 import json
+import random
+import re
 from youclidbackend import primitives
 from pprint import pprint
 
@@ -66,7 +67,9 @@ def extract(text):
 
 
 def random_color():
-    pass
+    r = lambda: random.randint(0, 255)
+    return '#%02X%02X%02X%02X' % (r(),r(),r(),r())
+
 
 
 def parse(text):
@@ -98,9 +101,9 @@ def parse(text):
             raise e
         # Call the appropriate parser function
         obj = f(args_dict)
-        obj.color = (args_dict['color'] if args_dict.get('color', False)
+        obj[0].color = (args_dict['color'] if args_dict.get('color', False)
                      else random_color())
-        obj.color = hex_to_rgba(obj.color)
+        obj[0].color = hex_to_rgba(obj[0].color)
 
         # Now we need to handle the return value
 
@@ -171,7 +174,8 @@ def create_output(d, text, animations):
         output['geometry'][v.name] = {
                                       'type': v.__class__.__name__,
                                       'id': v.name,
-                                      'data': v.__dict__()
+                                      'color': v.color,
+                                      'data': v.__dict__(),
                                      }
 
     return output
