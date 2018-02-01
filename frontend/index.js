@@ -34,7 +34,7 @@ function makeRender(geometry, step) {
                 obj.data.center = center
             }
 	        // The center is given as a point (something like "A")
-            else if(!obj.data.center.x) {
+            else if(typeof(obj.data.center) === 'string') {
                 obj.data.center = objects[obj.data.center]
             }
         }
