@@ -1,4 +1,6 @@
-class Circle:
+from youclidbackend.primitives import YouClidObject
+
+class Circle(YouClidObject):
     """Represents a circle in 2D"""
     def __init__(self, name):
         self.name = name
@@ -7,6 +9,7 @@ class Circle:
         self.p3 = None
         self.center = None
         self.radius = None
+        super().__init__()
 
     def __str__(self):
         return "Circle %s(%s, %s, %s)" % (str(self.name),
