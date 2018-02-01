@@ -13,21 +13,32 @@ function makeRender(geometry, step) {
     let toDraw = geometry.animations[step]
     let objects = geometry.geometry
     for(let key in objects) {
-	let obj = objects[key]
-	if(obj.type === "Circle") {
-	    if(!obj.data.center || !obj.data.radius) {
-		let circle = circleFromPoints(objects[obj.data.p1].data,
-					      objects[obj.data.p2].data,
-					      objects[obj.data.p3].data)
-		obj.data.center = circle.center
-		obj.data.radius = circle.radius
-	    }
-	    else if(!obj.data.center.x){
-		obj.data.center = objects[obj.data.center].data
-	    }
-	}
+        let obj = objects[key]
+        if(obj.type === "Circle") {
+            if(!obj.data.center && !obj.data.radius) {
+            let circle = circleFromPoints(objects[obj.data.p1].data,
+                              objects[obj.data.p2].data,
+                              objects[obj.data.p3].data)
+            obj.data.center = circle.center
+            obj.data.radius = circle.radius
+            }
+            else if (!obj.data.radius && obj.data.center) {
+                // Get the coordinates of a point on the circle
+                let otherPoint = objects[obj.data.p1].data
+                // Get the coordinates of the center of the circle
+                let center = objects[obj.data.center].data
+                // Compute the distance from the center to a point (the radius)
+                obj.data.radius = dist(center, otherPoint)
+                // Update the center of the circle to be the coordinates of
+                // the center
+                obj.data.center = center
+            }
+	        // The center is given as a point (something like "A")
+            else if(!obj.data.center.x) {
+                obj.data.center = objects[obj.data.center]
+            }
+        }
     }
-    console.log(geometry)
     return function(visual) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
