@@ -1,4 +1,4 @@
-Let [line AB color=#ffffffff] be the given finite straight line.
+Let [line AB color=#ff0000ff] be the given finite straight line.
 It is required to construct an equilateral triangle on the straight [line AB]. [step]
 Describe the [circle BCD name=BCD] with [center A circle=BCD] and radius [line AB]. [step]
 Again describe the [circle ACE name=ACE] with [center B circle=ACE] and radius [line BA]. [step]
