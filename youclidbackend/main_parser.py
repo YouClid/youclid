@@ -67,13 +67,13 @@ def extract(text):
 
 
 def default_color(t):
-    if t in set(primitives.Point):
+    if t in [primitives.Point]:
         return '#%02X%02X%02X%02X' % (255, 255, 255, 255)
-    if t in set(primitives.Line):
+    if t in [primitives.Line]:
         return '#%02X%02X%02X%02X' % (0, 255, 0, 255)
-    if t in set(primitives.Circle):
+    if t in [primitives.Circle]:
         return '#%02X%02X%02X%02X' % (255, 0, 255, 255)
-    if t in set(primitives.Polygon):
+    if t in [primitives.Polygon]:
         return '#%02X%02X%02X%02X' % (255, 0, 0, 255)
     raise Exception("Undefined geometric object")
 
