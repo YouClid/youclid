@@ -33,9 +33,8 @@ function makeRender(geometry, step) {
                 // the center
                 obj.data.center = center
             }
-            // radius and center defined
-            // TODO: Untested
-            else {
+	    // The center is given as a point (something like "A")
+            else if(!obj.data.center.x) {
                 obj.data.center = objects[obj.data.center]
             }
         }
