@@ -68,8 +68,7 @@ def extract(text):
 
 def random_color():
     r = lambda: random.randint(0, 255)
-    return '#%02X%02X%02X%02X' % (r(),r(),r(),r())
-
+    return '#%02X%02X%02X%02X' % (r(), r(), r(), 255)
 
 
 def parse(text):
@@ -197,7 +196,7 @@ def format_text(text):
     text = '\n'.join(text)
 
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
-    #pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(regex, get_text, text)
 
     return replaced
@@ -414,9 +413,11 @@ def hex_to_rgba(s):
     line = s[1:]
     # Return a list of each pair of hex digits divided by 255 (FF)
     color = list(map(lambda x: int(x, 16)/255,
-                    [line[i:i+2] for i in range(0, len(line), 2)]))
+                 [line[i:i+2] for i in range(0, len(line), 2)]))
     while len(color) < 4:
-        val = 1.0 if len(color) == 3 else 0.0  # Other colors should default to 0 if not specified, but alpha should be 1.
+        # Other colors should default to 0 if not specified, but alpha
+        # should be 1.
+        val = 1.0 if len(color) == 3 else 0.0
         color.append(val)
     return color
 
