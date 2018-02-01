@@ -120,7 +120,7 @@ def parse(text):
                 color = args_dict['color']
             elif obj[0].color is None:
                 color = random_color()
-            obj[0].color = hex_to_rgba(color)
+                obj[0].color = hex_to_rgba(color)
             curr_step.extend(e.name for e in obj)
 
     # Ensure that we have something in the animations variable
