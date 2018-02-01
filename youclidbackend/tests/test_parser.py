@@ -1,5 +1,7 @@
 import unittest
+
 import youclidbackend
+from youclidbackend import colors
 
 
 class TestParser(unittest.TestCase):
@@ -863,7 +865,8 @@ class TestParser(unittest.TestCase):
                                        'data': {
                                                 'x': None,
                                                 'y': None
-                                               }
+                                               },
+                                       'color': colors.WHITE
                                       }
                                },
                     'animations': [['A']]
@@ -882,7 +885,8 @@ class TestParser(unittest.TestCase):
                                        'data': {
                                                 'x': None,
                                                 'y': None
-                                               }
+                                               },
+                                       'color': colors.WHITE
                                       }
                                },
                     'animations': [['A']]
@@ -901,7 +905,8 @@ class TestParser(unittest.TestCase):
                                        'data': {
                                                 'x': None,
                                                 'y': None
-                                               }
+                                               },
+                                       'color': colors.WHITE
                                       },
                                  'B': {
                                        'type': 'Point',
@@ -909,7 +914,8 @@ class TestParser(unittest.TestCase):
                                        'data': {
                                                 'x': None,
                                                 'y': None
-                                               }
+                                               },
+                                       'color': colors.WHITE
                                       },
                                  'AB': {
                                         'type': "Line",
@@ -917,7 +923,8 @@ class TestParser(unittest.TestCase):
                                         'data': {
                                                  'p1': "A",
                                                  "p2": "B"
-                                                }
+                                                },
+                                        'color': colors.GREEN
                                        }
                                },
                     'animations': [['A']]

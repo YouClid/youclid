@@ -2,10 +2,9 @@
 
 import argparse
 import json
-import random
 import re
 import shlex
-from youclidbackend import primitives
+from youclidbackend import primitives, colors
 from pprint import pprint
 
 polygons = {3: "Triangle",
@@ -67,18 +66,6 @@ def extract(text):
     return re.finditer(regex, text)
 
 
-def default_color(t):
-    if t in [primitives.Point]:
-        return '#%02X%02X%02X%02X' % (255, 255, 255, 255)
-    if t in [primitives.Line]:
-        return '#%02X%02X%02X%02X' % (0, 255, 0, 255)
-    if t in [primitives.Circle]:
-        return '#%02X%02X%02X%02X' % (255, 0, 255, 255)
-    if t in [primitives.Polygon]:
-        return '#%02X%02X%02X%02X' % (255, 0, 0, 255)
-    raise Exception("Undefined geometric object")
-
-
 def parse(text):
     parsers = CaseInsensitiveDictionary({
                                          "line": parse_line,
@@ -126,9 +113,6 @@ def parse(text):
             if args_dict.get('color', False):
                 color = args_dict['color']
                 obj[0].color = hex_to_rgba(color)
-            elif obj[0].color is None:
-                color = default_color(type(obj[0]))
-                obj[0].color = hex_to_rgba(color)
             curr_step.extend(e.name for e in obj)
 
     # Ensure that we have something in the animations variable
@@ -138,8 +122,10 @@ def parse(text):
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
+
 def _tokenize(match):
     return shlex.split(match)
+
 
 def _parse_match(whole_match):
     # Dictionary of named arguments
