@@ -139,7 +139,7 @@ def _parse_match(whole_match):
     partials = whole_match.split()
 
     # The type will always be the first thing
-    args_dict['type'] = partials[0].title()
+    args_dict['type'] = partials[0]
 
     # Check to see if the second argument is a name
     if len(partials) > 1 and '=' not in partials[1]:
@@ -205,6 +205,7 @@ def format_text(text):
 def get_text(match):
     match = match[1]
     args_dict = _parse_match(match)
+    args_dict['type'] = args_dict['type'].title()
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
@@ -365,7 +366,7 @@ def parse_location(keyword_args):
     name = keyword_args["name"]
     x = float(keyword_args["x"])
     y = float(keyword_args["y"])
-    if obj_dict.get("name"):
+    if obj_dict.get(name):
         o = obj_dict[name]
     else:
         o = primitives.Point(keyword_args["name"])
