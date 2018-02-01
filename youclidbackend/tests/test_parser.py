@@ -934,6 +934,153 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result['geometry'], expected['geometry'])
         self.subtest_list_equal(result['animations'], expected['animations'])
 
+        youclidbackend.main_parser.obj_dict = {}
+        text = """
+Let [line AB color=#ffffff] be the given finite straight line.
+It is required to construct an equilateral triangle on the straight
+[line AB]. [step] Describe the [circle BCD name=BCD] with
+[center A circle=BCD] and radius [line AB]. [step] Again describe the
+[circle ACE name=ACE] with [center B circle=ACE] and radius [line BA]. [step]
+Join the straight lines [line CA] and [line CB] from the [point C] at which
+the circles cut one another to the points [point A] and [point B]. [step] Now,
+since the [point A] is the center of the [circle CDB name=BCD], therefore
+[line AC] equals [line AB]. Again, since the [point B] is the center of the
+[circle CAE name=ACE], therefore [line BC] equals [line BA]. But [line AC] was
+proved equal to [line AB], therefore each of the straight lines [line AC]
+and [line BC] equals [line AB]. And things which equal the same thing also
+equal one another, therefore [line AC] also equals [line BC]. Therefore the
+three straight lines [line AC], [line AB], and [line BC] equal one another.
+Therefore the [polygon ABC] is equilateral, and it has been constructed on
+the given finite straight [line AB].
+[clear]
+[polygon ABC] [step]
+
+[loc A x=-0.25 y=0]
+[loc B x=0.25 y=0]
+[loc C x=0 y=0.433]
+[loc D x=-0.75 y=0]
+[loc E x=0.75 y=0]
+               """
+        result = youclidbackend.main_parser.parse(text)
+        expected = {
+                    'text': '',
+                    'geometry': {
+                                 'A': {
+                                       'type': 'Point',
+                                       'id': 'A',
+                                       'data': {
+                                                'x': -0.25,
+                                                'y': 0
+                                               },
+                                       'color': colors.WHITE
+                                      },
+                                 'B': {
+                                       'type': 'Point',
+                                       'id': 'B',
+                                       'data': {
+                                                'x': 0.25,
+                                                'y': 0
+                                               },
+                                       'color': colors.WHITE
+                                      },
+                                 'C': {
+                                       'type': 'Point',
+                                       'id': 'C',
+                                       'data': {
+                                                'x': 0,
+                                                'y': 0.433
+                                               },
+                                       'color': colors.WHITE
+                                      },
+                                 'D': {
+                                       'type': 'Point',
+                                       'id': 'D',
+                                       'data': {
+                                                'x': -0.75,
+                                                'y': 0
+                                               },
+                                       'color': colors.WHITE
+                                      },
+                                 'E': {
+                                       'type': 'Point',
+                                       'id': 'E',
+                                       'data': {
+                                                'x': 0.75,
+                                                'y': 0
+                                               },
+                                       'color': colors.WHITE
+                                      },
+                                 'AB': {
+                                        'type': "Line",
+                                        'id': "AB",
+                                        'data': {
+                                                 'p1': "A",
+                                                 "p2": "B"
+                                                },
+                                        'color': colors.WHITE
+                                       },
+                                 'AC': {
+                                        'type': "Line",
+                                        'id': "AC",
+                                        'data': {
+                                                 'p1': "A",
+                                                 "p2": "C"
+                                                },
+                                        'color': colors.GREEN
+                                       },
+                                 'BC': {
+                                        'type': "Line",
+                                        'id': "BC",
+                                        'data': {
+                                                 'p1': "B",
+                                                 "p2": "C"
+                                                },
+                                        'color': colors.GREEN
+                                       },
+                                 'ABC': {
+                                         'type': 'Polygon',
+                                         'id': 'ABC',
+                                         'data': {
+                                                  'points': ['A', 'B', 'C']
+                                                 },
+                                         'color': colors.RED
+                                        },
+                                 'BCD': {
+                                         'type': 'Circle',
+                                         'id': 'BCD',
+                                         'data': {
+                                                  'center': 'A',
+                                                  'p1': "B",
+                                                  'p2': "C",
+                                                  'p3': "D",
+                                                  'radius': None
+                                                 },
+                                         'color': colors.PURPLE
+                                        },
+                                 'ACE': {
+                                         'type': 'Circle',
+                                         'id': 'ACE',
+                                         'data': {
+                                                  'center': 'B',
+                                                  'p1': "A",
+                                                  'p2': "C",
+                                                  'p3': "E",
+                                                  'radius': None
+                                                 },
+                                         'color': colors.PURPLE
+                                        }
+                                },
+                    'animations': [
+                                   ['A', 'B', 'AB'],
+                                   ['BCD', 'AB', 'A', 'B', 'C', 'D'],
+                                   ['AB', 'ACE', 'BCD', 'A', 'B', 'C', 'D', 'E'],
+                                   ['AB', 'AC', 'BC', 'ACE', 'BCD', 'A', 'B', 'C', 'D', 'E'],
+                                   ['ABC', 'A', 'B', 'C']
+                                  ]
+                   }
+        self.assertEqual(result['geometry'], expected['geometry'])
+        self.subtest_list_equal(result['animations'], expected['animations'])
+
     def subtest_list_equal(self, result, expected):
         """List of list subtest not caring about order of the inner list"""
         for i in range(len(result)):
