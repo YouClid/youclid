@@ -132,7 +132,7 @@ def parse(text):
 
     # Ensure that we have something in the animations variable
     if(len(animations) == 0):
-        animations.append(curr_step[:])
+        animations.append(curr_step)
 
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
