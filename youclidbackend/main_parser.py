@@ -97,6 +97,9 @@ def parse(text):
         obj = f(args_dict)
         # Now we need to handle the return value
 
+        # Don't do anything special for locations
+        if args_dict["type"] == "loc":
+            continue
         # If there is no return value, move on to the next call
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
@@ -117,8 +120,7 @@ def parse(text):
                 curr_step.add(e.name)
 
     # Ensure that we have something in the animations variable
-    if(len(animations) == 0):
-        animations.append([x for x in curr_step])
+    animations.append([x for x in curr_step])
 
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
