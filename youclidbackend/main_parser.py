@@ -66,9 +66,16 @@ def extract(text):
     return re.finditer(regex, text)
 
 
-def random_color():
-    r = lambda: random.randint(0, 255)
-    return '#%02X%02X%02X%02X' % (r(), r(), r(), 255)
+def default_color(t):
+    if t in set(primitives.Point):
+        return '#%02X%02X%02X%02X' % (255, 255, 255, 255)
+    if t in set(primitives.Line):
+        return '#%02X%02X%02X%02X' % (0, 255, 0, 255)
+    if t in set(primitives.Circle):
+        return '#%02X%02X%02X%02X' % (255, 0, 255, 255)
+    if t in set(primitives.Polygon):
+        return '#%02X%02X%02X%02X' % (255, 0, 0, 255)
+    raise Exception("Undefined geometric object")
 
 
 def parse(text):
@@ -119,7 +126,7 @@ def parse(text):
                 color = args_dict['color']
                 obj[0].color = hex_to_rgba(color)
             elif obj[0].color is None:
-                color = random_color()
+                color = default_color(type(obj[0]))
                 obj[0].color = hex_to_rgba(color)
             curr_step.extend(e.name for e in obj)
 
