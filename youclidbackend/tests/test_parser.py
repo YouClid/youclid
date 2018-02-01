@@ -871,7 +871,8 @@ class TestParser(unittest.TestCase):
                                },
                     'animations': [['A']]
                    }
-        self.assertEqual(result, expected)
+        self.assertEqual(result['geometry'], expected['geometry'])
+        self.subtest_list_equal(result['animations'], expected['animations'])
 
         youclidbackend.main_parser.obj_dict = {}
         text = "This is a point [point A]"
@@ -892,6 +893,7 @@ class TestParser(unittest.TestCase):
                     'animations': [['A']]
                    }
         self.assertEqual(result['geometry'], expected['geometry'])
+        self.subtest_list_equal(result['animations'], expected['animations'])
 
         youclidbackend.main_parser.obj_dict = {}
         text = "[point A][line AB]"
@@ -927,9 +929,17 @@ class TestParser(unittest.TestCase):
                                         'color': colors.GREEN
                                        }
                                },
-                    'animations': [['A']]
+                    'animations': [['A', 'B', 'AB']]
                    }
         self.assertEqual(result['geometry'], expected['geometry'])
+        self.subtest_list_equal(result['animations'], expected['animations'])
+
+    def subtest_list_equal(self, result, expected):
+        """List of list subtest not caring about order of the inner list"""
+        for i in range(len(result)):
+            self.assertCountEqual(result[i], expected[i])
+        for i in range(len(expected)):
+            self.assertCountEqual(result[i], expected[i])
 
     def test_html_generation(self):
         """TODO: Maybe we want to do this?"""

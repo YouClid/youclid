@@ -81,7 +81,7 @@ def parse(text):
     # A list of the objects that need to be drawn at each step
     animations = []
     # Ojbects that we've added at this step
-    curr_step = []
+    curr_step = set()
 
     # Iterate over all matches in the text
     for match in extract(text):
@@ -103,21 +103,22 @@ def parse(text):
         if type(obj[0]) == _Step:
             if len(curr_step) > 0:
                 # Add all unique objects we touched to the current animation
-                animations.append([x for x in set(curr_step)])
+                animations.append([x for x in curr_step])
         # Otherwise, if we parsed a clear, reset curr_step
         elif type(obj[0]) == _Clear:
-            curr_step = []
+            curr_step = set()
         # Otherwise, we created some object, so add them to the current step
         # for display purposes
         else:
             if args_dict.get('color', False):
                 color = args_dict['color']
                 obj[0].color = hex_to_rgba(color)
-            curr_step.extend(e.name for e in obj)
+            for e in obj:
+                curr_step.add(e.name)
 
     # Ensure that we have something in the animations variable
     if(len(animations) == 0):
-        animations.append(curr_step[:])
+        animations.append([x for x in curr_step])
 
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
