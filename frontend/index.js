@@ -46,6 +46,8 @@ function makeRender(geometry, step) {
 	    let color = objects[id].color
 
 	    switch(geo.type) {
+	    case "Point":
+		break;
 	    case "Line":
 		visual.drawLine(geo.id,
 				objects[geo.data.p1].data,
