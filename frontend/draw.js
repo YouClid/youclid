@@ -48,8 +48,16 @@ class Visual {
 	let canvas = document.createElement('canvas')
 	document.body.appendChild( canvas )
 
-	canvas.width = this.size
-	canvas.height = this.size
+	// canvas.width = this.size
+	// canvas.height = this.size
+
+	canvas.style.width = this.size + "px";
+	canvas.style.height = this.size + "px";
+
+	// set the size of the drawingBuffer
+	var devicePixelRatio = window.devicePixelRatio || 1;
+	canvas.width = this.size * devicePixelRatio;
+	canvas.height = this.size * devicePixelRatio;
 
 	let gl = canvas.getContext('webgl')
 	
@@ -455,6 +463,8 @@ function onResize( event ) {
     this.gl.canvas.clientHeight =  this.size
     this.gl.canvas.width  =  drawSize
     this.gl.canvas.height =  drawSize
+    this.gl.canvas.style.width  =  this.size
+    this.gl.canvas.style.height =  this.size
     this.gl.viewport(0, 0, this.size, this.size)
     this.update()
 }
