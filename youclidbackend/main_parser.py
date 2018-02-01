@@ -118,6 +118,7 @@ def parse(text):
         else:
             if args_dict.get('color', False):
                 color = args_dict['color']
+                obj[0].color = hex_to_rgba(color)
             elif obj[0].color is None:
                 color = random_color()
                 obj[0].color = hex_to_rgba(color)
