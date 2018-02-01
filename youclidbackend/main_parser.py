@@ -101,9 +101,11 @@ def parse(text):
             raise e
         # Call the appropriate parser function
         obj = f(args_dict)
-        obj[0].color = (args_dict['color'] if args_dict.get('color', False)
-                     else random_color())
-        obj[0].color = hex_to_rgba(obj[0].color)
+        if args_dict.get('color', False):
+            color = args_dict['color']
+        elif obj[0].color is None:
+            color = random_color()
+        obj[0].color = hex_to_rgba(color)
 
         # Now we need to handle the return value
 
