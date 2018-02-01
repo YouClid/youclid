@@ -450,7 +450,7 @@ function onResize( event ) {
     this.canvasRect = this.gl.canvas.getBoundingClientRect()
     this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
     let realToCSSPixels = window.devicePixelRatio
-    let drawSize = math.floor(this.size * realToCSSPixels)
+    let drawSize = Math.floor(this.size * realToCSSPixels)
     this.gl.canvas.clientWidth  =  this.size
     this.gl.canvas.clientHeight =  this.size
     this.gl.canvas.width  =  drawSize
