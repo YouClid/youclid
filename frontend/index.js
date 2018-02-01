@@ -33,7 +33,7 @@ function makeRender(geometry, step) {
                 // the center
                 obj.data.center = center
             }
-	    // The center is given as a point (something like "A")
+	        // The center is given as a point (something like "A")
             else if(!obj.data.center.x) {
                 obj.data.center = objects[obj.data.center]
             }
@@ -43,26 +43,36 @@ function makeRender(geometry, step) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
-	    let red = [1.0, 0.0, 0.0, 1.0]
+	    let color = objects[id].color
 
 	    switch(geo.type) {
 	    case "Point":
-		visual.drawPoint(geo.id, geo.data, red)
 		break;
 	    case "Line":
 		visual.drawLine(geo.id,
 				objects[geo.data.p1].data,
 				objects[geo.data.p2].data,
-				red)
+				color)
 		break;
 	    case "Circle":
-		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, red)
+		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
 		break;
 	    case "Polygon":
-		visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), red)
+		visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
+	    }
+	}
+	
+	// Draw points last
+	for(let i = 0; i < toDraw.length; i++) {
+	    let id = toDraw[i]
+	    let geo = objects[id]
+	    let color = objects[id].color
+
+	    if(geo.type === "Point") {
+		visual.drawPoint(geo.id, geo.data, color)
 	    }
 	}
     }

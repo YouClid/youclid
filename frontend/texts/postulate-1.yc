@@ -1,4 +1,4 @@
-Let [line AB] be the given finite straight line.
+Let [line AB color=#00ff00] be the given finite straight line.
 It is required to construct an equilateral triangle on the straight [line AB]. [step]
 Describe the [circle BCD name=BCD] with [center A circle=BCD] and radius [line AB]. [step]
 Again describe the [circle ACE name=ACE] with [center B circle=ACE] and radius [line BA]. [step]
@@ -10,7 +10,7 @@ And things which equal the same thing also equal one another, therefore [line AC
 Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another.
 Therefore the [polygon ABC] is equilateral, and it has been constructed on the given finite straight [line AB].
 [clear]
-[polygon ABC hidden] [step]
+[polygon ABC] [step]
 
 [loc A x=-0.25 y=0]
 [loc B x=0.25 y=0]

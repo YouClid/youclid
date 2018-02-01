@@ -1,9 +1,12 @@
-class Line:
+from youclidbackend.primitives import YouClidObject
+
+class Line(YouClidObject):
     """Represents a line in 2D"""
     def __init__(self, name):
         self.p1 = None
         self.p2 = None
         self.name = name
+        super().__init__()
 
     def __str__(self):
         return "Line %s(%s, %s)" % (str(self.name),

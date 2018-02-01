@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import argparse
-import re
 import json
+import random
+import re
 from youclidbackend import primitives
 from pprint import pprint
 
@@ -65,6 +66,18 @@ def extract(text):
     return re.finditer(regex, text)
 
 
+def default_color(t):
+    if t in [primitives.Point]:
+        return '#%02X%02X%02X%02X' % (255, 255, 255, 255)
+    if t in [primitives.Line]:
+        return '#%02X%02X%02X%02X' % (0, 255, 0, 255)
+    if t in [primitives.Circle]:
+        return '#%02X%02X%02X%02X' % (255, 0, 255, 255)
+    if t in [primitives.Polygon]:
+        return '#%02X%02X%02X%02X' % (255, 0, 0, 255)
+    raise Exception("Undefined geometric object")
+
+
 def parse(text):
     parsers = CaseInsensitiveDictionary({
                                          "line": parse_line,
@@ -94,15 +107,12 @@ def parse(text):
             raise e
         # Call the appropriate parser function
         obj = f(args_dict)
-
         # Now we need to handle the return value
 
         # If there is no return value, move on to the next call
-        if obj is None:
-            continue
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
-        elif type(obj[0]) == _Step:
+        if type(obj[0]) == _Step:
             if len(curr_step) > 0:
                 # Add all unique objects we touched to the current animation
                 animations.append([x for x in set(curr_step)])
@@ -112,6 +122,12 @@ def parse(text):
         # Otherwise, we created some object, so add them to the current step
         # for display purposes
         else:
+            if args_dict.get('color', False):
+                color = args_dict['color']
+                obj[0].color = hex_to_rgba(color)
+            elif obj[0].color is None:
+                color = default_color(type(obj[0]))
+                obj[0].color = hex_to_rgba(color)
             curr_step.extend(e.name for e in obj)
 
     # Ensure that we have something in the animations variable
@@ -130,7 +146,7 @@ def _parse_match(whole_match):
     partials = whole_match.split()
 
     # The type will always be the first thing
-    args_dict['type'] = partials[0].title()
+    args_dict['type'] = partials[0]
 
     # Check to see if the second argument is a name
     if len(partials) > 1 and '=' not in partials[1]:
@@ -166,7 +182,8 @@ def create_output(d, text, animations):
         output['geometry'][v.name] = {
                                       'type': v.__class__.__name__,
                                       'id': v.name,
-                                      'data': v.__dict__()
+                                      'color': v.color,
+                                      'data': v.__dict__(),
                                      }
 
     return output
@@ -186,7 +203,7 @@ def format_text(text):
     text = '\n'.join(text)
 
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
-    #pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(regex, get_text, text)
 
     return replaced
@@ -195,6 +212,7 @@ def format_text(text):
 def get_text(match):
     match = match[1]
     args_dict = _parse_match(match)
+    args_dict['type'] = args_dict['type'].title()
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
@@ -202,10 +220,12 @@ def get_text(match):
     if(args_dict.get('text', False)):
         return output.format(text=args_dict['text'])
     if (args_dict['type'] == "Polygon"):
-        length = len(args_dict['points']) if args_dict.get('points', False) else len(args_dict['name'])
+        length = (len(args_dict['points']) if args_dict.get('points', False)
+                  else len(args_dict['name']))
         args_dict['type'] = polygons.get(length, "Polygon")
     obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
     return output.format(text=obj_text)
+
 
 def parse_line(keyword_args):
     name = rotate_lex(keyword_args["name"])
@@ -353,7 +373,7 @@ def parse_location(keyword_args):
     name = keyword_args["name"]
     x = float(keyword_args["x"])
     y = float(keyword_args["y"])
-    if obj_dict.get("name"):
+    if obj_dict.get(name):
         o = obj_dict[name]
     else:
         o = primitives.Point(keyword_args["name"])
@@ -389,6 +409,24 @@ def generate_html(json_object):
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
+
+
+def hex_to_rgba(s):
+    """Converts a string (like "#ffffffff") to an array of floats betweeen
+    0 and 1 representing the Red, Green, Blue, and Alpha components
+    """
+
+    # Remove the leading '#' character
+    line = s[1:]
+    # Return a list of each pair of hex digits divided by 255 (FF)
+    color = list(map(lambda x: int(x, 16)/255,
+                 [line[i:i+2] for i in range(0, len(line), 2)]))
+    while len(color) < 4:
+        # Other colors should default to 0 if not specified, but alpha
+        # should be 1.
+        val = 1.0 if len(color) == 3 else 0.0
+        color.append(val)
+    return color
 
 
 def rotate_lex(l):
