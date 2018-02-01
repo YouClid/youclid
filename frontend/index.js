@@ -22,8 +22,8 @@ function makeRender(geometry, step) {
 		obj.data.center = circle.center
 		obj.data.radius = circle.radius
 	    }
-	    else {
-		// obj.data.center = objects[obj.data.center].data
+	    else if(!obj.data.center.x){
+		obj.data.center = objects[obj.data.center].data
 	    }
 	}
     }
@@ -35,9 +35,6 @@ function makeRender(geometry, step) {
 	    let color = objects[id].color
 
 	    switch(geo.type) {
-	    case "Point":
-		visual.drawPoint(geo.id, geo.data, color)
-		break;
 	    case "Line":
 		visual.drawLine(geo.id,
 				objects[geo.data.p1].data,
@@ -52,6 +49,17 @@ function makeRender(geometry, step) {
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
+	    }
+	}
+	
+	// Draw points last
+	for(let i = 0; i < toDraw.length; i++) {
+	    let id = toDraw[i]
+	    let geo = objects[id]
+	    let color = objects[id].color
+
+	    if(geo.type === "Point") {
+		visual.drawPoint(geo.id, geo.data, color)
 	    }
 	}
     }
