@@ -15,5 +15,5 @@ Therefore the [polygon ABC color=#ffffffff] is equilateral, and it has been cons
 [loc A x=-0.25 y=0]
 [loc B x=0.25 y=0]
 [loc C x=0 y=0.433]
-[loc D x=-0.75 y=0]
-[loc E x=0.75 y=0]
+[loc D x=-0.75 y=0 color=#ffffffff]
+[loc E x=0.75 y=0 color=#ffffffff]
