@@ -1,19 +1,19 @@
-Let [line AB color=#ffffffff] be the given finite straight line.
-It is required to construct an equilateral triangle on the straight [line AB color=#ffffffff]. [step]
-Describe the [circle BCD name=BCD color=#ffffffff] with [center A circle=BCD color=#ffffffff] and radius [line AB color=#ffffffff]. [step]
-Again describe the [circle ACE name=ACE color=#ffffffff] with [center B circle=ACE color=#ffffffff] and radius [line BA color=#ffffffff]. [step]
-Join the straight lines [line CA color=#ffffffff] and [line CB color=#ffffffff] from the [point C color=#ffffffff] at which the circles cut one another to the points [point A color=#ffffffff] and [point B color=#ffffffff]. [step]
-Now, since the [point A color=#ffffffff] is the center of the [circle CDB name=BCD color=#ffffffff], therefore [line AC color=#ffffffff] equals [line AB color=#ffffffff].
-Again, since the [point B color=#ffffffff] is the center of the [circle CAE name=ACE color=#ffffffff], therefore [line BC color=#ffffffff] equals [line BA color=#ffffffff].
-But [line AC color=#ffffffff] was proved equal to [line AB color=#ffffffff], therefore each of the straight lines [line AC color=#ffffffff] and [line BC color=#ffffffff] equals [line AB color=#ffffffff].
-And things which equal the same thing also equal one another, therefore [line AC color=#ffffffff] also equals [line BC color=#ffffffff].
-Therefore the three straight lines [line AC color=#ffffffff], [line AB color=#ffffffff], and [line BC color=#ffffffff] equal one another.
-Therefore the [polygon ABC color=#ffffffff] is equilateral, and it has been constructed on the given finite straight [line AB color=#ffffffff].
+Let [line AB color=#00ff00] be the given finite straight line.
+It is required to construct an equilateral triangle on the straight [line AB]. [step]
+Describe the [circle BCD name=BCD] with [center A circle=BCD] and radius [line AB]. [step]
+Again describe the [circle ACE name=ACE] with [center B circle=ACE] and radius [line BA]. [step]
+Join the straight lines [line CA] and [line CB] from the [point C] at which the circles cut one another to the points [point A] and [point B]. [step]
+Now, since the [point A] is the center of the [circle CDB name=BCD], therefore [line AC] equals [line AB].
+Again, since the [point B] is the center of the [circle CAE name=ACE], therefore [line BC] equals [line BA].
+But [line AC] was proved equal to [line AB], therefore each of the straight lines [line AC] and [line BC] equals [line AB].
+And things which equal the same thing also equal one another, therefore [line AC] also equals [line BC].
+Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another.
+Therefore the [polygon ABC] is equilateral, and it has been constructed on the given finite straight [line AB].
 [clear]
-[polygon ABC color=#ffffffff] [step]
+[polygon ABC] [step]
 
 [loc A x=-0.25 y=0]
 [loc B x=0.25 y=0]
 [loc C x=0 y=0.433]
-[loc D x=-0.75 y=0 color=#ffffffff]
-[loc E x=0.75 y=0 color=#ffffffff]
+[loc D x=-0.75 y=0]
+[loc E x=0.75 y=0]
