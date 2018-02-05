@@ -35,7 +35,7 @@ function makeRender(geometry, step) {
             }
 	        // The center is given as a point (something like "A")
             else if(typeof(obj.data.center) === 'string') {
-                obj.data.center = objects[obj.data.center]
+                obj.data.center = objects[obj.data.center].data
             }
         }
     }
