@@ -10,7 +10,7 @@ And things which equal the same thing also equal one another, therefore [line AC
 Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another.
 Therefore the [polygon ABC] is equilateral, and it has been constructed on the given finite straight [line AB].
 [clear]
-[polygon ABC] [step]
+[polygon ABC]
 
 [loc A x=-0.25 y=0]
 [loc B x=0.25 y=0]
