@@ -30,13 +30,16 @@ Specifications
 
 1.  All text that is desired to be parsed MUST be enclosed by BRACKETS. The
     first character MUST be the OPEN BRACKET character, and the last character
-    MUST be the CLOSED BRACKET character. All keywords MUST be enclosed by the BRACKETS
-    to be interpreted by the parser
+    MUST be the CLOSED BRACKET character. All keywords MUST be enclosed by the
+    BRACKETS to be interpreted by the parser
 2.  Text that is not enclosed by the BRACKETS will be treated as normal text.
 3.  In the event that a BRACKET is to be interpreted literally in the text,
     it MUST be escaped by a BACKSLASH character.
 4.  Words inside BRACKETS MUST be separated by a single space.
-5.  The first word inside BRACKETS MUST represent the type of the object
+5.  Keyword arguments (for example x=10) MUST NOT have a space between the
+    name of the argument and the equal sign, and MUST NOT have a space between
+    the equal sign and the value of the argument.
+6.  The first word inside BRACKETS MUST represent the type of the object
     and MUST be one of the following:
         - Line
         - Circle
@@ -46,26 +49,31 @@ Specifications
         - Loc
         - Step
         - Clear
-6.  In order to be referenced, an object MUST have a name parameter assigned.
-7.  The second word inside BRACKETS MAY represent the name of the object and
-    SHALL be the name of the points that define that object, each represented by a single character.
-8.  If an name is defined through a keyword, the name SHALL NOT be parsed into points.
-9.  All arguments to an object MUST be keyword arguments, excluding the name and type.
-10. For the “center” keyword, the third word inside the BRACKETS MUST be “circle=ABC”
+7.  In order to be referenced, an object MUST have a name parameter assigned.
+8.  The second word inside BRACKETS MAY represent the name of the object and
+    SHALL be the name of the points that define that object, each represented by a
+    single character.
+9.  If an name is defined through a keyword, the name SHALL NOT be parsed into points.
+10. All arguments to an object MUST be keyword arguments, excluding the name and type.
+11. For the “center” keyword, the third word inside the BRACKETS MUST be “circle=ABC”
     where ABC MUST be the name of the circle object.
-11. For the “loc” keyword, keyword arguments of "x" and "y" MUST be provided representing the
-    x and y coordinates of the geometric object.
-12. For each point specified, either explicitly by the “point” keyword, or implicitly
-    by using a “line”, “circle”, “center”, or “polygon” keyword, there MUST be a corresponding
-    “loc” keyword to provide coordinates for that point.
-13. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object not be added to the text.
-     For example, if the text was “Let line AB a given finite straight line”, the markup should be
-    “Let [line AB] be a given finite straight line” and not “Let line [line AB] be a give finite straight line”,
-    as the latter will result in the word “line” being  displayed twice.
-14. The user MAY specify steps in the markup which will represent groups of elements to be displayed
-    together in the frontend. This allows the user to create animated steps in the frontend construction.
-     All elements created between two [step] commands will be displayed together, and in every subsequent [step] command.
-15. The user MAY use the “clear” keyword as a way to remove all visualization from the screen.
-16. The user MAY use the “hidden” keyword to not have the object be added to the text.
-17. The user MAY use the “text” keyword to replace the default text that will be placed for the object.
-    For example, “[Line AB text=”line 1”]” Will place the text “line 1”, instead of “Line AB” in the output text.
+12. For the “loc” keyword, keyword arguments of "x" and "y" MUST be provided
+    representing the x and y coordinates of the geometric object.
+13. For each point specified, either explicitly by the “point” keyword, or implicitly
+    by using a “line”, “circle”, “center”, or “polygon” keyword, there MUST be a
+    corresponding “loc” keyword to provide coordinates for that point.
+14. It is RECOMMENDED that text be marked up and is RECOMMENDED that the object not be
+    added to the text. For example, if the text was “Let line AB a given finite
+    straight line”, the markup should be “Let [line AB] be a given finite straight line”
+    and not “Let line [line AB] be a give finite straight line”, as the latter will
+    result in the word “line” being  displayed twice.
+15. The user MAY specify steps in the markup which will represent groups of elements
+    to be displayed together in the frontend. This allows the user to create animated
+    steps in the frontend construction. All elements created between two [step]
+    commands will be displayed together, and in every subsequent [step] command.
+16. The user MAY use the “clear” keyword as a way to remove all visualization from the screen.
+17. The user MAY use the “hidden” keyword to not have the object be added to the text.
+18. The user MAY use the “text” keyword to replace the default text that will be placed
+    for the object.
+    For example, “[Line AB text=”line 1”]” Will place the text “line 1”, instead of
+    “Line AB” in the output text.

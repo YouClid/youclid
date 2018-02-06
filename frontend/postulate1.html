@@ -4,18 +4,24 @@
 		<meta charset=utf-8>
 		<title>YouClid</title>
 		<link rel="stylesheet" href="default.css">
-		<script src="js/three.js"></script>
+		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
 		  
 		  window.onload = init
 
 		  geometry = {
-    "text": "Let <span name=text_line_AB style='background-color: #dddddd'>line AB</span> be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. \nDescribe the <span name=text_circle_BCD style='background-color: #dddddd'>circle BCD</span> with <span name=text_point_A style='background-color: #dddddd'>center A</span> and radius <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. \nAgain describe the <span name=text_circle_ACE style='background-color: #dddddd'>circle ACE</span> with <span name=text_point_B style='background-color: #dddddd'>center B</span> and radius <span name=text_line_AB style='background-color: #dddddd'>line BA</span>. \nJoin the straight lines <span name=text_line_AC style='background-color: #dddddd'>line CA</span> and <span name=text_line_BC style='background-color: #dddddd'>line CB</span> from the <span name=text_point_C style='background-color: #dddddd'>point C</span> at which the circles cut one another to the points <span name=text_point_A style='background-color: #dddddd'>point A</span> and <span name=text_point_B style='background-color: #dddddd'>point B</span>. \nNow, since the <span name=text_point_A style='background-color: #dddddd'>point A</span> is the center of the <span name=text_circle_BCD style='background-color: #dddddd'>circle CDB</span>, therefore <span name=text_line_AC style='background-color: #dddddd'>line AC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line AB</span>.\nAgain, since the <span name=text_point_B style='background-color: #dddddd'>point B</span> is the center of the <span name=text_circle_ACE style='background-color: #dddddd'>circle CAE</span>, therefore <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line BA</span>.\nBut <span name=text_line_AC style='background-color: #dddddd'>line AC</span> was proved equal to <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, therefore each of the straight lines <span name=text_line_AC style='background-color: #dddddd'>line AC</span> and <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line AB</span>.\nAnd things which equal the same thing also equal one another, therefore <span name=text_line_AC style='background-color: #dddddd'>line AC</span> also equals <span name=text_line_BC style='background-color: #dddddd'>line BC</span>.\nTherefore the three straight lines <span name=text_line_AC style='background-color: #dddddd'>line AC</span>, <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, and <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equal one another.\nTherefore the <span name=text_polygon_ABC style='background-color: #dddddd'>Triangle ABC</span> is equilateral, and it has been constructed on the given finite straight <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. \n <span name=text_polygon_ABC style='background-color: #dddddd'>Triangle ABC</span> \n\n\n",
+    "text": "Let  <span name=text_line_AB class='GeoElement'>Line AB</span> be the given finite straight line.\nIt is required to construct an equilateral triangle on the straight  <span name=text_line_AB class='GeoElement'>Line AB</span>. \nDescribe the  <span name=text_circle_BCD class='GeoElement'>Circle BCD</span> with  <span name=text_center_A class='GeoElement'>Center A</span> and radius  <span name=text_line_AB class='GeoElement'>Line AB</span>. \nAgain describe the  <span name=text_circle_ACE class='GeoElement'>Circle ACE</span> with  <span name=text_center_B class='GeoElement'>Center B</span> and radius  <span name=text_line_BA class='GeoElement'>Line BA</span>. \nJoin the straight lines  <span name=text_line_CA class='GeoElement'>Line CA</span> and  <span name=text_line_CB class='GeoElement'>Line CB</span> from the  <span name=text_point_C class='GeoElement'>Point C</span> at which the circles cut one another to the points  <span name=text_point_A class='GeoElement'>Point A</span> and  <span name=text_point_B class='GeoElement'>Point B</span>. \nNow, since the  <span name=text_point_A class='GeoElement'>Point A</span> is the center of the  <span name=text_circle_BCD class='GeoElement'>Circle BCD</span>, therefore  <span name=text_line_AC class='GeoElement'>Line AC</span> equals  <span name=text_line_AB class='GeoElement'>Line AB</span>.\nAgain, since the  <span name=text_point_B class='GeoElement'>Point B</span> is the center of the  <span name=text_circle_ACE class='GeoElement'>Circle ACE</span>, therefore  <span name=text_line_BC class='GeoElement'>Line BC</span> equals  <span name=text_line_BA class='GeoElement'>Line BA</span>.\nBut  <span name=text_line_AC class='GeoElement'>Line AC</span> was proved equal to  <span name=text_line_AB class='GeoElement'>Line AB</span>, therefore each of the straight lines  <span name=text_line_AC class='GeoElement'>Line AC</span> and  <span name=text_line_BC class='GeoElement'>Line BC</span> equals  <span name=text_line_AB class='GeoElement'>Line AB</span>.\nAnd things which equal the same thing also equal one another, therefore  <span name=text_line_AC class='GeoElement'>Line AC</span> also equals  <span name=text_line_BC class='GeoElement'>Line BC</span>.\nTherefore the three straight lines  <span name=text_line_AC class='GeoElement'>Line AC</span>,  <span name=text_line_AB class='GeoElement'>Line AB</span>, and  <span name=text_line_BC class='GeoElement'>Line BC</span> equal one another.\nTherefore the  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span> is equilateral, and it has been constructed on the given finite straight  <span name=text_line_AB class='GeoElement'>Line AB</span>.\n\n <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span>\n",
     "geometry": {
         "A": {
             "type": "Point",
             "id": "A",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
             "data": {
                 "x": -0.25,
                 "y": 0.0
@@ -24,38 +30,26 @@
         "B": {
             "type": "Point",
             "id": "B",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
             "data": {
                 "x": 0.25,
-                "y": 0.0
-            }
-        },
-        "C": {
-            "type": "Point",
-            "id": "C",
-            "data": {
-                "x": 0.0,
-                "y": 0.433
-            }
-        },
-        "D": {
-            "type": "Point",
-            "id": "D",
-            "data": {
-                "x": -0.75,
-                "y": 0.0
-            }
-        },
-        "E": {
-            "type": "Point",
-            "id": "E",
-            "data": {
-                "x": 0.75,
                 "y": 0.0
             }
         },
         "AB": {
             "type": "Line",
             "id": "AB",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
             "data": {
                 "p1": "A",
                 "p2": "B"
@@ -64,26 +58,88 @@
         "BCD": {
             "type": "Circle",
             "id": "BCD",
+            "color": [
+                1.0,
+                0.0,
+                1.0,
+                1.0
+            ],
             "data": {
                 "p1": "B",
                 "p2": "C",
                 "p3": "D",
+                "radius": null,
                 "center": "A"
+            }
+        },
+        "C": {
+            "type": "Point",
+            "id": "C",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.0,
+                "y": 0.433
+            }
+        },
+        "D": {
+            "type": "Point",
+            "id": "D",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": -0.75,
+                "y": 0.0
             }
         },
         "ACE": {
             "type": "Circle",
             "id": "ACE",
+            "color": [
+                1.0,
+                0.0,
+                1.0,
+                1.0
+            ],
             "data": {
                 "p1": "A",
                 "p2": "C",
                 "p3": "E",
+                "radius": null,
                 "center": "B"
+            }
+        },
+        "E": {
+            "type": "Point",
+            "id": "E",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.75,
+                "y": 0.0
             }
         },
         "AC": {
             "type": "Line",
             "id": "AC",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
             "data": {
                 "p1": "A",
                 "p2": "C"
@@ -92,6 +148,12 @@
         "BC": {
             "type": "Line",
             "id": "BC",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
             "data": {
                 "p1": "B",
                 "p2": "C"
@@ -100,67 +162,62 @@
         "ABC": {
             "type": "Polygon",
             "id": "ABC",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
             "data": {
-                "p1": "A",
-                "p2": "B",
-                "p3": "C"
+                "points": [
+                    "A",
+                    "B",
+                    "C"
+                ]
             }
         }
     },
     "animations": [
         [
-            "AB",
-            "A",
-            "B"
-        ],
-        [
-            "AB",
             "A",
             "B",
-            "BCD",
-            "C",
-            "D"
+            "AB"
         ],
         [
-            "AB",
-            "A",
-            "B",
-            "BCD",
-            "C",
             "D",
-            "ACE",
-            "E"
-        ],
-        [
-            "AB",
             "A",
+            "AB",
             "B",
             "BCD",
-            "C",
-            "D",
-            "ACE",
-            "E",
-            "AC",
-            "BC"
-        ],
-        [
-            "AB",
-            "A",
-            "B",
-            "BCD",
-            "C",
-            "D",
-            "ACE",
-            "E",
-            "AC",
-            "BC",
-            "ABC"
-        ],
-        [
-            "ABC",
-            "A",
-            "B",
             "C"
+        ],
+        [
+            "E",
+            "D",
+            "A",
+            "ACE",
+            "AB",
+            "B",
+            "BCD",
+            "C"
+        ],
+        [
+            "E",
+            "D",
+            "A",
+            "BC",
+            "AC",
+            "ACE",
+            "AB",
+            "B",
+            "BCD",
+            "C"
+        ],
+        [
+            "A",
+            "ABC",
+            "C",
+            "B"
         ]
     ]
 }
@@ -169,20 +226,19 @@
 	</head>
 	<body>
 	  <div id="text">
-	    Let <span name=text_line_AB style='background-color: #dddddd'>line AB</span> be the given finite straight line.<br>
-        It is required to construct an equilateral triangle on the straight <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>
-        Describe the <span name=text_circle_BCD style='background-color: #dddddd'>circle BCD</span> with <span name=text_point_A style='background-color: #dddddd'>center A</span> and radius <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>
-        Again describe the <span name=text_circle_ACE style='background-color: #dddddd'>circle ACE</span> with <span name=text_point_B style='background-color: #dddddd'>center B</span> and radius <span name=text_line_AB style='background-color: #dddddd'>line BA</span>. <br>
-        Join the straight lines <span name=text_line_AC style='background-color: #dddddd'>line CA</span> and <span name=text_line_BC style='background-color: #dddddd'>line CB</span> from the <span name=text_point_C style='background-color: #dddddd'>point C</span> at which the circles cut one another to the points <span name=text_point_A style='background-color: #dddddd'>point A</span> and <span name=text_point_B style='background-color: #dddddd'>point B</span>. <br>
-        Now, since the <span name=text_point_A style='background-color: #dddddd'>point A</span> is the center of the <span name=text_circle_BCD style='background-color: #dddddd'>circle CDB</span>, therefore <span name=text_line_AC style='background-color: #dddddd'>line AC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line AB</span>.<br>
-        Again, since the <span name=text_point_B style='background-color: #dddddd'>point B</span> is the center of the <span name=text_circle_ACE style='background-color: #dddddd'>circle CAE</span>, therefore <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line BA</span>.<br>
-        But <span name=text_line_AC style='background-color: #dddddd'>line AC</span> was proved equal to <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, therefore each of the straight lines <span name=text_line_AC style='background-color: #dddddd'>line AC</span> and <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equals <span name=text_line_AB style='background-color: #dddddd'>line AB</span>.<br>
-        And things which equal the same thing also equal one another, therefore <span name=text_line_AC style='background-color: #dddddd'>line AC</span> also equals <span name=text_line_BC style='background-color: #dddddd'>line BC</span>.<br>
-        Therefore the three straight lines <span name=text_line_AC style='background-color: #dddddd'>line AC</span>, <span name=text_line_AB style='background-color: #dddddd'>line AB</span>, and <span name=text_line_BC style='background-color: #dddddd'>line BC</span> equal one another.<br>
-        Therefore the <span name=text_polygon_ABC style='background-color: #dddddd'>Triangle ABC</span> is equilateral, and it has been constructed on the given finite straight <span name=text_line_AB style='background-color: #dddddd'>line AB</span>. <br>
-         <span name=text_polygon_ABC style='background-color: #dddddd'>Triangle ABC</span> <br>
+	    Let  <span name=text_line_AB class='GeoElement'>Line AB</span> be the given finite straight line.<br>
+        It is required to construct an equilateral triangle on the straight  <span name=text_line_AB class='GeoElement'>Line AB</span>. <br>
+        Describe the  <span name=text_circle_BCD class='GeoElement'>Circle BCD</span> with  <span name=text_center_A class='GeoElement'>Center A</span> and radius  <span name=text_line_AB class='GeoElement'>Line AB</span>. <br>
+        Again describe the  <span name=text_circle_ACE class='GeoElement'>Circle ACE</span> with  <span name=text_center_B class='GeoElement'>Center B</span> and radius  <span name=text_line_BA class='GeoElement'>Line BA</span>. <br>
+        Join the straight lines  <span name=text_line_CA class='GeoElement'>Line CA</span> and  <span name=text_line_CB class='GeoElement'>Line CB</span> from the  <span name=text_point_C class='GeoElement'>Point C</span> at which the circles cut one another to the points  <span name=text_point_A class='GeoElement'>Point A</span> and  <span name=text_point_B class='GeoElement'>Point B</span>. <br>
+        Now, since the  <span name=text_point_A class='GeoElement'>Point A</span> is the center of the  <span name=text_circle_BCD class='GeoElement'>Circle BCD</span>, therefore  <span name=text_line_AC class='GeoElement'>Line AC</span> equals  <span name=text_line_AB class='GeoElement'>Line AB</span>.<br>
+        Again, since the  <span name=text_point_B class='GeoElement'>Point B</span> is the center of the  <span name=text_circle_ACE class='GeoElement'>Circle ACE</span>, therefore  <span name=text_line_BC class='GeoElement'>Line BC</span> equals  <span name=text_line_BA class='GeoElement'>Line BA</span>.<br>
+        But  <span name=text_line_AC class='GeoElement'>Line AC</span> was proved equal to  <span name=text_line_AB class='GeoElement'>Line AB</span>, therefore each of the straight lines  <span name=text_line_AC class='GeoElement'>Line AC</span> and  <span name=text_line_BC class='GeoElement'>Line BC</span> equals  <span name=text_line_AB class='GeoElement'>Line AB</span>.<br>
+        And things which equal the same thing also equal one another, therefore  <span name=text_line_AC class='GeoElement'>Line AC</span> also equals  <span name=text_line_BC class='GeoElement'>Line BC</span>.<br>
+        Therefore the three straight lines  <span name=text_line_AC class='GeoElement'>Line AC</span>,  <span name=text_line_AB class='GeoElement'>Line AB</span>, and  <span name=text_line_BC class='GeoElement'>Line BC</span> equal one another.<br>
+        Therefore the  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span> is equilateral, and it has been constructed on the given finite straight  <span name=text_line_AB class='GeoElement'>Line AB</span>.<br>
         <br>
-        <br>
+         <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span><br>
         
 	  </div>
 	</body>
