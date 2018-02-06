@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>YouClid</title>
+		<link rel="stylesheet" href="default.css">
+		<script src="draw.js"></script>
+		<script src="index.js"></script>
+		<script>
+		  
+		  window.onload = init
+
+		  geometry = {
+    "text": "Let  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span> be an isosceles triangle having the  <span name=text_line_AB class='GeoElement'>Line AB</span> equal to the  <span name=text_line_AC class='GeoElement'>Line AC</span>,  and let the straight lines  <span name=text_line_BD class='GeoElement'>Line BD</span> and  <span name=text_line_CE class='GeoElement'>Line CE</span> be produced further in a straight line with  <span name=text_line_AB class='GeoElement'>Line AB</span> and  <span name=text_line_AC class='GeoElement'>Line AC</span>. \n\nI say that the angle ABC equals the angle ACB, and the angle CBD equals the angle BCE.\n\nTake an arbitrary  <span name=text_point_F class='GeoElement'>Point F</span> on  <span name=text_line_BD class='GeoElement'>Line BD</span>. Cut off  <span name=text_line_AG class='GeoElement'>Line AG</span> from  <span name=text_line_AE class='GeoElement'>Line AE</span> the greater equal to  <span name=text_line_AF class='GeoElement'>Line AF</span> the less, and join  <span name=text_line_FC class='GeoElement'>Line FC</span> and  <span name=text_line_GB class='GeoElement'>Line GB</span>.\n\nSince  <span name=text_line_AF class='GeoElement'>Line AF</span> equals  <span name=text_line_AG class='GeoElement'>Line AG</span>, and  <span name=text_line_AB class='GeoElement'>Line AB</span> equals  <span name=text_line_AC class='GeoElement'>Line AC</span>, therefore,  <span name=text_line_FA class='GeoElement'>Line FA</span> and  <span name=text_line_AC class='GeoElement'>Line AC</span> equal  <span name=text_line_GA class='GeoElement'>Line GA</span> and  <span name=text_line_AB class='GeoElement'>Line AB</span>, respectively, and they contain a common angle, the angle FAG.\n\nTherefore,  <span name=text_line_FC class='GeoElement'>Line FC</span> equals  <span name=text_line_GB class='GeoElement'>Line GB</span>,  <span name=text_polygon_AFC class='GeoElement'>Triangle AFC</span> equals  <span name=text_polygon_AGB class='GeoElement'>Triangle AGB</span>, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides, that is, the angle ACF equals the angle ABG, and the angle AFC equals the angle AGB.\n\nSince  <span name=text_line_AF class='GeoElement'>Line AF</span> equals  <span name=text_line_AG class='GeoElement'>Line AG</span>, and in these  <span name=text_line_AB class='GeoElement'>Line AB</span> equals  <span name=text_line_AC class='GeoElement'>Line AC</span>, therefore, the remainder  <span name=text_line_BF class='GeoElement'>Line BF</span> equals the remainder  <span name=text_line_CG class='GeoElement'>Line CG</span>.\n\nBut  <span name=text_line_FC class='GeoElement'>Line FC</span> was also proved equal to  <span name=text_line_GB class='GeoElement'>Line GB</span>, therefore,  <span name=text_line_BF class='GeoElement'>Line BF</span> and  <span name=text_line_FC class='GeoElement'>Line FC</span> equal  <span name=text_line_CG class='GeoElement'>Line CG</span> and  <span name=text_line_GB class='GeoElement'>Line GB</span> respectively, and the angle BFC equals the angle CGB, while  <span name=text_line_BC class='GeoElement'>Line BC</span> is common to them. Therefore,  <span name=text_polygon_BFC class='GeoElement'>Triangle BFC</span> also equals  <span name=text_polygon_CGB class='GeoElement'>Triangle CGB</span>, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides. Therefore, the angle FBC equals the angle GCB, and the angle BCF equals the angle CBG.\n\nAccordingly, since the whole angle ABG was proved equal to the angle ACF, and in these the angle CBG equals the angle BCF, the remaining angle ABC equals the remaining angle ACB, and they are at the base of the  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span>. But the angle FBC was also proved equal to the angle GCB, and they are under the base.\n\nTherefore, in isosceles triangles, the angles at the base equal one another, and, if the equal straight lines are produced further, then the angles under the base equal one another.\n",
+    "geometry": {
+        "ABC": {
+            "type": "Polygon",
+            "id": "ABC",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "points": [
+                    "A",
+                    "B",
+                    "C"
+                ]
+            }
+        },
+        "A": {
+            "type": "Point",
+            "id": "A",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.0,
+                "y": 0.5
+            }
+        },
+        "B": {
+            "type": "Point",
+            "id": "B",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": -0.25,
+                "y": 0.0
+            }
+        },
+        "AB": {
+            "type": "Line",
+            "id": "AB",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "A",
+                "p2": "B"
+            }
+        },
+        "C": {
+            "type": "Point",
+            "id": "C",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.25,
+                "y": 0.0
+            }
+        },
+        "AC": {
+            "type": "Line",
+            "id": "AC",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "A",
+                "p2": "C"
+            }
+        },
+        "D": {
+            "type": "Point",
+            "id": "D",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": -0.5,
+                "y": -0.5
+            }
+        },
+        "BD": {
+            "type": "Line",
+            "id": "BD",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "B",
+                "p2": "D"
+            }
+        },
+        "E": {
+            "type": "Point",
+            "id": "E",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.5,
+                "y": -0.5
+            }
+        },
+        "CE": {
+            "type": "Line",
+            "id": "CE",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "C",
+                "p2": "E"
+            }
+        },
+        "F": {
+            "type": "Point",
+            "id": "F",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": -0.35,
+                "y": -0.2
+            }
+        },
+        "G": {
+            "type": "Point",
+            "id": "G",
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "data": {
+                "x": 0.35,
+                "y": -0.2
+            }
+        },
+        "AG": {
+            "type": "Line",
+            "id": "AG",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "A",
+                "p2": "G"
+            }
+        },
+        "AE": {
+            "type": "Line",
+            "id": "AE",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "A",
+                "p2": "E"
+            }
+        },
+        "AF": {
+            "type": "Line",
+            "id": "AF",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "A",
+                "p2": "F"
+            }
+        },
+        "CF": {
+            "type": "Line",
+            "id": "CF",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "C",
+                "p2": "F"
+            }
+        },
+        "BG": {
+            "type": "Line",
+            "id": "BG",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "B",
+                "p2": "G"
+            }
+        },
+        "AFC": {
+            "type": "Polygon",
+            "id": "AFC",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "points": [
+                    "A",
+                    "F",
+                    "C"
+                ]
+            }
+        },
+        "AGB": {
+            "type": "Polygon",
+            "id": "AGB",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "points": [
+                    "A",
+                    "G",
+                    "B"
+                ]
+            }
+        },
+        "BF": {
+            "type": "Line",
+            "id": "BF",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "B",
+                "p2": "F"
+            }
+        },
+        "CG": {
+            "type": "Line",
+            "id": "CG",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "C",
+                "p2": "G"
+            }
+        },
+        "BC": {
+            "type": "Line",
+            "id": "BC",
+            "color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "p1": "B",
+                "p2": "C"
+            }
+        },
+        "BFC": {
+            "type": "Polygon",
+            "id": "BFC",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "points": [
+                    "B",
+                    "F",
+                    "C"
+                ]
+            }
+        },
+        "BCG": {
+            "type": "Polygon",
+            "id": "BCG",
+            "color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "data": {
+                "points": [
+                    "B",
+                    "C",
+                    "G"
+                ]
+            }
+        }
+    },
+    "animations": [
+        [
+            "A",
+            "B",
+            "AC",
+            "ABC",
+            "AB",
+            "C"
+        ],
+        [
+            "D",
+            "E",
+            "A",
+            "B",
+            "AC",
+            "ABC",
+            "AB",
+            "CE",
+            "BD",
+            "C"
+        ],
+        [
+            "BC",
+            "B",
+            "G",
+            "AE",
+            "AF",
+            "A",
+            "BG",
+            "BFC",
+            "CF",
+            "AB",
+            "CE",
+            "BCG",
+            "D",
+            "E",
+            "AG",
+            "AFC",
+            "AC",
+            "BD",
+            "C",
+            "AGB",
+            "F",
+            "CG",
+            "ABC",
+            "BF"
+        ]
+    ]
+}
+
+		</script>
+	</head>
+	<body>
+	  <div id="text">
+	    Let  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span> be an isosceles triangle having the  <span name=text_line_AB class='GeoElement'>Line AB</span> equal to the  <span name=text_line_AC class='GeoElement'>Line AC</span>,  and let the straight lines  <span name=text_line_BD class='GeoElement'>Line BD</span> and  <span name=text_line_CE class='GeoElement'>Line CE</span> be produced further in a straight line with  <span name=text_line_AB class='GeoElement'>Line AB</span> and  <span name=text_line_AC class='GeoElement'>Line AC</span>. <br>
+        <br>
+        I say that the angle ABC equals the angle ACB, and the angle CBD equals the angle BCE.<br>
+        <br>
+        Take an arbitrary  <span name=text_point_F class='GeoElement'>Point F</span> on  <span name=text_line_BD class='GeoElement'>Line BD</span>. Cut off  <span name=text_line_AG class='GeoElement'>Line AG</span> from  <span name=text_line_AE class='GeoElement'>Line AE</span> the greater equal to  <span name=text_line_AF class='GeoElement'>Line AF</span> the less, and join  <span name=text_line_FC class='GeoElement'>Line FC</span> and  <span name=text_line_GB class='GeoElement'>Line GB</span>.<br>
+        <br>
+        Since  <span name=text_line_AF class='GeoElement'>Line AF</span> equals  <span name=text_line_AG class='GeoElement'>Line AG</span>, and  <span name=text_line_AB class='GeoElement'>Line AB</span> equals  <span name=text_line_AC class='GeoElement'>Line AC</span>, therefore,  <span name=text_line_FA class='GeoElement'>Line FA</span> and  <span name=text_line_AC class='GeoElement'>Line AC</span> equal  <span name=text_line_GA class='GeoElement'>Line GA</span> and  <span name=text_line_AB class='GeoElement'>Line AB</span>, respectively, and they contain a common angle, the angle FAG.<br>
+        <br>
+        Therefore,  <span name=text_line_FC class='GeoElement'>Line FC</span> equals  <span name=text_line_GB class='GeoElement'>Line GB</span>,  <span name=text_polygon_AFC class='GeoElement'>Triangle AFC</span> equals  <span name=text_polygon_AGB class='GeoElement'>Triangle AGB</span>, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides, that is, the angle ACF equals the angle ABG, and the angle AFC equals the angle AGB.<br>
+        <br>
+        Since  <span name=text_line_AF class='GeoElement'>Line AF</span> equals  <span name=text_line_AG class='GeoElement'>Line AG</span>, and in these  <span name=text_line_AB class='GeoElement'>Line AB</span> equals  <span name=text_line_AC class='GeoElement'>Line AC</span>, therefore, the remainder  <span name=text_line_BF class='GeoElement'>Line BF</span> equals the remainder  <span name=text_line_CG class='GeoElement'>Line CG</span>.<br>
+        <br>
+        But  <span name=text_line_FC class='GeoElement'>Line FC</span> was also proved equal to  <span name=text_line_GB class='GeoElement'>Line GB</span>, therefore,  <span name=text_line_BF class='GeoElement'>Line BF</span> and  <span name=text_line_FC class='GeoElement'>Line FC</span> equal  <span name=text_line_CG class='GeoElement'>Line CG</span> and  <span name=text_line_GB class='GeoElement'>Line GB</span> respectively, and the angle BFC equals the angle CGB, while  <span name=text_line_BC class='GeoElement'>Line BC</span> is common to them. Therefore,  <span name=text_polygon_BFC class='GeoElement'>Triangle BFC</span> also equals  <span name=text_polygon_CGB class='GeoElement'>Triangle CGB</span>, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides. Therefore, the angle FBC equals the angle GCB, and the angle BCF equals the angle CBG.<br>
+        <br>
+        Accordingly, since the whole angle ABG was proved equal to the angle ACF, and in these the angle CBG equals the angle BCF, the remaining angle ABC equals the remaining angle ACB, and they are at the base of the  <span name=text_polygon_ABC class='GeoElement'>Triangle ABC</span>. But the angle FBC was also proved equal to the angle GCB, and they are under the base.<br>
+        <br>
+        Therefore, in isosceles triangles, the angles at the base equal one another, and, if the equal straight lines are produced further, then the angles under the base equal one another.<br>
+        
+	  </div>
+	</body>
+</html>
