@@ -3,10 +3,11 @@
 #### Joseph Sweeney, Drew Monroe, Ian Dechene, Sailesh Simhadri, Soumya Kundu
 
 ### Dependencies
-- python3
+- python3.6
 
 ### Creating a Markup
 The format for creating a markup file is specified in [yc-format.txt](https://raw.githubusercontent.com/YouClid/youclid/master/yc-format.txt).
+We also have [documentation located here](https://youclid.github.io/docs/home)
 In general, the text that should be interpreted by the parser must be enclosed in brackets, like so: `[line AB]`
 The parser currently supports the following data types:
 - point
@@ -14,7 +15,7 @@ The parser currently supports the following data types:
 - circle
 - polygon
 
-Arguments to the data types are space separated.
+Arguments to the data types are space separated keyword arguments.
 The first argument to each data type must be the name of the object (which currently must be one letter point names that make up the object).
 The `center` keyword can be used to specify the center point for a circle.
 At the bottom of the file, the `loc` keyword must be used to give the points coordinates (floating point numbers between -1 and 1 inclusive), where `(0, 0)` is the center of the canvas.
@@ -23,7 +24,7 @@ We have provided an example file in [frontend/texts/postulate1.yc](https://raw.g
 
 ### Running the parser
 To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and the argument to `-o` with the path to the `frontend` directory of this repository and then the name of the HTML file that you want to generate:
-```
+```bash
 python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/test.html
 ```
 If you wish to specify transitions between steps in your text, simply include a \[step\] command.
@@ -36,9 +37,8 @@ Start by making a file called `line.yc` with the following contents:
 This text won't be marked up, since it's not enclosed in bracketes!
 This is [line AB], which is made up of [point A] and [point B].
 
-[definitions]
-[loc A -0.75 -0.75]
-[loc B 0.75 0.75]
+[loc A x=-0.75 y=-0.75]
+[loc B x=0.75 y=0.75]
 ```
 
 The first line won't be interpreted by our parser, since it doesn't have any markup.
@@ -50,7 +50,7 @@ Point `A` is given the coordinates `(-0.75, 0.75)` and point `B` is given the co
 
 All that is left to do is generate the HTML.
 Navigate to the `backend` directory and simply run the `main_parser.py` file as follows.
-```
+```bash
 python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/file.html
 ```
 Now, you can open the HTML file in your browser, and you should see a line!

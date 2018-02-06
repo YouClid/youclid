@@ -525,6 +525,35 @@ class TestParser(unittest.TestCase):
         self.subtest_count_equal(parser_output,
                                  [circle_ABC, point_A, point_B, point_C])
 
+        # [circle name=hello center=A radius=0.5]
+        kwargs = {
+                  'name': "hello",
+                  'center': 'A',
+                  'radius': 0.5
+                 }
+        circle_hello = youclidbackend.primitives.Circle("hello")
+        circle_hello.center = "A"
+        circle_hello.radius = 0.5
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_hello, point_A])
+
+        # Reset object dictionary
+        youclidbackend.main_parser.obj_dict = {}
+
+        # [circle name=hello center=A radius=0.5]
+        kwargs = {
+                  'name': "hello",
+                  'center': 'A',
+                  'radius': 0.5
+                 }
+        circle_hello = youclidbackend.primitives.Circle("hello")
+        circle_hello.center = "A"
+        circle_hello.radius = 0.5
+        parser_output = youclidbackend.main_parser.parse_circle(kwargs)
+        self.subtest_count_equal(parser_output,
+                                 [circle_hello, point_A])
+
         # [circle name=my_circle p1=A p2=B p3=C] with A, B, and C existing
         kwargs = {
                   'name': 'my_circle',
