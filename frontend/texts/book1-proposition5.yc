@@ -1,0 +1,25 @@
+Let [polygon ABC] be an isosceles triangle having the [line AB] equal to the [line AC], [step] and let the straight lines [line BD] and [line CE] be produced further in a straight line with [line AB] and [line AC]. [step]
+
+I say that the angle ABC equals the angle ACB, and the angle CBD equals the angle BCE.
+
+Take an arbitrary [point F] on [line BD]. Cut off [line AG] from [line AE] the greater equal to [line AF] the less, and join [line FC] and [line GB]. [step]
+
+Since [line AF] equals [line AG], and [line AB] equals [AC], therefore, [line FA] and [line AC] equal [line GA] and [line AB], respectively, and they contain a common angle, the angle FAG.
+
+Therefore, [line FC] equals [line GB], [polygon AFC] equals [polygon AGB], and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides, that is, the angle ACF equals the angle ABG, and the angle AFC equals the angle AGB.
+
+Since [line AF] equals [line AG], and in these [line AB] equals [line AC], therefore, the remainder [line BF] equals the remainder [line CG].
+
+But [line FC] was also proved equal to [line GB], therefore, [line BF] and [line FC] equal [line CG] and [line GB] respectively, and the angle BFC equals the angle CGB, while [line BC] is common to them. Therefore, [polygon BFC] also equals [polygon CGB], and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides. Therefore, the angle FBC equals the angle GCB, and the angle BCF equals the angle CBG.
+
+Accordingly, since the whole angle ABG was proved equal to the angle ACF, and in these the angle CBG equals the angle BCF, the remaining angle ABC equals the remaining angle ACB, and they are at the base of the [polygon ABC]. But the angle FBC was also proved equal to the angle GCB, and they are under the base.
+
+Therefore, in isosceles triangles, the angles at the base equal one another, and, if the equal straight lines are produced further, then the angles under the base equal one another.
+
+[loc A x=0 y=0.5]
+[loc B x=-0.25 y=0]
+[loc C x=0.25 y=0]
+[loc D x=-0.5 y=-0.5]
+[loc E x=0.5 y=-0.5]
+[loc F x=-0.35 y=-0.2]
+[loc G x=0.35 y=-0.2]
