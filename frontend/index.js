@@ -122,7 +122,7 @@ function highlightText(geo, isHot) {
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
 	el.style.backgroundColor = isHot ? 'yellow' : getHex(geo.color)
-	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.75 ? 'white' : '#0f0f0f'
+	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.8 && !isHot ? 'white' : '#0f0f0f'
     })
 }
 
