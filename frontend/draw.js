@@ -229,6 +229,8 @@ class Visual {
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*4, 4*4)
 
 	gl.drawArrays(gl.POINTS, 0, 1)
+
+	return hot
     
     }
 
@@ -287,6 +289,8 @@ class Visual {
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
 	gl.drawArrays(gl.LINES, 0, 2)
+
+	return hot
 
     }
 
@@ -361,6 +365,8 @@ class Visual {
 
 	gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
 
+	return hot
+
     }
 
 
@@ -418,6 +424,7 @@ class Visual {
 
 	gl.drawArrays(gl.LINE_STRIP, 0, points.length)
 
+	return hot
     }
 
 

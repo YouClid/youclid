@@ -44,21 +44,26 @@ function makeRender(geometry, step) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
 	    let color = objects[id].color
+	    let hot = false
 
 	    switch(geo.type) {
 	    case "Point":
 		break;
 	    case "Line":
-		visual.drawLine(geo.id,
-				objects[geo.data.p1].data,
-				objects[geo.data.p2].data,
-				color)
+		hot = visual.drawLine(geo.id,
+					  objects[geo.data.p1].data,
+					  objects[geo.data.p2].data,
+					  color)
+
+		highlightText(geo, hot)
 		break;
 	    case "Circle":
-		visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
+		hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
+		highlightText(geo, hot)
 		break;
 	    case "Polygon":
-		visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
+		hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
+		highlightText(geo, hot)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -70,9 +75,11 @@ function makeRender(geometry, step) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
 	    let color = objects[id].color
+	    let hot = false
 
 	    if(geo.type === "Point") {
-		visual.drawPoint(geo.id, geo.data, color)
+		hot = visual.drawPoint(geo.id, geo.data, color)
+		highlightText(geo, hot)
 	    }
 	}
     }
@@ -109,6 +116,26 @@ function circleFromPoints(p1, p2, p3) {
     let radius = dist(center, p1)
 
     return {center: center, radius: radius}
+}
+
+function highlightText(geo, isHot) {
+    let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
+    elements.forEach((el) => {
+	el.style.backgroundColor = isHot ? 'yellow' : getHex(geo.color)
+	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.8 && !isHot ? 'white' : '#0f0f0f'
+    })
+}
+
+function getHex(colorArr) {
+    let color = '#'
+    for(let i = 0; i<colorArr.length-1; i++) {
+	let val =  Math.floor(255*colorArr[i]).toString(16)
+	while(val.length < 2) {
+	    val = '0' + val
+	}
+	color += val
+    }
+    return color
 }
     
 
