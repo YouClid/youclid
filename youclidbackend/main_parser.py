@@ -104,9 +104,8 @@ def parse(text):
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
         if type(obj[0]) == _Step:
-            if len(curr_step) > 0:
-                # Add all unique objects we touched to the current animation
-                animations.append([x for x in curr_step])
+            # Add all unique objects we touched to the current animation
+            animations.append([x for x in curr_step])
         # Otherwise, if we parsed a clear, reset curr_step
         elif type(obj[0]) == _Clear:
             curr_step = set()
@@ -203,8 +202,10 @@ def format_text(text):
 def get_text(match):
     match = match[1]
     args_dict = _parse_match(match)
-    args_dict['type'] = args_dict['type'].title()
-    span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
+    # We need to replace "center" with "point" in order to get the correct
+    # highlighting on the frontend
+    t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
+    span_name = "text_%s_%s" % (t, args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
         return ""
