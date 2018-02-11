@@ -48,8 +48,16 @@ class Visual {
 	let canvas = document.createElement('canvas')
 	document.body.appendChild( canvas )
 
-	canvas.width = this.size
-	canvas.height = this.size
+	// Adjust canvas size based on screen
+	{
+	    canvas.style.width = this.size + "px";
+	    canvas.style.height = this.size + "px";
+
+	    // set the size of the drawingBuffer
+	    var devicePixelRatio = window.devicePixelRatio || 1;
+	    canvas.width = this.size * devicePixelRatio;
+	    canvas.height = this.size * devicePixelRatio;
+	}
 
 	let gl = canvas.getContext('webgl')
 	
@@ -64,7 +72,7 @@ class Visual {
 	this.gl = gl
 	this.canvasRect = canvas.getBoundingClientRect()
 
-	gl.lineWidth(1.5)
+	gl.lineWidth(3.0)
 
 	// Register listeners
 	document.addEventListener( 'mousemove', onMouseMove.bind(this));
@@ -419,11 +427,8 @@ function onResize( event ) {
     this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
     let realToCSSPixels = window.devicePixelRatio
     let drawSize = Math.floor(this.size * realToCSSPixels)
-    this.gl.canvas.clientWidth  =  this.size
-    this.gl.canvas.clientHeight =  this.size
-    this.gl.canvas.width  =  drawSize
-    this.gl.canvas.height =  drawSize
-    this.gl.viewport(0, 0, this.size, this.size)
+    this.gl.canvas.style.width = this.size + "px";
+    this.gl.canvas.style.height = this.size + "px"; 
     this.update()
 }
 
