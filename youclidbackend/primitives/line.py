@@ -1,4 +1,3 @@
-from youclidbackend import colors
 from youclidbackend.primitives import YouClidObject
 
 
@@ -9,7 +8,7 @@ class Line(YouClidObject):
         self.p1 = None
         self.p2 = None
         self.name = name
-        self.color = colors.GREEN
+        self.color = None
 
     def __str__(self):
         return "Line %s(%s, %s)" % (str(self.name),

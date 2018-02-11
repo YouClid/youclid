@@ -113,9 +113,11 @@ def parse(text):
         # Otherwise, we created some object, so add them to the current step
         # for display purposes
         else:
-            if args_dict.get('color', False):
+            if args_dict.get('color'):
                 color = args_dict['color']
                 obj[0].color = hex_to_rgba(color)
+            elif obj[0].color is None:
+                colors.set_color(obj[0])
             for e in obj:
                 curr_step.add(e.name)
 
