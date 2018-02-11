@@ -48,16 +48,16 @@ class Visual {
 	let canvas = document.createElement('canvas')
 	document.body.appendChild( canvas )
 
-	// canvas.width = this.size
-	// canvas.height = this.size
+	// Adjust canvas size based on screen
+	{
+	    canvas.style.width = this.size + "px";
+	    canvas.style.height = this.size + "px";
 
-	canvas.style.width = this.size + "px";
-	canvas.style.height = this.size + "px";
-
-	// set the size of the drawingBuffer
-	var devicePixelRatio = window.devicePixelRatio || 1;
-	canvas.width = this.size * devicePixelRatio;
-	canvas.height = this.size * devicePixelRatio;
+	    // set the size of the drawingBuffer
+	    var devicePixelRatio = window.devicePixelRatio || 1;
+	    canvas.width = this.size * devicePixelRatio;
+	    canvas.height = this.size * devicePixelRatio;
+	}
 
 	let gl = canvas.getContext('webgl')
 	
