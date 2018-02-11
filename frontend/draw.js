@@ -196,48 +196,8 @@ class Visual {
 
 
     drawPoint(ident, point, color) {
-	// Point has an x and a y attribute in NDC coordinates
-	let gl = this.gl
-	let name = "object_point_" + ident.toString()
-
-	let hot = this.isHot(name)
-
-	if(this.pointUnderMouse(point)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
-	    }
-	}
-    
-	if(hot) {
-	    color = [1.0, 1.0, 0, 1.0]
-	} 
-    
-	let vertices = [
-	    point.x, point.y, -0.1, 1.0
-	]
-	vertices = vertices.concat(color)
-	
-	this.glData.set(vertices)
-
-	gl.bufferData(gl.ARRAY_BUFFER, this.glData, gl.DYNAMIC_DRAW)
-	let a_Position = gl.getAttribLocation(gl.program, "a_Position")
-	gl.enableVertexAttribArray(a_Position)
-	gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*4, 0)
-
-	let a_Color = gl.getAttribLocation(gl.program, "a_Color")
-	gl.enableVertexAttribArray(a_Color)
-	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*4, 4*4)
-
-	gl.drawArrays(gl.POINTS, 0, 1)
-    
+        // create a circular point (filled in) of radius 0.01
+        return this.drawCircle(ident, point, 0.01, color, true)
     }
 
 
@@ -296,6 +256,8 @@ class Visual {
 
 	gl.drawArrays(gl.LINES, 0, 2)
 
+	return hot
+
     }
 
     getPoints(center, radius) {
@@ -315,7 +277,7 @@ class Visual {
 	return points
     }
 
-    drawCircle(ident, center, radius, color) {
+    drawCircle(ident, center, radius, color, fill=false) {
 
 	let name = "object_line_" + ident.toString()
 
@@ -367,7 +329,12 @@ class Visual {
 	gl.enableVertexAttribArray(a_Color)
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
-	gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
+    if (fill === true)
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length+1)
+    else
+        gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
+
+	return hot
 
     }
 
@@ -426,6 +393,7 @@ class Visual {
 
 	gl.drawArrays(gl.LINE_STRIP, 0, points.length)
 
+	return hot
     }
 
 

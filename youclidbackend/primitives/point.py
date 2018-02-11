@@ -1,12 +1,15 @@
+from youclidbackend import colors
 from youclidbackend.primitives import YouClidObject
+
 
 class Point(YouClidObject):
     """Represents a point object in 2D"""
     def __init__(self, name):
+        super().__init__()
         self.x = None
         self.y = None
         self.name = name
-        super().__init__()
+        self.color = colors.WHITE
 
     def __str__(self):
         return "Point %s(%s, %s)" % (str(self.name),

@@ -1,15 +1,18 @@
+from youclidbackend import colors
 from youclidbackend.primitives import YouClidObject
+
 
 class Circle(YouClidObject):
     """Represents a circle in 2D"""
     def __init__(self, name):
+        super().__init__()
         self.name = name
         self.p1 = None
         self.p2 = None
         self.p3 = None
         self.center = None
         self.radius = None
-        super().__init__()
+        self.color = colors.PURPLE
 
     def __str__(self):
         return "Circle %s(%s, %s, %s)" % (str(self.name),
