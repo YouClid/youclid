@@ -114,10 +114,7 @@ def parse(text):
         # for display purposes
         else:
             if args_dict.get('color'):
-                color = args_dict['color']
-                obj[0].color = hex_to_rgba(color)
-            elif obj[0].color is None:
-                colors.set_color(obj[0])
+                obj[0].color = hex_to_rgba(args_dict['color'])
             for e in obj:
                 curr_step.add(e.name)
 
