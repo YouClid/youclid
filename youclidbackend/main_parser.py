@@ -182,8 +182,9 @@ def create_output(d, text, animations):
 def format_text(text):
     newtext = []
     text = text.split('\n')
+    step =[0]
     for i in text:
-        i = i.replace('[step]', '')
+        #i = i.replace('[step]', '')
         i = i.replace('[definitions]', '')
         i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
@@ -194,13 +195,18 @@ def format_text(text):
 
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(regex, get_text, text)
+    replaced = re.sub(regex, lambda text: get_text(text, step), text)
+    start = "<div id='step_0'>"
+    end = "</div>"
+    result = "%s %s %s" % (start, replaced, end)
+    return result
 
-    return replaced
 
-
-def get_text(match):
+def get_text(match, step):
     match = match[1]
+    if(match == 'step'):
+        step[0] += 1
+        return "</div><div id='step_%d'>" % step[0]
     args_dict = _parse_match(match)
     args_dict['type'] = args_dict['type'].title()
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])

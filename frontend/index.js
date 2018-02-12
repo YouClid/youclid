@@ -1,11 +1,16 @@
 let anim_index = 0
 let visual = null
 let hotText = {}
+let labels = {}
 
 function init() {
     let render = makeRender(geometry, anim_index)
-
+    
     visual = new Visual(render)
+    
+    labels = makeLabels(geometry)
+
+    updateAnimation(0)
 
     document.addEventListener( 'keydown', onKeyDown)
     let textElements = Array.from(document.getElementsByClassName('GeoElement'))
@@ -63,15 +68,15 @@ function makeRender(geometry, step) {
 					  objects[geo.data.p2].data,
 					  color)
 
-		highlightText(geo, hot || textHot)
+		highlightText(geo, hot, textHot)
 		break;
 	    case "Circle":
 		hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
-		highlightText(geo, hot || textHot)
+		highlightText(geo, hot, textHot)
 		break;
 	    case "Polygon":
 		hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
-		highlightText(geo, hot || textHot)
+		highlightText(geo, hot, textHot)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -88,7 +93,7 @@ function makeRender(geometry, step) {
 
 	    if(geo.type === "Point") {
 		hot = visual.drawPoint(geo.id, geo.data, color)
-		highlightText(geo, hot || textHot)
+		highlightText(geo, hot, textHot)
 	    }
 	}
     }
@@ -127,7 +132,14 @@ function circleFromPoints(p1, p2, p3) {
     return {center: center, radius: radius}
 }
 
-function highlightText(geo, isHot) {
+function highlightText(geo, isHot, textHot) {
+    isHot = isHot || textHot
+    if(textHot) {
+	showLabel(geo.id)
+    }
+    else {
+	hideLabel(geo.id)
+    }
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
 	el.style.color = isHot ? 'yellow' : getHex(geo.color)
@@ -148,6 +160,65 @@ function getHex(colorArr) {
 
 function isHot(geo) {
     return hotText[geo.type.toLowerCase()+"_"+geo.id] ? true : false
+}
+
+
+function makeLabels(data) {
+    let geometry = data.geometry
+    let anims = data.animations
+    for(let i = 0; i<anims.length; i++) {
+	for(let j = 0; j<anims[i].length; j++) {
+	    let obj = geometry[anims[i][j]]
+	    if(labels[obj.id]) continue
+	    let elem = document.createElement('div')
+	    elem.id = obj.id
+	    elem.innerHTML = obj.id
+	    elem.style.position = 'absolute'
+	    elem.className = 'label'
+	    elem.style.display = "none"
+	    let x = 0
+	    let y = 0
+	    let point = null
+	    switch(obj.type) {
+	    case "Point":
+		x = obj.data.x
+		y = obj.data.y
+		break;
+	    case "Line":
+		point = geometry[obj.data.p2].data
+		x = point.x
+		y = point.y
+		break;
+	    case "Circle":
+		x = obj.data.center.x
+		y = obj.data.center.y
+		break;
+	    case "Polygon":
+		point = geometry[obj.data.points[0]].data
+		x = point.x
+		y = point.y
+		break;
+	    default:
+		console.log("Can't make label for type " + obj.type)
+	    }
+	    x = ( x + 1) / 2 + 0.01
+	    y = (-y + 1) / 2 - 0.025
+	    elem.style.left = (Math.floor(x * visual.size) + visual.canvasRect.left) + 'px'
+	    elem.style.top = (Math.floor(y * visual.size) + visual.canvasRect.top) + 'px'
+	    labels[obj.id] = elem
+	    document.body.appendChild(elem)
+	}
+    }
+}
+
+function showLabel(id) {
+    let el = document.getElementById(id)
+    if(el) el.style.display = "initial"
+}
+
+function hideLabel(id) {
+    let el = document.getElementById(id)
+    if(el) el.style.display = "none"
 }
     
 
@@ -189,13 +260,32 @@ function onTouchEnd( event ) {
     onMouseUp( event );
 }
 
+function updateAnimation(delta) {
+    if(delta < 0) {
+	anim_index = anim_index === 0 ? anim_index : anim_index + delta
+    }
+    else {
+	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + delta
+    }
+
+    let prev = Array.from(document.getElementsByClassName('step_highlighted'))
+    prev.forEach((el) => el.className = '')
+    
+
+    let par = document.getElementById('step_' + anim_index)
+    if(par) {
+	par.className = 'step_highlighted'
+    }
+
+    
+    visual.setRender(makeRender(geometry, anim_index))
+}
+
 function onKeyDown( event ) {
     if(event.keyCode == 37) {
-	anim_index = anim_index === 0 ? anim_index : anim_index - 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(-1)
     }
     else if(event.keyCode == 39) {
-	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(+1)
     }
 }
