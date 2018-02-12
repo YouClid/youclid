@@ -10,6 +10,8 @@ function init() {
     
     labels = makeLabels(geometry)
 
+    updateAnimation(0)
+
     document.addEventListener( 'keydown', onKeyDown)
     let textElements = Array.from(document.getElementsByClassName('GeoElement'))
     textElements.forEach(
@@ -258,13 +260,32 @@ function onTouchEnd( event ) {
     onMouseUp( event );
 }
 
+function updateAnimation(delta) {
+    if(delta < 0) {
+	anim_index = anim_index === 0 ? anim_index : anim_index + delta
+    }
+    else {
+	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + delta
+    }
+
+    let prev = Array.from(document.getElementsByClassName('step_highlighted'))
+    prev.forEach((el) => el.className = '')
+    
+
+    let par = document.getElementById('step_' + anim_index)
+    if(par) {
+	par.className = 'step_highlighted'
+    }
+
+    
+    visual.setRender(makeRender(geometry, anim_index))
+}
+
 function onKeyDown( event ) {
     if(event.keyCode == 37) {
-	anim_index = anim_index === 0 ? anim_index : anim_index - 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(-1)
     }
     else if(event.keyCode == 39) {
-	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(+1)
     }
 }
