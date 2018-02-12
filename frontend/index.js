@@ -121,10 +121,28 @@ function circleFromPoints(p1, p2, p3) {
 function highlightText(geo, isHot) {
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-	el.style.backgroundColor = isHot ? 'yellow' : getHex(geo.color)
+    console.log(el.classList[1])
+    if(isHot){
+        el.style.backgroundColor = 'yellow'
+    }
+    else if(el.classList[1] <= "step_"+anim_index){
+        el.style.backgroundColor = getHex(geo.color)
+    }
+    else{
+        el.style.backgroundColor = '#5A5A5A'
+    }
 	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.8 && !isHot ? 'white' : '#0f0f0f'
     })
 }
+
+function clearText(){
+    let elements = document.getElementsByClassName("GeoElement")
+    for (var el of elements) {
+        el.style.backgroundColor = '#5A5A5A'
+    }
+
+}
+
 
 function getHex(colorArr) {
     let color = '#'
@@ -191,6 +209,7 @@ function onTouchEnd( event ) {
 }
 
 function onKeyDown( event ) {
+    clearText()
     if(event.keyCode == 37) {
 	anim_index = anim_index === 0 ? anim_index : anim_index - 1
 	visual.setRender(makeRender(geometry, anim_index))
