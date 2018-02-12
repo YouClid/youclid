@@ -1,5 +1,6 @@
 let anim_index = 0
 let visual = null
+let hotText = {}
 
 function init() {
     let render = makeRender(geometry, anim_index)
@@ -7,6 +8,12 @@ function init() {
     visual = new Visual(render)
 
     document.addEventListener( 'keydown', onKeyDown)
+    let textElements = Array.from(document.getElementsByClassName('GeoElement'))
+    textElements.forEach(
+	(el) => {
+	    el.addEventListener('mouseenter', overTextChange)
+	    el.addEventListener('mouseleave', overTextRevert)
+	})
 }
 
 function makeRender(geometry, step) {
@@ -43,7 +50,8 @@ function makeRender(geometry, step) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
-	    let color = objects[id].color
+	    let textHot = isHot(geo)
+	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
 	    let hot = false
 
 	    switch(geo.type) {
@@ -55,15 +63,15 @@ function makeRender(geometry, step) {
 					  objects[geo.data.p2].data,
 					  color)
 
-		highlightText(geo, hot)
+		highlightText(geo, hot || textHot)
 		break;
 	    case "Circle":
 		hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
-		highlightText(geo, hot)
+		highlightText(geo, hot || textHot)
 		break;
 	    case "Polygon":
 		hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
-		highlightText(geo, hot)
+		highlightText(geo, hot || textHot)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -74,12 +82,13 @@ function makeRender(geometry, step) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
-	    let color = objects[id].color
+	    let textHot = isHot(geo)
+	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
 	    let hot = false
 
 	    if(geo.type === "Point") {
 		hot = visual.drawPoint(geo.id, geo.data, color)
-		highlightText(geo, hot)
+		highlightText(geo, hot || textHot)
 	    }
 	}
     }
@@ -121,8 +130,7 @@ function circleFromPoints(p1, p2, p3) {
 function highlightText(geo, isHot) {
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-	el.style.backgroundColor = isHot ? 'yellow' : getHex(geo.color)
-	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.8 && !isHot ? 'white' : '#0f0f0f'
+	el.style.color = isHot ? 'yellow' : getHex(geo.color)
     })
 }
 
@@ -137,6 +145,10 @@ function getHex(colorArr) {
     }
     return color
 }
+
+function isHot(geo) {
+    return hotText[geo.type.toLowerCase()+"_"+geo.id] ? true : false
+}
     
 
 
@@ -146,28 +158,15 @@ function getHex(colorArr) {
 
 /* Two functions for hovering over span elements, and leaving from hover */
 function overTextChange(event)  {
-    if(event.target.tagName === "SPAN") {
-        event.target.style.backgroundColor = "yellow";
-        let obj_id_str = event.target.getAttribute("name").replace('text', 'object');
-        //alert(obj_id_str);
-        testname = scene.getObjectByName(obj_id_str);
-        //alert(testname.name);
-        if(testname != null){
-          oldcolor = new THREE.Color( testname.material.color );
-          testname.material.color.setHex( 0xfffa00 );
-      }
-    }
+    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+    hotText[obj_id_str] = true
+    visual.update()
 }
 
 function overTextRevert(event)  {
-    if(event.target.tagName === "SPAN") {
-        event.target.style.backgroundColor = "#dddddd";
-        if(testname != null){
-          testname.material.color.setHex( oldcolor.getHex() );
-      }
-        oldcolor=null;
-        testname=null;
-   }
+    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+    hotText[obj_id_str] = false
+    visual.update()
 }
 
 

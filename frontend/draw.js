@@ -34,9 +34,8 @@ class Visual {
 
 	this.canvasRect = null
 
-	this.hot = {}
-	this.active = null
-
+	this.mouseDown = false
+	
 	this.render = renderFunc
 
 	this.init()
@@ -72,10 +71,12 @@ class Visual {
 	this.gl = gl
 	this.canvasRect = canvas.getBoundingClientRect()
 
-	gl.lineWidth(3.0)
+	gl.lineWidth(4.0)
 
 	// Register listeners
 	document.addEventListener( 'mousemove', onMouseMove.bind(this));
+	document.addEventListener( 'mousedown', () => this.mouseDown = true)
+	document.addEventListener( 'mouseup', () => this.mouseDown = false)
 	window.addEventListener( 'resize', onResize.bind(this));
     
 	this.update()
@@ -196,8 +197,8 @@ class Visual {
 
 
     drawPoint(ident, point, color) {
-        // create a circular point (filled in) of radius 0.01
-        return this.drawCircle(ident, point, 0.01, color, true)
+        // create a circular point (filled in) of radius 0.0125
+        return this.drawCircle(ident, point, 0.013, color, true)
     }
 
 
@@ -205,19 +206,13 @@ class Visual {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
     
 	if(this.lineUnderMouse(p1, p2)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
 	}
     
@@ -281,23 +276,17 @@ class Visual {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
 	
 	let points = this.getPoints(center, radius)
 	
 	if(this.polyUnderMouse(points)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
-	    }
-	}
+	} 
 	
 	if(hot) {
 	    color = [1.0, 1.0, 0, 1.0] // Yellow
@@ -343,19 +332,13 @@ class Visual {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
 	
 	if(this.polyUnderMouse(points)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
 	}
 	
