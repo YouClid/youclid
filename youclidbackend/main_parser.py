@@ -114,7 +114,7 @@ def parse(text):
         # for display purposes
         else:
             if args_dict.get('color'):
-                obj[0].color = hex_to_rgba(args_dict['color'])
+                obj[0].color = colors.hex_to_rgba(args_dict['color'])
             for e in obj:
                 curr_step.add(e.name)
 
@@ -399,24 +399,6 @@ def generate_html(json_object):
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
-
-
-def hex_to_rgba(s):
-    """Converts a string (like "#ffffffff") to an array of floats betweeen
-    0 and 1 representing the Red, Green, Blue, and Alpha components
-    """
-
-    # Remove the leading '#' character
-    line = s[1:]
-    # Return a list of each pair of hex digits divided by 255 (FF)
-    color = list(map(lambda x: int(x, 16)/255,
-                 [line[i:i+2] for i in range(0, len(line), 2)]))
-    while len(color) < 4:
-        # Other colors should default to 0 if not specified, but alpha
-        # should be 1.
-        val = 1.0 if len(color) == 3 else 0.0
-        color.append(val)
-    return color
 
 
 def rotate_lex(l):
