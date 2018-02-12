@@ -198,7 +198,7 @@ def format_text(text):
     # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
     replaced = re.sub(regex, lambda text: get_text(text, step), text)
     start = "<div id='step_0'>"
-    end = "<\div>"
+    end = "</div>"
     result = "%s %s %s" % (start, replaced, end)
     return result
 
@@ -207,7 +207,7 @@ def get_text(match, step):
     match = match[1]
     if(match == 'step'):
         step[0] += 1
-        return "<\div><div id='step_%d'>" % step[0]
+        return "</div><div id='step_%d'>" % step[0]
     args_dict = _parse_match(match)
     args_dict['type'] = args_dict['type'].title()
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
