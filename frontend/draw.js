@@ -28,8 +28,6 @@ class Visual {
 	this.gl = null
 	this.glData = null
 
-	this.drawn = {}
-
 	this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
 
 	this.canvasRect = null
@@ -37,6 +35,14 @@ class Visual {
 	this.mouseDown = false
 	
 	this.render = renderFunc
+
+	this.debounced_update = debounce(() => {
+	    let gl = this.gl
+	    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+	    gl.clear(gl.COLOR_BUFFER_BIT)
+    
+	    this.render(this) // Defined by user
+	}, 5)
 
 	this.init()
     }
@@ -82,13 +88,8 @@ class Visual {
 	this.update()
     }
 
-    update() {
-	let gl = this.gl
-	gl.clearColor(0.0, 0.0, 0.0, 1.0)
-	gl.clear(gl.COLOR_BUFFER_BIT)
-    
-	this.render(this) // Defined by user
-
+    update() {	
+	this.debounced_update()
     }
 
     setRender(render) {
@@ -456,5 +457,18 @@ function scale(v, c) {
     return v2(v.x*c, v.y*c)
 }
 
+// Taken from: https://gist.github.com/nmsdvid/8807205
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+	var context = this, args = arguments;
+	clearTimeout(timeout);
+	timeout = setTimeout(function() {
+	    timeout = null;
+	    if (!immediate) func.apply(context, args);
+	}, wait);
+	if (immediate && !timeout) func.apply(context, args);
+    };
+}
 
 
