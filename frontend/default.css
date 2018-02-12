@@ -20,6 +20,12 @@ body {
 
 }
 
+.label {
+    color: white;
+    font-size: 1.1em;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
 .GeoElement {
 
 }
@@ -44,4 +50,8 @@ button:hover {
 #prev_step {
     bottom: 10%;
     right: 35%;
+}
+
+.step_highlighted {
+    background-color: #444444;
 }
