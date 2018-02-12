@@ -1,5 +1,3 @@
-import random
-
 BLACK = [0.0, 0.0, 0.0, 1.0]
 WHITE = [1.0, 1.0, 1.0, 1.0]
 NAVY = [0.0, 0.12156862745098039, 0.24705882352941178, 1.0]
@@ -22,9 +20,10 @@ SILVER = [0.8666666666666667, 0.8666666666666667, 0.8666666666666667, 1.0]
 class _object_color():
     def __init__(self):
         self._counter = 0
-        self._colors = [BLUE, AQUA, TEAL, OLIVE, GREEN, LIME, ORANGE, RED,
-                        MAROON, FUCHSIA, PURPLE, GRAY]
-        random.shuffle(self._colors)
+        self._colors = [AQUA, GREEN, BLUE,
+                        RED, ORANGE, PURPLE,
+                        LIME, MAROON, TEAL,
+                        FUCHSIA, OLIVE, GRAY]
 
     def next_color(self):
         r = self._colors[self._counter]
