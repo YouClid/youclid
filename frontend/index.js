@@ -14,6 +14,14 @@ function init() {
 	    el.addEventListener('mouseenter', overTextChange)
 	    el.addEventListener('mouseleave', overTextRevert)
 	})
+    document.getElementById('next_step').onclick = () => {
+	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
+	visual.setRender(makeRender(geometry, anim_index))
+    }
+    document.getElementById('prev_step').onclick = () => {
+	anim_index = anim_index === 0 ? anim_index : anim_index - 1
+	visual.setRender(makeRender(geometry, anim_index))
+    }
 }
 
 function makeRender(geometry, step) {
@@ -149,7 +157,6 @@ function getHex(colorArr) {
 function isHot(geo) {
     return hotText[geo.type.toLowerCase()+"_"+geo.id] ? true : false
 }
-    
 
 
 /*

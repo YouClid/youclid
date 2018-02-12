@@ -24,6 +24,24 @@ body {
 
 }
 
-canvas {
+button {
+    position: absolute;
+    background-color: #f7f7f7;
+    color: black;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 1.4em;
+}
+button:hover {
+    background-color: #fafafa;
+}
 
+#next_step {
+    bottom: 10%;
+    right: 20%;
+}
+
+#prev_step {
+    bottom: 10%;
+    right: 35%;
 }
