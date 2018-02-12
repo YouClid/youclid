@@ -5,20 +5,18 @@
 ]
 'patterns': [
   {
-    'match': '([^\\\\]|^)(\\[)(.*?)( .*?)?( .*?)?(\\])'
+    'match': '(?<!\\\\)(\\[)(.*?)( .*?)?( .*?)?(?<!\\\\)(\\])'
     'captures':
         # This exists because matching a character or newline counts as a match
         '1':
-            'name': 'keyword.youclid.nothing'
-        '2':
             'name': 'keyword.youclid.bracket'
-        '3':
+        '2':
             'name': 'keyword.youclid.type'
-        '4':
+        '3':
             'name': 'keyword.youclid.name'
-        '5':
+        '4':
             'name': 'keyword.youclid.arguments'
-        '6':
+        '5':
             'name': 'keyword.youclid.bracket'
     'name': 'keyword.youclid'
   }
