@@ -27,3 +27,7 @@ body {
 canvas {
 
 }
+
+.step_highlighted {
+    background-color: #550055;
+}
