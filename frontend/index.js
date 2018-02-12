@@ -121,7 +121,6 @@ function circleFromPoints(p1, p2, p3) {
 function highlightText(geo, isHot) {
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-    console.log(el.classList[1])
     if(isHot){
         el.style.backgroundColor = 'yellow'
     }
