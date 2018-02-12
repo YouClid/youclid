@@ -183,8 +183,9 @@ def create_output(d, text, animations):
 def format_text(text):
     newtext = []
     text = text.split('\n')
+    step = [0]
     for i in text:
-        i = i.replace('[step]', '')
+        #i = i.replace('[step]', '')
         i = i.replace('[definitions]', '')
         i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
@@ -195,17 +196,22 @@ def format_text(text):
 
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(regex, get_text, text)
+    #replaced = re.sub(regex, get_text, text)
+    replaced = re.sub(regex, lambda text: get_text(text, step), text)
 
     return replaced
 
 
-def get_text(match):
+def get_text(match, step):
     match = match[1]
+    if(match == 'step'):
+        step[0] += 1
+        return ""
     args_dict = _parse_match(match)
     args_dict['type'] = args_dict['type'].title()
     span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
-    output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
+    c = "class='GeoElement step_%d'" % step[0]
+    output = " <span name=%s %s>{text}</span>" % (span_name, c)
     if (args_dict.get('hidden', False)):
         return ""
     if(args_dict.get('text', False)):
