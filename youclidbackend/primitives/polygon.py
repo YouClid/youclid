@@ -1,5 +1,6 @@
-from youclidbackend import colors
+import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
+
 
 class Polygon(YouClidObject):
     """Represents a triangle in 2D"""
@@ -7,7 +8,7 @@ class Polygon(YouClidObject):
         super().__init__()
         self.name = name
         self.points = None
-        self.color = colors.RED
+        self.color = youclidbackend.colors.next_color()
 
     def __str__(self):
         ret = "Polygon %s(" % (str(self.name))
