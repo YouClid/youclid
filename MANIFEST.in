@@ -1,0 +1,4 @@
+include frontend/template.html
+include frontend/default.css
+include frontend/draw.js
+include frontend/index.js

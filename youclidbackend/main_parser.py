@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import shlex
+import youclidbackend
 from youclidbackend import primitives, colors
 from pprint import pprint
 
@@ -393,7 +394,9 @@ def parse_clear(keyword_args):
 
 def generate_html(json_object):
     html = ""
-    with open("../frontend/template.html", 'r') as f:
+    # I hope that this is the right way to do this? If not, someone tell me
+    basepath = youclidbackend.__path__[0]
+    with open(basepath + "/../frontend/template.html", 'r') as f:
         html = f.read()
 
     html = html.replace("// insert json here", json.dumps(json_object,
