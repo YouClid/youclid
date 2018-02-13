@@ -5,7 +5,9 @@ setup(name='youclid',
       version='0.1',
       packages=find_packages(),
       install_requires=[],
-      package_data={'frontend': ['default.css', 'template.html',
-                                 'index.js', 'draw.js']},
+      package_data={'youclidbackend': ['data/template.html',
+                                       'data/default.css',
+                                       'data/draw.js',
+                                       'data/index.js']},
       include_package_data=True
       )

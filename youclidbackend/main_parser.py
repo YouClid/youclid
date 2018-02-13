@@ -396,7 +396,7 @@ def generate_html(json_object):
     html = ""
     # I hope that this is the right way to do this? If not, someone tell me
     basepath = youclidbackend.__path__[0]
-    with open(basepath + "/../frontend/template.html", 'r') as f:
+    with open(basepath + "/data/template.html", 'r') as f:
         html = f.read()
 
     html = html.replace("// insert json here", json.dumps(json_object,
