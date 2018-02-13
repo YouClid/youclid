@@ -10,6 +10,9 @@ function init() {
     
     labels = makeLabels(geometry)
 
+    if(geometry.animations.length > 1)
+	createStepButtons()
+
     updateAnimation(0)
 
     document.addEventListener( 'keydown', onKeyDown)
@@ -220,7 +223,45 @@ function hideLabel(id) {
     let el = document.getElementById(id)
     if(el) el.style.display = "none"
 }
+
+
+function createStepButtons() {
+    let next = document.createElement('input')
+    let prev = document.createElement('input')
+
+    next.className = 'step_btn'
+    next.id = 'next_step'
+    next.value = 'Next Step'
+    next.type = 'button'
+    prev.className = 'step_btn'
+    prev.id = 'prev_step'
+    prev.value = 'Prev Step'
+    prev.type = 'button'
     
+    next.onclick = () => {
+	updateAnimation(+1)
+    }
+    prev.onclick = () => {
+	updateAnimation(-1)
+    }
+
+    document.body.append(prev)
+    document.body.append(next)
+
+
+    let moveButtons = () => {
+	let rect = visual.canvasRect
+	let pad = 40
+
+	prev.style.left = rect.left + pad + 'px'
+	prev.style.top = rect.bottom - prev.clientHeight - pad + 'px'
+	next.style.left  = rect.right - next.clientWidth - pad + 'px'
+	next.style.top = rect.bottom - next.clientHeight - pad + 'px'
+    }
+    moveButtons()
+
+    window.addEventListener('resize', moveButtons)
+}
 
 
 /*
