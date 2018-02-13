@@ -112,9 +112,8 @@ def parse(text):
         # Otherwise, we created some object, so add them to the current step
         # for display purposes
         else:
-            if args_dict.get('color', False):
-                color = args_dict['color']
-                obj[0].color = hex_to_rgba(color)
+            if args_dict.get('color'):
+                obj[0].color = colors.hex_to_rgba(args_dict['color'])
             for e in obj:
                 curr_step.add(e.name)
 
@@ -182,8 +181,9 @@ def create_output(d, text, animations):
 def format_text(text):
     newtext = []
     text = text.split('\n')
+    step =[0]
     for i in text:
-        i = i.replace('[step]', '')
+        #i = i.replace('[step]', '')
         i = i.replace('[definitions]', '')
         i = i.replace('[clear]', '')
         if not i.startswith('[loc'):
@@ -194,13 +194,18 @@ def format_text(text):
 
     regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
     # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(regex, get_text, text)
+    replaced = re.sub(regex, lambda text: get_text(text, step), text)
+    start = "<div id='step_0'>"
+    end = "</div>"
+    result = "%s %s %s" % (start, replaced, end)
+    return result
 
-    return replaced
 
-
-def get_text(match):
+def get_text(match, step):
     match = match[1]
+    if(match == 'step'):
+        step[0] += 1
+        return "</div><div id='step_%d'>" % step[0]
     args_dict = _parse_match(match)
     # We need to replace "center" with "point" in order to get the correct
     # highlighting on the frontend
@@ -401,24 +406,6 @@ def generate_html(json_object):
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
-
-
-def hex_to_rgba(s):
-    """Converts a string (like "#ffffffff") to an array of floats betweeen
-    0 and 1 representing the Red, Green, Blue, and Alpha components
-    """
-
-    # Remove the leading '#' character
-    line = s[1:]
-    # Return a list of each pair of hex digits divided by 255 (FF)
-    color = list(map(lambda x: int(x, 16)/255,
-                 [line[i:i+2] for i in range(0, len(line), 2)]))
-    while len(color) < 4:
-        # Other colors should default to 0 if not specified, but alpha
-        # should be 1.
-        val = 1.0 if len(color) == 3 else 0.0
-        color.append(val)
-    return color
 
 
 def rotate_lex(l):

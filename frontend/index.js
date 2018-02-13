@@ -1,12 +1,27 @@
 let anim_index = 0
 let visual = null
+let hotText = {}
+let labels = {}
 
 function init() {
     let render = makeRender(geometry, anim_index)
-
+    
     visual = new Visual(render)
+    
+    labels = makeLabels(geometry)
+
+    if(geometry.animations.length > 1)
+	createStepButtons()
+
+    updateAnimation(0)
 
     document.addEventListener( 'keydown', onKeyDown)
+    let textElements = Array.from(document.getElementsByClassName('GeoElement'))
+    textElements.forEach(
+	(el) => {
+	    el.addEventListener('mouseenter', overTextChange)
+	    el.addEventListener('mouseleave', overTextRevert)
+	})
 }
 
 function makeRender(geometry, step) {
@@ -43,7 +58,8 @@ function makeRender(geometry, step) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
-	    let color = objects[id].color
+	    let textHot = isHot(geo)
+	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
 	    let hot = false
 
 	    switch(geo.type) {
@@ -55,15 +71,15 @@ function makeRender(geometry, step) {
 					  objects[geo.data.p2].data,
 					  color)
 
-		highlightText(geo, hot)
+		highlightText(geo, hot, textHot)
 		break;
 	    case "Circle":
 		hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
-		highlightText(geo, hot)
+		highlightText(geo, hot, textHot)
 		break;
 	    case "Polygon":
 		hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
-		highlightText(geo, hot)
+		highlightText(geo, hot, textHot)
 		break;
 	    default:
 		console.log("We don't handle type " + geo.type)
@@ -74,12 +90,13 @@ function makeRender(geometry, step) {
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
 	    let geo = objects[id]
-	    let color = objects[id].color
+	    let textHot = isHot(geo)
+	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
 	    let hot = false
 
 	    if(geo.type === "Point") {
 		hot = visual.drawPoint(geo.id, geo.data, color)
-		highlightText(geo, hot)
+		highlightText(geo, hot, textHot)
 	    }
 	}
     }
@@ -118,11 +135,17 @@ function circleFromPoints(p1, p2, p3) {
     return {center: center, radius: radius}
 }
 
-function highlightText(geo, isHot) {
+function highlightText(geo, isHot, textHot) {
+    isHot = isHot || textHot
+    if(textHot) {
+	showLabel(geo.id)
+    }
+    else {
+	hideLabel(geo.id)
+    }
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-	el.style.backgroundColor = isHot ? 'yellow' : getHex(geo.color)
-	el.style.color = geo.color.reduce((x,y) => x+y) <= 1.8 && !isHot ? 'white' : '#0f0f0f'
+	el.style.color = isHot ? 'yellow' : getHex(geo.color)
     })
 }
 
@@ -137,7 +160,108 @@ function getHex(colorArr) {
     }
     return color
 }
+
+function isHot(geo) {
+    return hotText[geo.type.toLowerCase()+"_"+geo.id] ? true : false
+}
+
+
+function makeLabels(data) {
+    let geometry = data.geometry
+    let anims = data.animations
+    for(let i = 0; i<anims.length; i++) {
+	for(let j = 0; j<anims[i].length; j++) {
+	    let obj = geometry[anims[i][j]]
+	    if(labels[obj.id]) continue
+	    let elem = document.createElement('div')
+	    elem.id = obj.id
+	    elem.innerHTML = obj.id
+	    elem.style.position = 'absolute'
+	    elem.className = 'label'
+	    elem.style.display = "none"
+	    let x = 0
+	    let y = 0
+	    let point = null
+	    switch(obj.type) {
+	    case "Point":
+		x = obj.data.x
+		y = obj.data.y
+		break;
+	    case "Line":
+		point = geometry[obj.data.p2].data
+		x = point.x
+		y = point.y
+		break;
+	    case "Circle":
+		x = obj.data.center.x
+		y = obj.data.center.y
+		break;
+	    case "Polygon":
+		point = geometry[obj.data.points[0]].data
+		x = point.x
+		y = point.y
+		break;
+	    default:
+		console.log("Can't make label for type " + obj.type)
+	    }
+	    x = ( x + 1) / 2 + 0.01
+	    y = (-y + 1) / 2 - 0.025
+	    elem.style.left = (Math.floor(x * visual.size) + visual.canvasRect.left) + 'px'
+	    elem.style.top = (Math.floor(y * visual.size) + visual.canvasRect.top) + 'px'
+	    labels[obj.id] = elem
+	    document.body.appendChild(elem)
+	}
+    }
+}
+
+function showLabel(id) {
+    let el = document.getElementById(id)
+    if(el) el.style.display = "initial"
+}
+
+function hideLabel(id) {
+    let el = document.getElementById(id)
+    if(el) el.style.display = "none"
+}
+
+
+function createStepButtons() {
+    let next = document.createElement('input')
+    let prev = document.createElement('input')
+
+    next.className = 'step_btn'
+    next.id = 'next_step'
+    next.value = 'Next Step'
+    next.type = 'button'
+    prev.className = 'step_btn'
+    prev.id = 'prev_step'
+    prev.value = 'Prev Step'
+    prev.type = 'button'
     
+    next.onclick = () => {
+	updateAnimation(+1)
+    }
+    prev.onclick = () => {
+	updateAnimation(-1)
+    }
+
+    document.body.append(prev)
+    document.body.append(next)
+
+
+    let moveButtons = () => {
+	let rect = visual.canvasRect
+	let pad = 40
+
+	prev.style.left = rect.left + pad + 'px'
+	prev.style.top = rect.bottom - prev.clientHeight - pad + 'px'
+	next.style.left  = rect.right - next.clientWidth - pad + 'px'
+	next.style.top = rect.bottom - next.clientHeight - pad + 'px'
+    }
+    moveButtons()
+
+    window.addEventListener('resize', moveButtons)
+}
 
 
 /*
@@ -146,28 +270,15 @@ function getHex(colorArr) {
 
 /* Two functions for hovering over span elements, and leaving from hover */
 function overTextChange(event)  {
-    if(event.target.tagName === "SPAN") {
-        event.target.style.backgroundColor = "yellow";
-        let obj_id_str = event.target.getAttribute("name").replace('text', 'object');
-        //alert(obj_id_str);
-        testname = scene.getObjectByName(obj_id_str);
-        //alert(testname.name);
-        if(testname != null){
-          oldcolor = new THREE.Color( testname.material.color );
-          testname.material.color.setHex( 0xfffa00 );
-      }
-    }
+    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+    hotText[obj_id_str] = true
+    visual.update()
 }
 
 function overTextRevert(event)  {
-    if(event.target.tagName === "SPAN") {
-        event.target.style.backgroundColor = "#dddddd";
-        if(testname != null){
-          testname.material.color.setHex( oldcolor.getHex() );
-      }
-        oldcolor=null;
-        testname=null;
-   }
+    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+    hotText[obj_id_str] = false
+    visual.update()
 }
 
 
@@ -190,13 +301,32 @@ function onTouchEnd( event ) {
     onMouseUp( event );
 }
 
+function updateAnimation(delta) {
+    if(delta < 0) {
+	anim_index = anim_index === 0 ? anim_index : anim_index + delta
+    }
+    else {
+	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + delta
+    }
+
+    let prev = Array.from(document.getElementsByClassName('step_highlighted'))
+    prev.forEach((el) => el.className = '')
+    
+
+    let par = document.getElementById('step_' + anim_index)
+    if(par) {
+	par.className = 'step_highlighted'
+    }
+
+    
+    visual.setRender(makeRender(geometry, anim_index))
+}
+
 function onKeyDown( event ) {
     if(event.keyCode == 37) {
-	anim_index = anim_index === 0 ? anim_index : anim_index - 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(-1)
     }
     else if(event.keyCode == 39) {
-	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
-	visual.setRender(makeRender(geometry, anim_index))
+	updateAnimation(+1)
     }
 }

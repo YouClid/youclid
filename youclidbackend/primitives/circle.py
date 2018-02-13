@@ -1,4 +1,4 @@
-from youclidbackend import colors
+import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
 
@@ -12,7 +12,7 @@ class Circle(YouClidObject):
         self.p3 = None
         self.center = None
         self.radius = None
-        self.color = colors.PURPLE
+        self.color = youclidbackend.colors.next_color()
 
     def __str__(self):
         return "Circle %s(%s, %s, %s)" % (str(self.name),

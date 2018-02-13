@@ -1,4 +1,4 @@
-from youclidbackend import colors
+import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
 
@@ -9,7 +9,7 @@ class Point(YouClidObject):
         self.x = None
         self.y = None
         self.name = name
-        self.color = colors.WHITE
+        self.color = youclidbackend.colors.next_color()
 
     def __str__(self):
         return "Point %s(%s, %s)" % (str(self.name),

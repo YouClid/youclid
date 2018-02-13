@@ -34,9 +34,8 @@ class Visual {
 
 	this.canvasRect = null
 
-	this.hot = {}
-	this.active = null
-
+	this.mouseDown = false
+	
 	this.render = renderFunc
 
 	this.init()
@@ -48,8 +47,16 @@ class Visual {
 	let canvas = document.createElement('canvas')
 	document.body.appendChild( canvas )
 
-	canvas.width = this.size
-	canvas.height = this.size
+	// Adjust canvas size based on screen
+	{
+	    canvas.style.width = this.size + "px";
+	    canvas.style.height = this.size + "px";
+
+	    // set the size of the drawingBuffer
+	    var devicePixelRatio = window.devicePixelRatio || 1;
+	    canvas.width = this.size * devicePixelRatio;
+	    canvas.height = this.size * devicePixelRatio;
+	}
 
 	let gl = canvas.getContext('webgl')
 	
@@ -64,10 +71,12 @@ class Visual {
 	this.gl = gl
 	this.canvasRect = canvas.getBoundingClientRect()
 
-	gl.lineWidth(1.5)
+	gl.lineWidth(4.0)
 
 	// Register listeners
 	document.addEventListener( 'mousemove', onMouseMove.bind(this));
+	document.addEventListener( 'mousedown', () => this.mouseDown = true)
+	document.addEventListener( 'mouseup', () => this.mouseDown = false)
 	window.addEventListener( 'resize', onResize.bind(this));
     
 	this.update()
@@ -188,50 +197,8 @@ class Visual {
 
 
     drawPoint(ident, point, color) {
-	// Point has an x and a y attribute in NDC coordinates
-	let gl = this.gl
-	let name = "object_point_" + ident.toString()
-
-	let hot = this.isHot(name)
-
-	if(this.pointUnderMouse(point)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
-	    }
-	}
-    
-	if(hot) {
-	    color = [1.0, 1.0, 0, 1.0]
-	} 
-    
-	let vertices = [
-	    point.x, point.y, -0.1, 1.0
-	]
-	vertices = vertices.concat(color)
-	
-	this.glData.set(vertices)
-
-	gl.bufferData(gl.ARRAY_BUFFER, this.glData, gl.DYNAMIC_DRAW)
-	let a_Position = gl.getAttribLocation(gl.program, "a_Position")
-	gl.enableVertexAttribArray(a_Position)
-	gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*4, 0)
-
-	let a_Color = gl.getAttribLocation(gl.program, "a_Color")
-	gl.enableVertexAttribArray(a_Color)
-	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*4, 4*4)
-
-	gl.drawArrays(gl.POINTS, 0, 1)
-
-	return hot
-    
+        // create a circular point (filled in) of radius 0.0125
+        return this.drawCircle(ident, point, 0.013, color, true)
     }
 
 
@@ -239,19 +206,13 @@ class Visual {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
     
 	if(this.lineUnderMouse(p1, p2)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
 	}
     
@@ -311,27 +272,21 @@ class Visual {
 	return points
     }
 
-    drawCircle(ident, center, radius, color) {
+    drawCircle(ident, center, radius, color, fill=false) {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
 	
 	let points = this.getPoints(center, radius)
 	
 	if(this.polyUnderMouse(points)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
-	    }
-	}
+	} 
 	
 	if(hot) {
 	    color = [1.0, 1.0, 0, 1.0] // Yellow
@@ -363,7 +318,10 @@ class Visual {
 	gl.enableVertexAttribArray(a_Color)
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
-	gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
+    if (fill === true)
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length+1)
+    else
+        gl.drawArrays(gl.LINE_STRIP, 0, points.length+1)
 
 	return hot
 
@@ -374,19 +332,13 @@ class Visual {
 
 	let name = "object_line_" + ident.toString()
 
-	let hot = this.isHot(name)
+	let hot = false
+	let active = false
 	
 	if(this.polyUnderMouse(points)) {
-	    if(!hot) {
-		if(this.active === null) {
-		    this.hot[name] = true
-		    hot = true
-		}
-	    }
-	} else {
-	    if(hot) {
-		this.hot[name] = false
-		hot = false
+	    hot = true
+	    if(this.mouseDown) {
+		active = true
 	    }
 	}
 	
@@ -458,11 +410,8 @@ function onResize( event ) {
     this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
     let realToCSSPixels = window.devicePixelRatio
     let drawSize = Math.floor(this.size * realToCSSPixels)
-    this.gl.canvas.clientWidth  =  this.size
-    this.gl.canvas.clientHeight =  this.size
-    this.gl.canvas.width  =  drawSize
-    this.gl.canvas.height =  drawSize
-    this.gl.viewport(0, 0, this.size, this.size)
+    this.gl.canvas.style.width = this.size + "px";
+    this.gl.canvas.style.height = this.size + "px"; 
     this.update()
 }
 
