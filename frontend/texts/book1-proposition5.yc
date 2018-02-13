@@ -7,7 +7,7 @@ I say that the angle ABC equals the angle ACB, and the angle CBD equals the angl
 
 Take an arbitrary [point F] on [line BD]. Cut off [line AG] from [line AE] the greater equal to [line AF] the less, and join [line FC] and [line GB].
 
-Since [line AF] equals [line AG], and [line AB] equals [line AC], therefore, [line FA] and [line AC] equal [line GA] and [line AB], respectively, and they contain a common angle, the angle FAG.
+Since [line AF] equals [line AG], and [line AB] equals [line AC], therefore, [line AF text=FA] and [line AC] equal [line AG text=GA] and [line AB], respectively, and they contain a common angle, the angle FAG.
 
 Therefore, [line FC] equals [line GB], [polygon AFC] equals [polygon AGB], and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides, that is, the angle ACF equals the angle ABG, and the angle AFC equals the angle AGB.
 
