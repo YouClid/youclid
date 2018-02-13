@@ -9,5 +9,6 @@ setup(name='youclid',
                                        'data/default.css',
                                        'data/draw.js',
                                        'data/index.js']},
-      include_package_data=True
+      include_package_data=True,
+      scripts=['bin/youclidparser']
       )
