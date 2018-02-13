@@ -10,6 +10,9 @@ function init() {
     
     labels = makeLabels(geometry)
 
+    if(geometry.animations.length > 1)
+	createStepButtons()
+
     updateAnimation(0)
 
     document.addEventListener( 'keydown', onKeyDown)
@@ -19,14 +22,6 @@ function init() {
 	    el.addEventListener('mouseenter', overTextChange)
 	    el.addEventListener('mouseleave', overTextRevert)
 	})
-    document.getElementById('next_step').onclick = () => {
-	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + 1
-	visual.setRender(makeRender(geometry, anim_index))
-    }
-    document.getElementById('prev_step').onclick = () => {
-	anim_index = anim_index === 0 ? anim_index : anim_index - 1
-	visual.setRender(makeRender(geometry, anim_index))
-    }
 }
 
 function makeRender(geometry, step) {
@@ -229,6 +224,44 @@ function hideLabel(id) {
     if(el) el.style.display = "none"
 }
 
+
+function createStepButtons() {
+    let next = document.createElement('input')
+    let prev = document.createElement('input')
+
+    next.className = 'step_btn'
+    next.id = 'next_step'
+    next.value = 'Next Step'
+    next.type = 'button'
+    prev.className = 'step_btn'
+    prev.id = 'prev_step'
+    prev.value = 'Prev Step'
+    prev.type = 'button'
+    
+    next.onclick = () => {
+	updateAnimation(+1)
+    }
+    prev.onclick = () => {
+	updateAnimation(-1)
+    }
+
+    document.body.append(prev)
+    document.body.append(next)
+
+
+    let moveButtons = () => {
+	let rect = visual.canvasRect
+	let pad = 40
+
+	prev.style.left = rect.left + pad + 'px'
+	prev.style.top = rect.bottom - prev.clientHeight - pad + 'px'
+	next.style.left  = rect.right - next.clientWidth - pad + 'px'
+	next.style.top = rect.bottom - next.clientHeight - pad + 'px'
+    }
+    moveButtons()
+
+    window.addEventListener('resize', moveButtons)
+}
 
 
 /*
