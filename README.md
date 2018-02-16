@@ -5,6 +5,11 @@
 ### Dependencies
 - python3.6
 
+### Installation
+```bash
+pip install git+git://github.com/YouClid/youclid.git@master#egg=youclid
+```
+
 ### Creating a Markup
 The format for creating a markup file is specified in [yc-format.txt](https://raw.githubusercontent.com/YouClid/youclid/master/yc-format.txt).
 We also have [documentation located here](https://youclid.github.io/docs/home)
@@ -23,9 +28,9 @@ To mark where this part of the document starts, it must be preceded by a `[Defin
 We have provided an example file in [frontend/texts/postulate1.yc](https://raw.githubusercontent.com/YouClid/youclid/master/frontend/texts/postulate-1.yc) which can be used as a reference.
 
 ### Running the parser
-To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and the argument to `-o` with the path to the `frontend` directory of this repository and then the name of the HTML file that you want to generate:
+To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and use the `-o` argument to specify an output file
 ```bash
-python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/test.html
+youclidparser /path/to/marked/up/yc/file -o output.html
 ```
 If you wish to specify transitions between steps in your text, simply include a \[step\] command.
 Any objects created between \[step\] commands will be displayed as one transition.
@@ -48,10 +53,9 @@ This means that you don't even need any of the text after the comma on the secon
 The lines after the blank line give the points locations.
 Point `A` is given the coordinates `(-0.75, 0.75)` and point `B` is given the coordinates `(0.75, 0.75)`.
 
-All that is left to do is generate the HTML.
-Navigate to the `backend` directory and simply run the `main_parser.py` file as follows.
+All that is left to do is generate the HTML; simply run the following command
 ```bash
-python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/file.html
+youclidparser /path/to/marked/up/yc/file -o output.html
 ```
 Now, you can open the HTML file in your browser, and you should see a line!
 
