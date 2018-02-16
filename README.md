@@ -91,4 +91,4 @@ Next, run the following commands to create symlinks to our package, replacing `/
 ```
 ln -s /path/to/youclid/colors/atom/language-youclid ~/.atom/packages/language-youclid
 ```
-If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
+If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/atom/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
