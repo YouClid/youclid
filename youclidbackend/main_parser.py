@@ -392,7 +392,7 @@ def parse_clear(keyword_args):
     return [_Clear()]
 
 
-def generate_html(json_object):
+def generate_html(json_object, final):
     html = ""
     # I hope that this is the right way to do this? If not, someone tell me
     basepath = youclidbackend.__path__[0]
@@ -404,12 +404,26 @@ def generate_html(json_object):
     html = html.replace("<!-- Insert the text here -->",
                         json_object['text'].replace("\n", "<br>\n        "))
 
-    html = html.replace("default.css",
-                        youclidbackend.__path__[0] + "/data/default.css")
-    html = html.replace("draw.js",
-                        youclidbackend.__path__[0] + "/data/draw.js")
-    html = html.replace("index.js",
-                        youclidbackend.__path__[0] + "/data/index.js")
+    if not final:
+        html = html.replace("default.css",
+                            youclidbackend.__path__[0] + "/data/default.css")
+        html = html.replace("draw.js",
+                            youclidbackend.__path__[0] + "/data/draw.js")
+        html = html.replace("index.js",
+                            youclidbackend.__path__[0] + "/data/index.js")
+    else:
+        with open(youclidbackend.__path__[0] + "/data/default.css") as f:
+            data = f.read()
+        html = html.replace('<link rel="stylesheet" href="default.css">',
+                            '<style>' + data + '</style>')
+        with open(youclidbackend.__path__[0] + "/data/draw.js") as f:
+            data = f.read()
+        html = html.replace('<script src="draw.js"></script>',
+                            '<script>' + data + '</script>')
+        with open(youclidbackend.__path__[0] + "/data/index.js") as f:
+            data = f.read()
+        html = html.replace('<script src="index.js"></script>',
+                            '<script>' + data + '</script>')
 
     return html
 
@@ -435,6 +449,11 @@ if __name__ == "__main__":
                         "--output",
                         type=str,
                         help="Path to output html file")
+    parser.add_argument("-f",
+                        "--final",
+                        help="If present, output a copy of the HTML "
+                             "for distrubition",
+                        action='store_true')
     args = parser.parse_args()
 
     with open(args.path) as f:
@@ -444,6 +463,6 @@ if __name__ == "__main__":
 
     if(args.output):
         with open(args.output, "w") as f:
-            f.write(generate_html(json_object))
+            f.write(generate_html(json_object, args.final))
     else:
         print(json_object)
