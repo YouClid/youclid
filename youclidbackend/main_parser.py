@@ -404,6 +404,13 @@ def generate_html(json_object):
     html = html.replace("<!-- Insert the text here -->",
                         json_object['text'].replace("\n", "<br>\n        "))
 
+    html = html.replace("default.css",
+                        youclidbackend.__path__[0] + "/data/default.css")
+    html = html.replace("draw.js",
+                        youclidbackend.__path__[0] + "/data/draw.js")
+    html = html.replace("index.js",
+                        youclidbackend.__path__[0] + "/data/index.js")
+
     return html
 
 
