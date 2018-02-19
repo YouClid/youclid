@@ -10,6 +10,8 @@ function init() {
     
     labels = makeLabels(geometry)
 
+    colorText(geometry)
+
     if(geometry.animations.length > 1)
 	createStepButtons()
 
@@ -263,6 +265,18 @@ function createStepButtons() {
     window.addEventListener('resize', moveButtons)
 }
 
+function clearText(geometry, step) {
+    geometry.animations[step].forEach((id) => {
+	highlightText(geometry.geometry[id], false, false)
+    })
+}
+
+function colorText(geometry) {
+    geometry.animations.forEach((step) => {
+	step.forEach((id) => highlightText(geometry.geometry[id], false, false))
+    })
+}
+
 
 /*
   All Event Callbacks
@@ -302,6 +316,8 @@ function onTouchEnd( event ) {
 }
 
 function updateAnimation(delta) {
+    clearText(geometry, anim_index)
+    
     if(delta < 0) {
 	anim_index = anim_index === 0 ? anim_index : anim_index + delta
     }
