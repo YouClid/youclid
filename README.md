@@ -7,7 +7,7 @@
 
 ### Installation
 ```bash
-pip install git+git://github.com/YouClid/youclid.git@master#egg=youclid
+pip3 install git+git://github.com/YouClid/youclid.git@master#egg=youclid
 ```
 
 ### Examples
