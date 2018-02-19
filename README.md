@@ -32,8 +32,17 @@ To run the parser, which will generate HTML from your markup, simply run the fol
 ```bash
 youclidparser /path/to/marked/up/yc/file -o output.html
 ```
-If you wish to specify transitions between steps in your text, simply include a \[step\] command.
-Any objects created between \[step\] commands will be displayed as one transition.
+If you wish to specify transitions between steps in your text, simply include a `\[step\]` command.
+Any objects created between `\[step\]` commands will be displayed as one transition.
+
+If you wish to specify colors for a particular object, you can do so directly in the markup, as follows:
+```
+[line AB color=#ffffffff]
+```
+Where the hex values are of the form RGBA (Red, Green, Blue, Alpha).
+If you do not specify an Alpha, it will be assumed to be `ff`.
+
+If you wish to distribute the generated HTML to another user, you can use the `--final` argument to create a distributable file.
 
 ### Step-by-Step Example
 Let's say that you wish to create a diagonal line across the screen.
