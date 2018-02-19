@@ -35,13 +35,6 @@ youclidparser /path/to/marked/up/yc/file -o output.html
 If you wish to specify transitions between steps in your text, simply include a `\[step\]` command.
 Any objects created between `\[step\]` commands will be displayed as one transition.
 
-If you wish to specify colors for a particular object, you can do so directly in the markup, as follows:
-```
-[line AB color=#ffffffff]
-```
-Where the hex values are of the form RGBA (Red, Green, Blue, Alpha).
-If you do not specify an Alpha, it will be assumed to be `ff`.
-
 If you wish to distribute the generated HTML to another user, you can use the `--final` argument to create a distributable file.
 
 ### Step-by-Step Example
@@ -67,6 +60,14 @@ All that is left to do is generate the HTML; simply run the following command
 youclidparser /path/to/marked/up/yc/file -o output.html
 ```
 Now, you can open the HTML file in your browser, and you should see a line!
+
+If you wish to specify colors for a particular object, you can do so directly in the markup, as follows:
+```
+[line AB color=#ffffffff]
+```
+Where the hex values are of the form RGBA (Red, Green, Blue, Alpha).
+If you do not specify an Alpha, it will be assumed to be `ff`.
+
 
 ### Syntax Highlighting
 We plan on creating syntax files for popular text editors.
