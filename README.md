@@ -5,6 +5,14 @@
 ### Dependencies
 - python3.6
 
+### Installation
+```bash
+pip3 install git+git://github.com/YouClid/youclid.git@master#egg=youclid
+```
+
+### Examples
+You can see examples of the parser in action [at our website](https://youclid.github.io/examples).
+
 ### Creating a Markup
 The format for creating a markup file is specified in [yc-format.txt](https://raw.githubusercontent.com/YouClid/youclid/master/yc-format.txt).
 We also have [documentation located here](https://youclid.github.io/docs/home)
@@ -23,12 +31,14 @@ To mark where this part of the document starts, it must be preceded by a `[Defin
 We have provided an example file in [frontend/texts/postulate1.yc](https://raw.githubusercontent.com/YouClid/youclid/master/frontend/texts/postulate-1.yc) which can be used as a reference.
 
 ### Running the parser
-To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and the argument to `-o` with the path to the `frontend` directory of this repository and then the name of the HTML file that you want to generate:
+To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and use the `-o` argument to specify an output file
 ```bash
-python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/test.html
+youclid /path/to/marked/up/yc/file -o output.html
 ```
-If you wish to specify transitions between steps in your text, simply include a \[step\] command.
-Any objects created between \[step\] commands will be displayed as one transition.
+If you wish to specify transitions between steps in your text, simply include a `\[step\]` command.
+Any objects created between `\[step\]` commands will be displayed as one transition.
+
+If you wish to distribute the generated HTML to another user, you can use the `--final` argument to create a distributable file.
 
 ### Step-by-Step Example
 Let's say that you wish to create a diagonal line across the screen.
@@ -48,12 +58,19 @@ This means that you don't even need any of the text after the comma on the secon
 The lines after the blank line give the points locations.
 Point `A` is given the coordinates `(-0.75, 0.75)` and point `B` is given the coordinates `(0.75, 0.75)`.
 
-All that is left to do is generate the HTML.
-Navigate to the `backend` directory and simply run the `main_parser.py` file as follows.
+All that is left to do is generate the HTML; simply run the following command
 ```bash
-python3 main_parser.py /path/to/marked/up/yc/file -o /path/to/youclid/frontend/file.html
+youclid /path/to/marked/up/yc/file -o output.html
 ```
 Now, you can open the HTML file in your browser, and you should see a line!
+
+If you wish to specify colors for a particular object, you can do so directly in the markup, as follows:
+```
+[line AB color=#ffffffff]
+```
+Where the hex values are of the form RGBA (Red, Green, Blue, Alpha).
+If you do not specify an Alpha, it will be assumed to be `ff`.
+
 
 ### Syntax Highlighting
 We plan on creating syntax files for popular text editors.
@@ -87,4 +104,4 @@ Next, run the following commands to create symlinks to our package, replacing `/
 ```
 ln -s /path/to/youclid/colors/atom/language-youclid ~/.atom/packages/language-youclid
 ```
-If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
+If you wish to customize the colors, [our `.less` file](https://raw.githubusercontent.com/YouClid/youclid/master/colors/atom/language-youclid/styles/youclid.less) is located in `colors/language-youclid/styles/youclid.less`.
