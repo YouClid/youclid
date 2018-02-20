@@ -319,16 +319,31 @@ class Visual {
 	
 	let gl = this.gl
 
-	if(this.glData.length < (points.length * 8)) {
-	    this.glData = new Float32Array(points.length * 8)
+	let vertices = []
+	let num_indices = 0
+
+	if(!fill) {
+	    vertices = this.makeLineBuf(points, color, this.lineWidth)
+	    num_indices = 2*(points.length)
+	}
+	else {
+	    vertices = points.map((p) => {
+		return [p.x, p.y, 0.0, 1.0].concat(color)
+	    })
+	    vertices = this.flatten(vertices)
+	    num_indices = points.length + 1
+	}
+
+	if(this.glData.length < vertices.length) {
+	    this.glData = new Float32Array(vertices.length)
 	}
 	
 	let data = this.glData
 
 	let FSIZE = data.BYTES_PER_ELEMENT
 
-	let vertices = this.makeLineBuf(points, color, this.lineWidth)
-	console.log(vertices)
+
+	data.set(vertices)
 
 	gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
 	let a_Position = gl.getAttribLocation(gl.program, "a_Position")
@@ -339,10 +354,11 @@ class Visual {
 	gl.enableVertexAttribArray(a_Color)
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
+
 	if (fill === true)
-            gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length+1)
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, num_indices)
 	else
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, points.length+1)
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
 
 	return hot
 
