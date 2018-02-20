@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 YOUCLIDPATH=`pip3 show youclid | grep "Location" | awk '{print $2}'`
 python3.6 $YOUCLIDPATH/youclidbackend/main_parser.py
