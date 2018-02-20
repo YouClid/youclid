@@ -210,7 +210,7 @@ class Visual {
 	for(let i=0; i<points.length; i++) {
 	    let p1 = points[i]
 	    let p2 = i < points.length - 1 ? points[i+1] : points[i-1]
-	    let n = normal(sub(p1, p2))
+	    let n = i < points.length - 1 ? normal(sub(p1, p2)) : normal(sub(p2, p1))
 	
 	    let v1 = [
 		p1.x + (width / 2 * n.x),
@@ -365,7 +365,7 @@ class Visual {
     }
 
 
-    drawPoly(ident, points, color) {
+    drawPoly(ident, points, color, fill=false) {
 
 	let name = "object_line_" + ident.toString()
 
@@ -383,35 +383,15 @@ class Visual {
 	    color = [1.0, 1.0, 0, 1.0] // Yellow
 	}
 
-	
-	let gl = this.gl
-
-	if(this.glData.length < (points.length * 8)) {
-	    this.glData = new Float32Array(points.length * 8)
-	}
-	
-	let data = this.glData
-
-	let FSIZE = data.BYTES_PER_ELEMENT
-
 	points.push(points[0])
+	let vertices = []
+	let num_indices = 0
 
-	let vertices = points.map((p) => {
-	    return [p.x, p.y, 0.0, 1.0].concat(color)
-	})
-	
-	data.set(this.flatten(vertices))
-
-	gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
-	let a_Position = gl.getAttribLocation(gl.program, "a_Position")
-	gl.enableVertexAttribArray(a_Position)
-	gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
-
-	let a_Color = gl.getAttribLocation(gl.program, "a_Color")
-	gl.enableVertexAttribArray(a_Color)
-	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
-
-	gl.drawArrays(gl.LINE_STRIP, 0, points.length)
+	for(let i = 0; i<points.length-1; i++) {
+	    let p1 = points[i]
+	    let p2 = points[i+1]
+	    this.drawLine(ident, p1, p2, color)
+	}
 
 	return hot
     }
