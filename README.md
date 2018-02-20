@@ -33,7 +33,7 @@ We have provided an example file in [frontend/texts/postulate1.yc](https://raw.g
 ### Running the parser
 To run the parser, which will generate HTML from your markup, simply run the following command, replacing the first argument with the path to your `.yc` file, and use the `-o` argument to specify an output file
 ```bash
-youclidparser /path/to/marked/up/yc/file -o output.html
+youclid /path/to/marked/up/yc/file -o output.html
 ```
 If you wish to specify transitions between steps in your text, simply include a `\[step\]` command.
 Any objects created between `\[step\]` commands will be displayed as one transition.
@@ -60,7 +60,7 @@ Point `A` is given the coordinates `(-0.75, 0.75)` and point `B` is given the co
 
 All that is left to do is generate the HTML; simply run the following command
 ```bash
-youclidparser /path/to/marked/up/yc/file -o output.html
+youclid /path/to/marked/up/yc/file -o output.html
 ```
 Now, you can open the HTML file in your browser, and you should see a line!
 

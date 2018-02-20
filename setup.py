@@ -11,5 +11,5 @@ setup(name='youclid',
                                        'data/draw.js',
                                        'data/index.js']},
       include_package_data=True,
-      scripts=['bin/youclidparser']
+      scripts=['bin/youclid']
       )
