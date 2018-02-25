@@ -303,9 +303,7 @@ def parse_circle(keyword_args):
 
     radius = keyword_args.get("radius")
     if radius is not None:
-        # TODO: Support a line as the radius, not just a value?
         circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
-
     return ret
 
 

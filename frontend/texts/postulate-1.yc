@@ -3,8 +3,8 @@
 
 Let [line AB] be the given finite straight line.
 It is required to construct an equilateral triangle on the straight [line AB]. [step]
-Describe the [circle BCD name=BCD] with [center A circle=BCD] and radius [line AB]. [step]
-Again describe the [circle ACE name=ACE] with [center B circle=ACE] and radius [line BA]. [step]
+Describe the [circle BCD name=BCD radius=AB] with [center A circle=BCD] and radius [line AB]. [step]
+Again describe the [circle ACE name=ACE radius=BA] with [center B circle=ACE] and radius [line BA]. [step]
 Join the straight lines [line CA] and [line CB] from the [point C] at which the circles cut one another to the points [point A] and [point B]. [step]
 Now, since the [point A] is the center of the [circle CDB name=BCD], therefore [line AC] equals [line AB].
 Again, since the [point B] is the center of the [circle CAE name=ACE], therefore [line BC] equals [line BA].
