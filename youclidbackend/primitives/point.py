@@ -35,3 +35,6 @@ class Point(YouClidObject):
                 'x': self.x,
                 'y': self.y
                }
+
+    def dist(self, other):
+        sqrt((self.x - other.x)**2 + (self.y - other.y)**2)

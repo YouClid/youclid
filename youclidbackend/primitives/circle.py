@@ -43,6 +43,6 @@ class Circle(YouClidObject):
                 'p1': self.p1.name if self.p1 is not None else None,
                 'p2': self.p2.name if self.p2 is not None else None,
                 'p3': self.p3.name if self.p3 is not None else None,
-                'radius': self.radius if self.radius is not None else None,
+                'radius': self.radius[0].dist(self.radius[1]) if self.radius is not None else None,
                 'center': self.center.name if self.center is not None else None
                }
