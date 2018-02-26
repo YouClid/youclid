@@ -352,7 +352,10 @@ def parse_circle(keyword_args):
 
     radius = keyword_args.get("radius")
     if radius is not None:
-        circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
+        try:
+            circle.radius = float(radius)
+        except ValueError:
+            circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
     return ret
 
 
