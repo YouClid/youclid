@@ -132,22 +132,34 @@ def parse(text):
 def constrain(obj_dict):
     """Takes in a object dictionary and modifies points, giving them
     coordinates"""
+
     points = set()
     for obj in obj_dict.values():
         if type(obj) == primitives.Point and (obj.x is obj.y is None):
             points.add(obj)
-    for p in points:
-        print("Point", p)
-        symified_constraints = [x.symify() for x in p.constraints
-                                if x.symify() is not None]
-        intersection = sympy.intersection(*symified_constraints)
-        if intersection == []:
-            tmp = symified_constraints[0].arbitrary_point()
-            t = sympy.Symbol('t', real=True)
-            r = random.uniform(0, 2*math.pi)
-            intersection = [sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))]
-        p.x = float(intersection[0].x)
-        p.y = float(intersection[0].y)
+
+    while True:
+        updated = False
+        for p in points:
+            try:
+                symified_constraints = [x.symify() for x in p.constraints
+                                        if x.symify() is not None]
+                intersection = sympy.intersection(*symified_constraints)
+                if intersection == []:
+                    tmp = symified_constraints[0].arbitrary_point()
+                    t = sympy.Symbol('t', real=True)
+                    r = random.uniform(0, 2*math.pi)
+                    intersection = [sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))]
+                if p.x:
+                    continue
+                p.x = float(intersection[0].x)
+                p.y = float(intersection[0].y)
+                print(p.name, p.x, p.y)
+                updated = True
+            except Exception as e:
+                continue
+        if not updated:
+            break
 
 
 def _tokenize(match):

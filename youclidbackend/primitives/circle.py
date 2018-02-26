@@ -60,4 +60,7 @@ class Circle(YouClidObject):
                 self.radius = (self.center, self.p2)
             if self.p3.x is not None:
                 self.radius = (self.center, self.p3)
-        return sympy.Circle(self.center.symify(), self.radius_length())
+        try:
+            return sympy.Circle(self.center.symify(), self.radius_length())
+        except:
+            return None

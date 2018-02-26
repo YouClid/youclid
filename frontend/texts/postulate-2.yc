@@ -6,3 +6,4 @@ Let [point A] be the given point, and [line BC] the given straigt line. It is re
 [loc A x=-.05 y=-0.0866]
 [loc B x=0 y=0]
 [loc C x=0 y=.2]
+[loc D x=-.1 y=0]
