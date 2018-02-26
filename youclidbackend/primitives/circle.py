@@ -49,7 +49,7 @@ class Circle(YouClidObject):
                }
 
     def radius_length(self):
-        return self.radius[0].dist(self.radius[1])
+        return self.radius[0].dist(self.radius[1]) if type(self.radius) is tuple else self.radius
 
     def symify(self):
         # TODO: Implicityly assuming that the center is given coordaintes.
