@@ -1,3 +1,4 @@
+import sympy
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -36,3 +37,6 @@ class Line(YouClidObject):
                 'p1': self.p1.name if self.p1 is not None else None,
                 'p2': self.p2.name if self.p2 is not None else None,
                }
+
+    def symify(self):
+        return sympy.Line(self.p1.symify(), self.p2.symify())

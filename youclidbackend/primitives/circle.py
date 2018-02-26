@@ -1,3 +1,4 @@
+import sympy
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -49,3 +50,6 @@ class Circle(YouClidObject):
 
     def radius_length(self):
         return self.radius[0].dist(self.radius[1])
+
+    def symify(self):
+        return sympy.Circle(self.center.symify(), self.radius_length)

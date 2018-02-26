@@ -1,4 +1,5 @@
 import math
+import sympy
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -40,3 +41,6 @@ class Point(YouClidObject):
 
     def dist(self, other):
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+
+    def symify(self):
+        return sympy.Point(self.x, self.y)

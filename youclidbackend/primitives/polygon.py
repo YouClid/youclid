@@ -1,3 +1,4 @@
+import sympy
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -37,3 +38,6 @@ class Polygon(YouClidObject):
         ret_dict = {}
         ret_dict["points"] = [x.name for x in self.points]
         return ret_dict
+
+    def symify(self):
+        return sympy.Polygon([x.symify() for x in self.points])
