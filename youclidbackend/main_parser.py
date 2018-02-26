@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3.6
 import sympy
 import argparse
 import json
@@ -6,6 +6,8 @@ import re
 import shlex
 import random
 import math
+
+import youclidbackend
 from youclidbackend import primitives, colors
 from pprint import pprint
 
@@ -106,9 +108,8 @@ def parse(text):
         # If we just parsed a step and there are things that were added
         # TODO: Maybe we should add even if curr_step is empty?
         if type(obj[0]) == _Step:
-            if len(curr_step) > 0:
-                # Add all unique objects we touched to the current animation
-                animations.append([x for x in curr_step])
+            # Add all unique objects we touched to the current animation
+            animations.append([x for x in curr_step])
         # Otherwise, if we parsed a clear, reset curr_step
         elif type(obj[0]) == _Clear:
             curr_step = set()
@@ -150,16 +151,19 @@ def constrain(obj_dict):
                     t = sympy.Symbol('t', real=True)
                     r = random.uniform(0, 2*math.pi)
                     intersection = [sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))]
-                if p.x:
+                if p.x is not None:
                     continue
-                p.x = float(intersection[0].x)
-                p.y = float(intersection[0].y)
-                print(p.name, p.x, p.y)
+                p.x = intersection[0].x
+                p.y = intersection[0].y
                 updated = True
             except Exception as e:
                 continue
         if not updated:
             break
+
+    for p in points:
+        p.x = float(p.x)
+        p.y = float(p.y)
 
 
 def _tokenize(match):
@@ -245,8 +249,10 @@ def get_text(match, step):
         step[0] += 1
         return "</div><div id='step_%d'>" % step[0]
     args_dict = _parse_match(match)
-    args_dict['type'] = args_dict['type'].title()
-    span_name = "text_%s_%s" % (args_dict['type'].lower(), args_dict['name'])
+    # We need to replace "center" with "point" in order to get the correct
+    # highlighting on the frontend
+    t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
+    span_name = "text_%s_%s" % (t, args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
         return ""
@@ -434,15 +440,38 @@ def parse_clear(keyword_args):
     return [_Clear()]
 
 
-def generate_html(json_object):
+def generate_html(json_object, final):
     html = ""
-    with open("../frontend/template.html", 'r') as f:
+    # I hope that this is the right way to do this? If not, someone tell me
+    basepath = youclidbackend.__path__[0]
+    with open(basepath + "/data/template.html", 'r') as f:
         html = f.read()
 
     html = html.replace("// insert json here", json.dumps(json_object,
                                                           indent=4))
     html = html.replace("<!-- Insert the text here -->",
                         json_object['text'].replace("\n", "<br>\n        "))
+
+    if not final:
+        html = html.replace("default.css",
+                            youclidbackend.__path__[0] + "/data/default.css")
+        html = html.replace("draw.js",
+                            youclidbackend.__path__[0] + "/data/draw.js")
+        html = html.replace("index.js",
+                            youclidbackend.__path__[0] + "/data/index.js")
+    else:
+        with open(youclidbackend.__path__[0] + "/data/default.css") as f:
+            data = f.read()
+        html = html.replace('<link rel="stylesheet" href="default.css">',
+                            '<style>' + data + '</style>')
+        with open(youclidbackend.__path__[0] + "/data/draw.js") as f:
+            data = f.read()
+        html = html.replace('<script src="draw.js"></script>',
+                            '<script>' + data + '</script>')
+        with open(youclidbackend.__path__[0] + "/data/index.js") as f:
+            data = f.read()
+        html = html.replace('<script src="index.js"></script>',
+                            '<script>' + data + '</script>')
 
     return html
 
@@ -468,6 +497,11 @@ if __name__ == "__main__":
                         "--output",
                         type=str,
                         help="Path to output html file")
+    parser.add_argument("-f",
+                        "--final",
+                        help="If present, output a copy of the HTML "
+                             "for distrubition",
+                        action='store_true')
     args = parser.parse_args()
 
     with open(args.path) as f:
@@ -477,6 +511,6 @@ if __name__ == "__main__":
 
     if(args.output):
         with open(args.output, "w") as f:
-            f.write(generate_html(json_object))
+            f.write(generate_html(json_object, args.final))
     else:
         print(json_object)

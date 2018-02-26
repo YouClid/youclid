@@ -8,7 +8,7 @@ Draw [line DC] from [point D] at right angles to [line AB], and draw it through 
 Bisect [line CE] at [point F].
 I say that [center F circle=ABC] is the center of the [circle ABC].
 For suppose it is not, but, if possible, let [point G] be the center. Join [line GA], [line GD], and [line GB].
-Then, since [line AD] equals [line DB], and [line DG] is common, the two sides [line AD] and [line DG] equal the two sides [line BD] and [line DG] respectively.
+Then, since [line AD] equals [line DB], and [line GD text=DG] is common, the two sides [line AD] and [line GD text=DG] equal the two sides [line BD] and [line GD text=DG] respectively.
 And the base [line GA] equals the base [line GB], for they are radii, therefore the angle ADG equals the angle GDB.
 But, when a straight line standing on a straight line makes the adjacent angles equal to one another, each of the equal angles is right, therefore the angle GDB is right.
 But the angle FDB is also right, therefore the angle FDB equals the angle GDB, the greater equals the less, which is impossible. Therefore [point G] is not the center of the [circle ABC].
