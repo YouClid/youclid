@@ -1,9 +1,11 @@
 #!/usr/bin/python3
-
+import sympy
 import argparse
 import json
 import re
 import shlex
+import random
+import math
 from youclidbackend import primitives, colors
 from pprint import pprint
 
@@ -121,8 +123,31 @@ def parse(text):
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
 
+    constrain(obj_dict)
+
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
+
+
+def constrain(obj_dict):
+    """Takes in a object dictionary and modifies points, giving them
+    coordinates"""
+    points = set()
+    for obj in obj_dict.values():
+        if type(obj) == primitives.Point and (obj.x is obj.y is None):
+            points.add(obj)
+    for p in points:
+        print("Point", p)
+        symified_constraints = [x.symify() for x in p.constraints
+                                if x.symify() is not None]
+        intersection = sympy.intersection(*symified_constraints)
+        if intersection == []:
+            tmp = symified_constraints[0].arbitrary_point()
+            t = sympy.Symbol('t', real=True)
+            r = random.uniform(0, 2*math.pi)
+            intersection = [sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))]
+        p.x = float(intersection[0].x)
+        p.y = float(intersection[0].y)
 
 
 def _tokenize(match):
@@ -277,21 +302,21 @@ def parse_circle(keyword_args):
             if p1 is None:
                 p1 = primitives.Point(name[0])
                 obj_dict[name[0]] = p1
-                p1.constraints.add(circle)
+            p1.constraints.add(circle)
             ret.append(p1)
             p2 = obj_dict.get(name[1])
             # TODO: Call parse point?
             if p2 is None:
                 p2 = primitives.Point(name[1])
                 obj_dict[name[1]] = p2
-                p2.constraints.add(circle)
+            p2.constraints.add(circle)
             ret.append(p2)
             p3 = obj_dict.get(name[2])
             # TODO: Call parse point?
             if p3 is None:
                 p3 = primitives.Point(name[2])
                 obj_dict[name[2]] = p3
-                p3.constraints.add(circle)
+            p3.constraints.add(circle)
             ret.append(p3)
 
             circle.p1 = p1

@@ -52,4 +52,12 @@ class Circle(YouClidObject):
         return self.radius[0].dist(self.radius[1])
 
     def symify(self):
-        return sympy.Circle(self.center.symify(), self.radius_length)
+        # TODO: Implicityly assuming that the center is given coordaintes.
+        if self.radius is None:
+            if self.p1.x is not None:
+                self.radius = (self.center, self.p1)
+            if self.p2.x is not None:
+                self.radius = (self.center, self.p2)
+            if self.p3.x is not None:
+                self.radius = (self.center, self.p3)
+        return sympy.Circle(self.center.symify(), self.radius_length())

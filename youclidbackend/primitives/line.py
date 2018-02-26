@@ -39,4 +39,7 @@ class Line(YouClidObject):
                }
 
     def symify(self):
-        return sympy.Line(self.p1.symify(), self.p2.symify())
+        try:
+            return sympy.Line(self.p1.symify(), self.p2.symify())
+        except:
+            return None

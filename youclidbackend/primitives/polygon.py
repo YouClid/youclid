@@ -40,4 +40,7 @@ class Polygon(YouClidObject):
         return ret_dict
 
     def symify(self):
-        return sympy.Polygon([x.symify() for x in self.points])
+        try:
+            return sympy.Polygon([x.symify() for x in self.points])
+        except:
+            return None
