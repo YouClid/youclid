@@ -11,7 +11,7 @@ class Point(YouClidObject):
         self.y = None
         self.name = name
         self.color = youclidbackend.colors.next_color()
-        self.constraints = []
+        self.constraints = set()
 
     def __str__(self):
         return "Point %s(%s, %s)" % (str(self.name),
