@@ -245,7 +245,7 @@ def parse_line(keyword_args):
         line = obj_dict.get(name)
 
     for p in point_list:
-        p.constraints.append(line)
+        p.constraints.add(line)
 
     ret.extend((line, line.p1, line.p2))
 
@@ -277,21 +277,21 @@ def parse_circle(keyword_args):
             if p1 is None:
                 p1 = primitives.Point(name[0])
                 obj_dict[name[0]] = p1
-                p1.constraints.append(circle)
+                p1.constraints.add(circle)
             ret.append(p1)
             p2 = obj_dict.get(name[1])
             # TODO: Call parse point?
             if p2 is None:
                 p2 = primitives.Point(name[1])
                 obj_dict[name[1]] = p2
-                p2.constraints.append(circle)
+                p2.constraints.add(circle)
             ret.append(p2)
             p3 = obj_dict.get(name[2])
             # TODO: Call parse point?
             if p3 is None:
                 p3 = primitives.Point(name[2])
                 obj_dict[name[2]] = p3
-                p3.constraints.append(circle)
+                p3.constraints.add(circle)
             ret.append(p3)
 
             circle.p1 = p1
@@ -366,7 +366,7 @@ def parse_polygon(keyword_args):
         ret.extend(point_list)
 
     for p in point_list:
-        p.constraints.append(polygon)
+        p.constraints.add(polygon)
 
     return ret
 
