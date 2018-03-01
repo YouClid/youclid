@@ -20,7 +20,7 @@ void main() {
 
 
 class Visual {
-    constructor(renderFunc) {
+    constructor() {
 	this.mouse = {x:1000, y:10000}
 	this.mousedown = false
 	this.mouseup = true
@@ -37,8 +37,6 @@ class Visual {
 	this.mouseDown = false
 	this.lineWidth = 0.01
 	
-	this.render = renderFunc
-
 	this.init()
     }
     
@@ -79,22 +77,13 @@ class Visual {
 	document.addEventListener( 'mousedown', () => this.mouseDown = true)
 	document.addEventListener( 'mouseup', () => this.mouseDown = false)
 	window.addEventListener( 'resize', onResize.bind(this));
-    
-	this.update()
+
     }
 
-    update() {
+    clear() {
 	let gl = this.gl
 	gl.clearColor(0.0, 0.0, 0.0, 1.0)
 	gl.clear(gl.COLOR_BUFFER_BIT)
-    
-	this.render(this) // Defined by user
-
-    }
-
-    setRender(render) {
-	this.render = render
-	this.update()
     }
     
     isHot(name) {
@@ -415,10 +404,12 @@ function onMouseMove( event ) {
     let ygood = event.clientY > canvasRect.top  && event.clientY < canvasRect.bottom
 
     if(xgood && ygood) {
+	this.mouseInCanvas = true
 	this.mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
 	this.mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
-
-	this.update()
+    }
+    else {
+	this.mouseInCanvas = false
     }
 }
 
@@ -429,7 +420,6 @@ function onResize( event ) {
     let drawSize = Math.floor(this.size * realToCSSPixels)
     this.gl.canvas.style.width = this.size + "px";
     this.gl.canvas.style.height = this.size + "px"; 
-    this.update()
 }
 
 /*************************************
