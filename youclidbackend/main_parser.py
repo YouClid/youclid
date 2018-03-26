@@ -72,6 +72,30 @@ def error(name=None, msg=None, content=None):
     sys.exit(1)
 
 
+
+def read_from_tokens(tokens):
+    token = tokens.pop(0)
+    if token == "[":
+        L = []
+        while tokens[0] != "]":
+            L.append(read_from_tokens(tokens))
+        return L
+    else:
+        return token
+
+def tokenize(text):
+    tokens = []
+    t = text.replace("[", " [ ").replace("]", " ] ")
+    t = shlex.split(t)
+    while(t):
+        if(t[0] == '['):
+            tokens.append(read_from_tokens(t))
+        else:
+            t.pop(0)
+    return tokens
+
+
+
 def extract(text):
     # Regular expression to match any instance of our markup. The idea is as
     # follows: First use a negative look behind to make sure the bracket that
@@ -81,7 +105,11 @@ def extract(text):
     return re.finditer(regex, text)
 
 
+
+
+
 def parse(text):
+    tokens = tokenize(text)
     parsers = CaseInsensitiveDictionary({
                                          "line": parse_line,
                                          "circle": parse_circle,
@@ -93,15 +121,16 @@ def parse(text):
                                          "clear": parse_clear
                                         })
 
-    # A list of the objects that need to be drawn at each step
+    ## A list of the objects that need to be drawn at each step
     animations = []
-    # Ojbects that we've added at this step
+    ## Ojbects that we've added at this step
     curr_step = set()
 
-    # Iterate over all matches in the text
-    for match in extract(text):
+    ## Iterate over all matches in the text
+    #for match in extract(text):
+    for match in tokens:
         # Get the dictionary of name and unnamed arguments
-        args_dict = _parse_match(match[1])
+        args_dict = _parse_match(match)
 
         try:
             f = parsers[args_dict["type"]]
@@ -133,12 +162,12 @@ def parse(text):
             for e in obj:
                 curr_step.add(e.name)
 
-    # Ensure that we have something in the animations variable
+    ## Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
 
     constrain(obj_dict)
 
-    # Create the output from the dictionary of objects
+    ## Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
 
@@ -182,12 +211,12 @@ def _tokenize(match):
     return shlex.split(match)
 
 
-def _parse_match(whole_match):
+def _parse_match(partials):
     # Dictionary of named arguments
     args_dict = {}
 
     # Split the match up by spaces
-    partials = _tokenize(whole_match)
+    #partials = _tokenize(whole_match)
     # The type will always be the first thing
     args_dict['type'] = partials[0]
 
@@ -260,7 +289,7 @@ def get_text(match, step):
     if(match == 'step'):
         step[0] += 1
         return "</div><div id='step_%d'>" % step[0]
-    args_dict = _parse_match(match)
+    args_dict = _parse_match(shlex.split(match))
     # We need to replace "center" with "point" in order to get the correct
     # highlighting on the frontend
     t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
