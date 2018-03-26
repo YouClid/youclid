@@ -6,6 +6,7 @@ import re
 import shlex
 import random
 import math
+import sys
 
 import youclidbackend
 from youclidbackend import primitives, colors
@@ -61,6 +62,16 @@ class _Clear():
         return type(other) == _Clear
 
 
+def error(name=None, msg=None, content=None):
+    if name is not None:
+        print("Error: %s" % name, file=sys.stderr)
+    if msg is not None:
+        print(msg, file=sys.stderr)
+    if content is not None:
+        print(content, file=sys.stderr)
+    sys.exit(1)
+
+
 def extract(text):
     # Regular expression to match any instance of our markup. The idea is as
     # follows: First use a negative look behind to make sure the bracket that
@@ -95,8 +106,9 @@ def parse(text):
         try:
             f = parsers[args_dict["type"]]
         except KeyError as e:
-            # TODO Print a nice error message
-            raise e
+            error(name="Undefined object name",
+                  msg="%s is not a valid object name" % args_dict["type"],
+                  content=match[1])
         # Call the appropriate parser function
         obj = f(args_dict)
         # Now we need to handle the return value
