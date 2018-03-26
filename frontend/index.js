@@ -21,6 +21,32 @@ function init() {
     renderer.render()
 }
 
+function sortItems(toDraw, objs) {
+    sorted = []
+    // Gonna do 3 passes, first gets everything that isn't a point
+    // then all the items that are 'textHot'
+    // then the points
+    toDraw.forEach((id) => {
+	if(objs[id].type != "Point" && !isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
+
+    toDraw.forEach((id) => {
+	if(isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
+
+    toDraw.forEach((id) => {
+	if(objs[id].type == "Point") {
+	    sorted.push(id)
+	}
+    })
+
+    return sorted
+}
+
 class Renderer {
     constructor(geometry, visual) {
 	this.geo = geometry
@@ -72,8 +98,9 @@ class Renderer {
 	    }
 	    let render =  function() {
 		visual.clear()
-		for(let i = 0; i < toDraw.length; i++) {
-		    let id = toDraw[i]
+		let toDrawSorted = sortItems(toDraw, objects)
+		for(let i = 0; i < toDrawSorted.length; i++) {
+		    let id = toDrawSorted[i]
 		    let geo = objects[id]
 		    let textHot = isHot(geo)
 		    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
@@ -81,6 +108,8 @@ class Renderer {
 
 		    switch(geo.type) {
 		    case "Point":
+			hot = visual.drawPoint(geo.id, geo.data, color)
+			highlightText(geo, hot, textHot)
 			break;
 		    case "Line":
 			hot = visual.drawLine(geo.id,
@@ -100,20 +129,6 @@ class Renderer {
 			break;
 		    default:
 			console.log("We don't handle type " + geo.type)
-		    }
-		}
-		
-		// Draw points last
-		for(let i = 0; i < toDraw.length; i++) {
-		    let id = toDraw[i]
-		    let geo = objects[id]
-		    let textHot = isHot(geo)
-		    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
-		    let hot = false
-
-		    if(geo.type === "Point") {
-			hot = visual.drawPoint(geo.id, geo.data, color)
-			highlightText(geo, hot, textHot)
 		    }
 		}
 	    }
@@ -233,7 +248,13 @@ function highlightText(geo, isHot, textHot) {
     }
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-	el.style.color = isHot ? 'yellow' : getHex(geo.color)
+	el.style.color = getHex(geo.color)
+	if(isHot) {
+	    el.classList.add('shadowed')
+	}
+	else {
+	    el.classList.remove('shadowed')
+	}
     })
 }
 

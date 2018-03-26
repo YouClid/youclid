@@ -155,7 +155,7 @@ class Visual {
 	    return false
 	}
 	let d = this.dist(a_to_m, scale(n, coeff))
-	return d < 0.05
+	return d < 0.02
     }
 
     polyUnderMouse(points) {
