@@ -17,7 +17,6 @@ function init() {
 	    el.addEventListener('mouseenter', overTextChange(renderer))
 	    el.addEventListener('mouseleave', overTextRevert(renderer))
 	})
-
     renderer.render()
 }
 
@@ -61,6 +60,7 @@ class Renderer {
 		this.render()
 	    }
 	})
+	this.updateAnimation(0)
     }
 
     makeRenderFuncs() {
@@ -186,7 +186,7 @@ class Renderer {
 	if(delta < 0) {
 	    this.anim_index = this.anim_index === 0 ? this.anim_index : this.anim_index + delta
 	}
-	else {
+	else if(delta > 0) {
 	    this.anim_index = this.anim_index === geometry.animations.length-1 ? this.anim_index : this.anim_index + delta
 	}
 

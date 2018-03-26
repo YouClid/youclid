@@ -21,8 +21,9 @@ body {
 }
 
 .shadowed {
-    text-shadow: 0 0 2px black, 0 0 10px white;
+    text-shadow: 0 0 10px white;
 }
+
 
 .label {
     color: white;
