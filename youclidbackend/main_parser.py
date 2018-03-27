@@ -96,13 +96,19 @@ def parse(text):
 
 def tokenize(text):
     tokens = []
+    # Replace brackets by spaces so that we can split on spaces
     t = text.replace("[", " [ ").replace("]", " ] ")
     t = shlex.split(t)
+    # Iterate over the entirity of the text
     while(t):
+        # If we've encountered our syntax, extract it
+        # TODO: Ensure that the previous character wasn't a \
         if(t[0] == '['):
             tokens.append(read_from_tokens(t))
+        # Otherwise, go to the next token
         else:
             t.pop(0)
+    # Return all of the tokens that we've obtained
     return tokens
 
 
@@ -110,7 +116,10 @@ def read_from_tokens(tokens):
     token = tokens.pop(0)
     if token == "[":
         L = []
+        # Continue iterating over the text until we reach the end of our syntax
+        # TODO: Ensure that the previous character was not a \
         while tokens[0] != "]":
+            # Allows for nested defintitions
             L.append(read_from_tokens(tokens))
         return L
     else:
