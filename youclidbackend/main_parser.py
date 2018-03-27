@@ -10,6 +10,7 @@ import sys
 
 import youclidbackend
 from youclidbackend import primitives, colors
+from youclidbackend.utils import _Step, _Clear, CaseInsensitiveDictionary
 from pprint import pprint
 
 polygons = {3: "Triangle",
@@ -20,49 +21,8 @@ polygons = {3: "Triangle",
 obj_dict = {}
 
 
-class CaseInsensitiveDictionary(dict):
-    def __init__(self, d=None):
-        self.d = {}
-        if d is not None:
-            self.d = {key.lower() if type(key) is str else key: d[key]
-                      for key in d}
-
-    def __getitem__(self, key):
-        if type(key) == str:
-            return self.d.__getitem__(key.lower())
-        else:
-            return self.d.__getitem__(key)
-
-    def __setitem__(self, key, value):
-        if type(key) == str:
-            return self.d.__setitem__(key.lower(), value)
-        else:
-            return self.d.__setitem__(key, value)
-
-    def __repr__(self):
-        return self.d.__repr__()
-
-    def __str__(self):
-        return self.d.__str__()
-
-
-class _Step():
-    """This object will be returned from a call to the parse_step function
-    to represent that we are done parsing the current step
-    """
-    def __eq__(self, other):
-        return type(other) == _Step
-
-
-class _Clear():
-    """This object will be returned from a call to the parse_clear function
-    to represent that we need to clear the current step
-    """
-    def __eq__(self, other):
-        return type(other) == _Clear
-
-
 def error(name=None, msg=None, content=None):
+    """Wrapper function for error handling"""
     if name is not None:
         print("Error: %s" % name, file=sys.stderr)
     if msg is not None:
@@ -70,42 +30,6 @@ def error(name=None, msg=None, content=None):
     if content is not None:
         print(content, file=sys.stderr)
     sys.exit(1)
-
-
-
-def read_from_tokens(tokens):
-    token = tokens.pop(0)
-    if token == "[":
-        L = []
-        while tokens[0] != "]":
-            L.append(read_from_tokens(tokens))
-        return L
-    else:
-        return token
-
-def tokenize(text):
-    tokens = []
-    t = text.replace("[", " [ ").replace("]", " ] ")
-    t = shlex.split(t)
-    while(t):
-        if(t[0] == '['):
-            tokens.append(read_from_tokens(t))
-        else:
-            t.pop(0)
-    return tokens
-
-
-
-def extract(text):
-    # Regular expression to match any instance of our markup. The idea is as
-    # follows: First use a negative look behind to make sure the bracket that
-    # we're trying to match wasn't escaped, then match a bracket, then match
-    # as many characters as possible until the next unescaped bracket.
-    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
-    return re.finditer(regex, text)
-
-
-
 
 
 def parse(text):
@@ -121,13 +45,12 @@ def parse(text):
                                          "clear": parse_clear
                                         })
 
-    ## A list of the objects that need to be drawn at each step
+    # A list of the objects that need to be drawn at each step
     animations = []
-    ## Ojbects that we've added at this step
+    # Ojbects that we've added at this step
     curr_step = set()
 
-    ## Iterate over all matches in the text
-    #for match in extract(text):
+    # Iterate over all matches in the text
     for match in tokens:
         # Get the dictionary of name and unnamed arguments
         args_dict = _parse_match(match)
@@ -162,61 +85,42 @@ def parse(text):
             for e in obj:
                 curr_step.add(e.name)
 
-    ## Ensure that we have something in the animations variable
+    # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
 
     constrain(obj_dict)
 
-    ## Create the output from the dictionary of objects
+    # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
 
-def constrain(obj_dict):
-    """Takes in a object dictionary and modifies points, giving them
-    coordinates"""
-
-    points = set()
-    for obj in obj_dict.values():
-        if type(obj) == primitives.Point and (obj.x is obj.y is None):
-            points.add(obj)
-
-    while True:
-        updated = False
-        for p in points:
-            try:
-                symified_constraints = [x.symify() for x in p.constraints
-                                        if x.symify() is not None]
-                intersection = sympy.intersection(*symified_constraints)
-                if intersection == []:
-                    tmp = symified_constraints[0].arbitrary_point()
-                    t = sympy.Symbol('t', real=True)
-                    r = random.uniform(0, 2*math.pi)
-                    intersection = [sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))]
-                if p.x is not None:
-                    continue
-                p.x = intersection[0].x
-                p.y = intersection[0].y
-                updated = True
-            except Exception as e:
-                continue
-        if not updated:
-            break
-
-    for p in points:
-        p.x = float(p.x)
-        p.y = float(p.y)
+def tokenize(text):
+    tokens = []
+    t = text.replace("[", " [ ").replace("]", " ] ")
+    t = shlex.split(t)
+    while(t):
+        if(t[0] == '['):
+            tokens.append(read_from_tokens(t))
+        else:
+            t.pop(0)
+    return tokens
 
 
-def _tokenize(match):
-    return shlex.split(match)
+def read_from_tokens(tokens):
+    token = tokens.pop(0)
+    if token == "[":
+        L = []
+        while tokens[0] != "]":
+            L.append(read_from_tokens(tokens))
+        return L
+    else:
+        return token
 
 
 def _parse_match(partials):
     # Dictionary of named arguments
     args_dict = {}
 
-    # Split the match up by spaces
-    #partials = _tokenize(whole_match)
     # The type will always be the first thing
     args_dict['type'] = partials[0]
 
@@ -241,70 +145,6 @@ def _parse_match(partials):
             args_dict[keyword_arg] = True
 
     return args_dict
-
-
-def create_output(d, text, animations):
-    output = {}
-
-    output['text'] = format_text(text)
-    output['geometry'] = {}
-    output['animations'] = animations
-
-    for k, v in d.items():
-        output['geometry'][v.name] = {
-                                      'type': v.__class__.__name__,
-                                      'id': v.name,
-                                      'color': v.color,
-                                      'data': v.__dict__(),
-                                     }
-
-    return output
-
-
-def format_text(text):
-    newtext = []
-    text = text.split('\n')
-    step =[0]
-    for i in text:
-        #i = i.replace('[step]', '')
-        i = i.replace('[definitions]', '')
-        i = i.replace('[clear]', '')
-        if not i.startswith('[loc'):
-            newtext.append(i)
-    newtext = newtext[:-1]
-    text = newtext
-    text = '\n'.join(text)
-
-    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
-    # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
-    replaced = re.sub(regex, lambda text: get_text(text, step), text)
-    start = "<div id='step_0'>"
-    end = "</div>"
-    result = "%s %s %s" % (start, replaced, end)
-    return result
-
-
-def get_text(match, step):
-    match = match[1]
-    if(match == 'step'):
-        step[0] += 1
-        return "</div><div id='step_%d'>" % step[0]
-    args_dict = _parse_match(shlex.split(match))
-    # We need to replace "center" with "point" in order to get the correct
-    # highlighting on the frontend
-    t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
-    span_name = "text_%s_%s" % (t, args_dict['name'])
-    output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
-    if (args_dict.get('hidden', False)):
-        return ""
-    if(args_dict.get('text', False)):
-        return output.format(text=args_dict['text'])
-    if (args_dict['type'] == "Polygon"):
-        length = (len(args_dict['points']) if args_dict.get('points', False)
-                  else len(args_dict['name']))
-        args_dict['type'] = polygons.get(length, "Polygon")
-    obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
-    return output.format(text=obj_text)
 
 
 def parse_line(keyword_args):
@@ -479,6 +319,106 @@ def parse_step(keyword_args):
 
 def parse_clear(keyword_args):
     return [_Clear()]
+
+
+def constrain(obj_dict):
+    """Takes in a object dictionary and modifies points, giving them
+    coordinates"""
+
+    points = set()
+    for obj in obj_dict.values():
+        if type(obj) == primitives.Point and (obj.x is obj.y is None):
+            points.add(obj)
+
+    while True:
+        updated = False
+        for p in points:
+            try:
+                symified_constraints = [x.symify() for x in p.constraints
+                                        if x.symify() is not None]
+                intersection = sympy.intersection(*symified_constraints)
+                if intersection == []:
+                    tmp = symified_constraints[0].arbitrary_point()
+                    t = sympy.Symbol('t', real=True)
+                    r = random.uniform(0, 2*math.pi)
+                    intersection = [sympy.Point(tmp.x.subs(t, r),
+                                                tmp.y.subs(t, r))]
+                if p.x is not None:
+                    continue
+                p.x = intersection[0].x
+                p.y = intersection[0].y
+                updated = True
+            except Exception as e:
+                continue
+        if not updated:
+            break
+
+    for p in points:
+        p.x = float(p.x)
+        p.y = float(p.y)
+
+
+def format_text(text):
+    newtext = []
+    text = text.split('\n')
+    step = [0]
+    for i in text:
+        i = i.replace('[definitions]', '')
+        i = i.replace('[clear]', '')
+        if not i.startswith('[loc'):
+            newtext.append(i)
+    newtext = newtext[:-1]
+    text = newtext
+    text = '\n'.join(text)
+
+    regex = r"(?<!\\)\[([\s\S]*?)(?<!\\)\]"
+    # pattern = r'(\[)([a-zA-Z]+) ([^\]]+)([\s\S]*?)\]'
+    replaced = re.sub(regex, lambda text: get_text(text, step), text)
+    start = "<div id='step_0'>"
+    end = "</div>"
+    result = "%s %s %s" % (start, replaced, end)
+    return result
+
+
+def get_text(match, step):
+    match = match[1]
+    if(match == 'step'):
+        step[0] += 1
+        return "</div><div id='step_%d'>" % step[0]
+    args_dict = _parse_match(shlex.split(match))
+    # We need to replace "center" with "point" in order to get the correct
+    # highlighting on the frontend
+    t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
+    span_name = "text_%s_%s" % (t, args_dict['name'])
+    output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
+    if (args_dict.get('hidden', False)):
+        return ""
+    if(args_dict.get('text', False)):
+        return output.format(text=args_dict['text'])
+    if (args_dict['type'] == "Polygon"):
+        length = (len(args_dict['points']) if args_dict.get('points', False)
+                  else len(args_dict['name']))
+        args_dict['type'] = polygons.get(length, "Polygon")
+    obj_text = "%s %s" % (args_dict['type'], args_dict['name'])
+    return output.format(text=obj_text)
+
+
+def create_output(d, text, animations):
+    output = {}
+
+    output['text'] = format_text(text)
+    output['geometry'] = {}
+    output['animations'] = animations
+
+    for k, v in d.items():
+        output['geometry'][v.name] = {
+                                      'type': v.__class__.__name__,
+                                      'id': v.name,
+                                      'color': v.color,
+                                      'data': v.__dict__(),
+                                     }
+
+    return output
 
 
 def generate_html(json_object, final):
