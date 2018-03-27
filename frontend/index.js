@@ -1,107 +1,208 @@
-let anim_index = 0
 let visual = null
 let hotText = {}
 let labels = {}
 
 function init() {
-    let render = makeRender(geometry, anim_index)
-    
-    visual = new Visual(render)
+    visual = new Visual()
+    let renderer = new Renderer(geometry, visual)
     
     labels = makeLabels(geometry)
 
     colorText(geometry)
 
-    if(geometry.animations.length > 1)
-	createStepButtons()
-
-    updateAnimation(0)
-
-    document.addEventListener( 'keydown', onKeyDown)
+    document.addEventListener( 'keydown', onKeyDown(renderer))
     let textElements = Array.from(document.getElementsByClassName('GeoElement'))
     textElements.forEach(
 	(el) => {
-	    el.addEventListener('mouseenter', overTextChange)
-	    el.addEventListener('mouseleave', overTextRevert)
+	    el.addEventListener('mouseenter', overTextChange(renderer))
+	    el.addEventListener('mouseleave', overTextRevert(renderer))
 	})
+    renderer.render()
 }
 
-function makeRender(geometry, step) {
-    let toDraw = geometry.animations[step]
-    let objects = geometry.geometry
-    for(let key in objects) {
-        let obj = objects[key]
-        if(obj.type === "Circle") {
-            if(!obj.data.center && !obj.data.radius) {
-            let circle = circleFromPoints(objects[obj.data.p1].data,
-                              objects[obj.data.p2].data,
-                              objects[obj.data.p3].data)
-            obj.data.center = circle.center
-            obj.data.radius = circle.radius
-            }
-            else if (!obj.data.radius && obj.data.center) {
-                // Get the coordinates of a point on the circle
-                let otherPoint = objects[obj.data.p1].data
-                // Get the coordinates of the center of the circle
-                let center = objects[obj.data.center].data
-                // Compute the distance from the center to a point (the radius)
-                obj.data.radius = dist(center, otherPoint)
-                // Update the center of the circle to be the coordinates of
-                // the center
-                obj.data.center = center
-            }
-	        // The center is given as a point (something like "A")
-            else if(typeof(obj.data.center) === 'string') {
-                obj.data.center = objects[obj.data.center].data
-            }
-        }
-    }
-    return function(visual) {
-	for(let i = 0; i < toDraw.length; i++) {
-	    let id = toDraw[i]
-	    let geo = objects[id]
-	    let textHot = isHot(geo)
-	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
-	    let hot = false
-
-	    switch(geo.type) {
-	    case "Point":
-		break;
-	    case "Line":
-		hot = visual.drawLine(geo.id,
-					  objects[geo.data.p1].data,
-					  objects[geo.data.p2].data,
-					  color)
-
-		highlightText(geo, hot, textHot)
-		break;
-	    case "Circle":
-		hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
-		highlightText(geo, hot, textHot)
-		break;
-	    case "Polygon":
-		hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
-		highlightText(geo, hot, textHot)
-		break;
-	    default:
-		console.log("We don't handle type " + geo.type)
-	    }
+function sortItems(toDraw, objs) {
+    sorted = []
+    // Gonna do 3 passes, first gets everything that isn't a point
+    // then all the items that are 'textHot'
+    // then the points
+    toDraw.forEach((id) => {
+	if(objs[id].type != "Point" && !isHot(objs[id])) {
+	    sorted.push(id)
 	}
+    })
+
+    toDraw.forEach((id) => {
+	if(isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
+
+    toDraw.forEach((id) => {
+	if(objs[id].type == "Point") {
+	    sorted.push(id)
+	}
+    })
+
+    return sorted
+}
+
+class Renderer {
+    constructor(geometry, visual) {
+	this.geo = geometry
+	this.visual = visual
+	this.anim_index = 0
+	this.makeRenderFuncs()
+	if(geometry.animations.length > 1)
+	    this.createStepButtons()
+
+	window.addEventListener("mousemove", (e) => {
+	    if(this.visual.mouseInCanvas) {
+		this.render()
+	    }
+	})
+	this.updateAnimation(0)
+    }
+
+    makeRenderFuncs() {
+	let visual = this.visual
+	this.renderFuncs = []
+	for(let step = 0; step < this.geo.animations.length; step++) {
+	    let toDraw = geometry.animations[step]
+	    let objects = this.geo.geometry
+	    for(let key in objects) {
+		let obj = objects[key]
+		if(obj.type === "Circle") {
+		    if(!obj.data.center && !obj.data.radius) {
+			let circle = circleFromPoints(objects[obj.data.p1].data,
+						      objects[obj.data.p2].data,
+						      objects[obj.data.p3].data)
+			obj.data.center = circle.center
+			obj.data.radius = circle.radius
+		    }
+		    else if (!obj.data.radius && obj.data.center) {
+			// Get the coordinates of a point on the circle
+			let otherPoint = objects[obj.data.p1].data
+			// Get the coordinates of the center of the circle
+			let center = objects[obj.data.center].data
+			// Compute the distance from the center to a point (the radius)
+			obj.data.radius = dist(center, otherPoint)
+			// Update the center of the circle to be the coordinates of
+			// the center
+			obj.data.center = center
+		    }
+	            // The center is given as a point (something like "A")
+		    else if(typeof(obj.data.center) === 'string') {
+			obj.data.center = objects[obj.data.center].data
+		    }
+		}
+	    }
+	    let render =  function() {
+		visual.clear()
+		let toDrawSorted = sortItems(toDraw, objects)
+		for(let i = 0; i < toDrawSorted.length; i++) {
+		    let id = toDrawSorted[i]
+		    let geo = objects[id]
+		    let textHot = isHot(geo)
+		    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
+		    let hot = false
+
+		    switch(geo.type) {
+		    case "Point":
+			hot = visual.drawPoint(geo.id, geo.data, color)
+			highlightText(geo, hot, textHot)
+			break;
+		    case "Line":
+			hot = visual.drawLine(geo.id,
+					      objects[geo.data.p1].data,
+					      objects[geo.data.p2].data,
+					      color)
+
+			highlightText(geo, hot, textHot)
+			break;
+		    case "Circle":
+			hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
+			highlightText(geo, hot, textHot)
+			break;
+		    case "Polygon":
+			hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
+			highlightText(geo, hot, textHot)
+			break;
+		    default:
+			console.log("We don't handle type " + geo.type)
+		    }
+		}
+	    }
+
+	    this.renderFuncs.push(render)
+	}
+    }
+
+    render() {
+	this.renderFuncs[this.anim_index]()
+    }
+
+    createStepButtons() {
+	let visual = this.visual
+	let next = document.createElement('input')
+	let prev = document.createElement('input')
+
+	next.className = 'step_btn'
+	next.id = 'next_step'
+	next.value = 'Next Step'
+	next.type = 'button'
+	prev.className = 'step_btn'
+	prev.id = 'prev_step'
+	prev.value = 'Prev Step'
+	prev.type = 'button'
 	
-	// Draw points last
-	for(let i = 0; i < toDraw.length; i++) {
-	    let id = toDraw[i]
-	    let geo = objects[id]
-	    let textHot = isHot(geo)
-	    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
-	    let hot = false
-
-	    if(geo.type === "Point") {
-		hot = visual.drawPoint(geo.id, geo.data, color)
-		highlightText(geo, hot, textHot)
-	    }
+	next.onclick = () => {
+	    this.updateAnimation(+1)
 	}
+	prev.onclick = () => {
+	    this.updateAnimation(-1)
+	}
+
+	document.body.append(prev)
+	document.body.append(next)
+
+
+	let moveButtons = () => {
+	    let rect = visual.canvasRect
+	    let pad = 40
+
+	    prev.style.left = rect.left + pad + 'px'
+	    prev.style.top = rect.bottom - prev.clientHeight - pad + 'px'
+	    next.style.left  = rect.right - next.clientWidth - pad + 'px'
+	    next.style.top = rect.bottom - next.clientHeight - pad + 'px'
+	}
+	moveButtons()
+
+	window.addEventListener('resize', moveButtons)
     }
+
+    updateAnimation(delta) {
+	clearText(this.geo, this.anim_index)
+	
+	if(delta < 0) {
+	    this.anim_index = this.anim_index === 0 ? this.anim_index : this.anim_index + delta
+	}
+	else if(delta > 0) {
+	    this.anim_index = this.anim_index === geometry.animations.length-1 ? this.anim_index : this.anim_index + delta
+	}
+
+	let prev = Array.from(document.getElementsByClassName('step_highlighted'))
+	prev.forEach((el) => el.className = '')
+	
+
+	let par = document.getElementById('step_' + this.anim_index)
+	if(par) {
+	    par.className = 'step_highlighted'
+	}
+
+	this.render()
+    }
+
+
 }
 
 function dist(p1, p2) {
@@ -147,7 +248,13 @@ function highlightText(geo, isHot, textHot) {
     }
     let elements = document.getElementsByName("text_"+geo.type.toLowerCase()+"_"+geo.id)
     elements.forEach((el) => {
-	el.style.color = isHot ? 'yellow' : getHex(geo.color)
+	el.style.color = getHex(geo.color)
+	if(isHot) {
+	    el.classList.add('shadowed')
+	}
+	else {
+	    el.classList.remove('shadowed')
+	}
     })
 }
 
@@ -226,45 +333,6 @@ function hideLabel(id) {
     if(el) el.style.display = "none"
 }
 
-
-function createStepButtons() {
-    let next = document.createElement('input')
-    let prev = document.createElement('input')
-
-    next.className = 'step_btn'
-    next.id = 'next_step'
-    next.value = 'Next Step'
-    next.type = 'button'
-    prev.className = 'step_btn'
-    prev.id = 'prev_step'
-    prev.value = 'Prev Step'
-    prev.type = 'button'
-    
-    next.onclick = () => {
-	updateAnimation(+1)
-    }
-    prev.onclick = () => {
-	updateAnimation(-1)
-    }
-
-    document.body.append(prev)
-    document.body.append(next)
-
-
-    let moveButtons = () => {
-	let rect = visual.canvasRect
-	let pad = 40
-
-	prev.style.left = rect.left + pad + 'px'
-	prev.style.top = rect.bottom - prev.clientHeight - pad + 'px'
-	next.style.left  = rect.right - next.clientWidth - pad + 'px'
-	next.style.top = rect.bottom - next.clientHeight - pad + 'px'
-    }
-    moveButtons()
-
-    window.addEventListener('resize', moveButtons)
-}
-
 function clearText(geometry, step) {
     geometry.animations[step].forEach((id) => {
 	highlightText(geometry.geometry[id], false, false)
@@ -278,21 +346,27 @@ function colorText(geometry) {
 }
 
 
+
+
 /*
   All Event Callbacks
 */
 
 /* Two functions for hovering over span elements, and leaving from hover */
-function overTextChange(event)  {
-    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
-    hotText[obj_id_str] = true
-    visual.update()
+function overTextChange(renderer)  {
+    return (event) => {
+	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+	hotText[obj_id_str] = true
+	renderer.render()
+    }
 }
 
-function overTextRevert(event)  {
-    let obj_id_str = event.target.getAttribute("name").replace('text_', '');
-    hotText[obj_id_str] = false
-    visual.update()
+function overTextRevert(renderer)  {
+    return () => {
+	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+	hotText[obj_id_str] = false
+	renderer.render()
+    }
 }
 
 
@@ -315,34 +389,13 @@ function onTouchEnd( event ) {
     onMouseUp( event );
 }
 
-function updateAnimation(delta) {
-    clearText(geometry, anim_index)
-    
-    if(delta < 0) {
-	anim_index = anim_index === 0 ? anim_index : anim_index + delta
-    }
-    else {
-	anim_index = anim_index === geometry.animations.length-1 ? anim_index : anim_index + delta
-    }
-
-    let prev = Array.from(document.getElementsByClassName('step_highlighted'))
-    prev.forEach((el) => el.className = '')
-    
-
-    let par = document.getElementById('step_' + anim_index)
-    if(par) {
-	par.className = 'step_highlighted'
-    }
-
-    
-    visual.setRender(makeRender(geometry, anim_index))
-}
-
-function onKeyDown( event ) {
-    if(event.keyCode == 37) {
-	updateAnimation(-1)
-    }
-    else if(event.keyCode == 39) {
-	updateAnimation(+1)
+function onKeyDown( r ) {
+    return () => {
+	if(event.keyCode == 37) {
+	    r.updateAnimation(-1)
+	}
+	else if(event.keyCode == 39) {
+	    r.updateAnimation(+1)
+	}
     }
 }
