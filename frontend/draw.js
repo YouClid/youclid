@@ -188,6 +188,9 @@ class Visual {
 
     drawPoint(ident, point, color) {
         // create a circular point (filled in) of radius 0.0125
+	if(this.pointUnderMouse(point)) {
+	    color = [1.0, 1.0, 0.0, 1.0]
+	}
         return this.drawCircle(ident, point, 0.013, color, true)
     }
 
