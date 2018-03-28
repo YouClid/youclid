@@ -302,7 +302,8 @@ class Visual {
 	} 
 	
 	if(hot) {
-	    color = [1.0, 1.0, 0, 1.0] // Yellow
+	    // color = [1.0, 1.0, 0, 1.0] // Yellow
+	    fill = true
 	}
 
 	
@@ -369,19 +370,52 @@ class Visual {
 	}
 	
 	if(hot) {
-	    color = [1.0, 1.0, 0, 1.0] // Yellow
+	    // color = [1.0, 1.0, 0, 1.0] // Yellow
+	    fill = true
 	}
 
 	points.push(points[0])
 	let vertices = []
 	let num_indices = 0
 
-	for(let i = 0; i<points.length-1; i++) {
-	    let p1 = points[i]
-	    let p2 = points[i+1]
-	    this.drawLine(ident, p1, p2, color)
+	if(!fill) {
+	    for(let i = 0; i<points.length-1; i++) {
+		let p1 = points[i]
+		let p2 = points[i+1]
+		this.drawLine(ident, p1, p2, color)
+	    }
 	}
+	else {
+	    let gl = this.gl
+	    vertices = points.map((p) => {
+		return [p.x, p.y, 0.0, 1.0].concat(color)
+	    })
+	    vertices = this.flatten(vertices)
+	    num_indices = points.length
+	    
+	    if(this.glData.length < vertices.length) {
+		this.glData = new Float32Array(vertices.length)
+	    }
+	    
+	    let data = this.glData
 
+	    let FSIZE = data.BYTES_PER_ELEMENT
+
+
+	    data.set(vertices)
+
+	    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+	    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+	    gl.enableVertexAttribArray(a_Position)
+	    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+	    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+	    gl.enableVertexAttribArray(a_Color)
+	    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
+
+
+	    gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
+	}
 	return hot
     }
 

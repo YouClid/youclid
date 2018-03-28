@@ -22,11 +22,18 @@ function init() {
 
 function sortItems(toDraw, objs) {
     sorted = []
-    // Gonna do 3 passes, first gets everything that isn't a point
+    // Gonna do 4 passes, first gets circles and polys,
+    // then everything that isn't a point
     // then all the items that are 'textHot'
     // then the points
     toDraw.forEach((id) => {
-	if(objs[id].type != "Point" && !isHot(objs[id])) {
+	if(objs[id].type == "Polygon" || objs[id].type == "Circle" && !isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
+    
+    toDraw.forEach((id) => {
+	if(objs[id].type == "Line" && !isHot(objs[id])) {
 	    sorted.push(id)
 	}
     })
@@ -120,11 +127,11 @@ class Renderer {
 			highlightText(geo, hot, textHot)
 			break;
 		    case "Circle":
-			hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, color)
+			hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, objects[id].color, textHot)
 			highlightText(geo, hot, textHot)
 			break;
 		    case "Polygon":
-			hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), color)
+			hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), objects[id].color, textHot)
 			highlightText(geo, hot, textHot)
 			break;
 		    default:
