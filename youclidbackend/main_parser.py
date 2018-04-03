@@ -104,44 +104,56 @@ def tokenize(text):
 
     s = shlex.shlex(text, punctuation_chars=']')
 
-    tokens = []  # will be returned
-    inner_tokens = []  # For recursive purposed TODO: make this work
-    depth = 0  # Ensure that there are always matching brackets
+    # List of dictionaries to be returned
+    tokens = []
+    # For recursive purposes TODO: make this work
+    inner_tokens = []
+    # Ensure that there are always matching brackets
+    depth = 0
     # All the starting line numbers for the syntax that we are currently
     # processing (we treat this as a stack). This is used so that we know
     # what line to tell the user if they have mismatching brackets
     linenumbers = []
-
-    # TODO: Watch out for escaping!
+    # The previous character (so that we can make sure that we don't parse
+    # things that are escaped)
+    previous = ''
     for x in s:
-        # If we've found a starting bracket, it's the start of our syntax
-        if x == '[':
+        # If we've found an unescaped starting bracket, it's the start
+        # of our syntax
+        if x == '[' and previous != '\\':
             # Increase our depth by one since we're parsing our syntax
             depth += 1
             # Push this line number on to the stack
             linenumbers.append(s.lineno)
             # Append a new dictionary
             inner_tokens.append({'lineno': s.lineno, 'data': []})
-        # If we've found a closing bracket, it's the end of our syntax
-        elif x == ']':
-            # Decrease our depth since we're no longer parsing this syntax
-            # NOTE: We may still be in a nested statement
+        # If we're parsing our syntax (ie if depth is > 0) and we've found
+        # an unescaped closing bracket, it's the end of our syntax
+        elif depth and x == ']' and previous != '\\':
+            # Decrease our depth since we're no longer parsing this syntax,
+            # but we may still be in a nested statement, so decrease depth
+            # by 1
             depth -= 1
-            # Add the last thing we processed (which will be finished since
-            # we're using a stack) to our list of objects
+            # Add the last thing we processed (which will be completely parsed
+            # since we're using a stack for storage) to our list of objects
             tokens.append(inner_tokens.pop())
             # We found the matching bracket, so remove the line number from
             # the stack
             linenumbers.pop()
-        # If we're parsing our syntax, add this token to the data of the
-        # data structure that we're currently working with
+        # If we're still parsing our syntax, add this token to the data of the
+        # structure that we're currently working with
         elif depth:
             inner_tokens[-1]['data'].append(x)
-    # TODO: Raise error with mismatched brackets
+        # Store the previous character
+        previous = x
+
+    # Raise error if we've reached the end of the file and there are still
+    # closing brackets that we're expecting
     if depth > 0:
         error(name="Mismatching brackets",
               msg="Opening bracket with no closing bracket",
               lineno=linenumbers[-1])
+
     return tokens
 
 
