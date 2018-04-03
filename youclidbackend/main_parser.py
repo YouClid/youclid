@@ -77,6 +77,7 @@ def parse(text):
                                          "loc": parse_location,
                                          "step": parse_step,
                                          "clear": parse_clear
+                                         "angle": parse_angle
                                         })
 
     # A list of the objects that need to be drawn at each step
@@ -362,6 +363,71 @@ def parse_polygon(keyword_args):
         polygon = obj_dict.get(name)
         ret.append(polygon)
         ret.extend(point_list)
+
+    return ret
+
+
+def parse_angle(keyword_args):
+    """Creates an angle object from the given parameters"""
+
+    ret = []
+    name = keyword_args["name"]
+
+    angle = obj_dict.get(name)
+
+    if angle is not None:
+        return [angle, angle.p1, angle.l1, angle.l2]
+    else:
+        angle = primitives.Angle(name)
+        obj_dict[name] = angle
+        ret.append(angle)
+        if len(name) == 3:
+            p1 = obj_dict.get(name[1])
+            if p1 is None:
+                p1 = primitives.Point(name[1])
+                obj_dict[name[1]] = p1
+            ret.append(p1)
+            l1 = obj_dict.get(rotate_lex(name[:2]))
+            if l1 is None:
+                l1 = primitives.Line(rotate_lex(name[:2]))
+                obj_dict[rotate_lex(name[:2])] = l1
+            ret.append(l1)
+            l2 = obj_dict.get(rotate_lex(name[1:]))
+            if l2 is None:
+                l2 = primitives.Line(rotate_lex(name[1:]))
+                obj_dict[rotate_lex(name[1:])] = l2
+            ret.append(l2)
+
+            angle.p1 = p1
+            angle.l1 = l1
+            angle.l2 = l2
+
+    p1 = keyword_args.get("p1")
+    if p1 is not None:
+        p1 = obj_dict.get(p1)
+        if p1 is None:
+            p1 = primitives.Point(keyword_args.get("p1"))
+            obj_dict[keyword_args.get("p1")] = p1
+            ret.append(p1)
+        angle.p1 = p1
+
+    l1 = keyword_args.get("l1")
+    if l1 is not None:
+        l1 = obj_dict.get(l1)
+        if l1 is None:
+            l1 = primitives.Line(rotate_lex(keyword_args.get("l1")))
+            obj_dict[rotate_lex(keyword_args.get("l1"))] = l1
+            ret.append(l1)
+        angle.l1 = l1
+
+    l2 = keyword_args.get("l2")
+    if l2 is not None:
+        l2 = obj_dict.get(l2)
+        if l2 is None:
+            l2 = primitives.Line(rotate_lex(keyword_args.get("l2")))
+            obj_dict[rotate_lex(keyword_args.get("l2"))] = l2
+            ret.append(l2)
+        angle.l2 = l2
 
     return ret
 
