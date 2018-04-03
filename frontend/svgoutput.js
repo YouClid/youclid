@@ -3,6 +3,7 @@
 var xAx = 800;
 var yAx = 800;
 
+let labels = {};
 
 function init(){
   displaySVG();
@@ -17,7 +18,8 @@ function displaySVG() {
     //var img = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     img.size(xAx, yAx);
     //createImage(img);
-    makeSVG(img, geometry);
+    SVGImage = makeSVG(img, geometry);
+    labels = makeLabels(img, geometry);
 
 }
 
@@ -77,6 +79,7 @@ function makeSVG(image, geometry) {
           let geo = objects[key];
             if(geo.type === "Point") {
               drawPoint(image, geo.id, geo.data, geo.color)
+
             }
 
       }
@@ -129,6 +132,58 @@ function coordToImageY(coord){
 }
 function distToImage(coord){
     return (coord * (Math.min(xAx, yAx)/2));
+}
+
+// Labels ---------
+
+function makeLabels(image, geo) {
+    let geometry = geo.geometry
+
+    for(let ckey in geometry) {
+      let obj = geometry[ckey]
+
+	    let x = 0
+	    let y = 0
+	    let point = null
+
+	    switch(obj.type) {
+	    case "Point":
+		x = obj.data.x
+		y = obj.data.y
+		break;
+	    case "Line":
+      /*
+		point = geometry[obj.data.p2].data
+		x = point.x
+		y = point.y
+    */
+		break;
+	    case "Circle":
+      /*
+		x = obj.data.center.x
+		y = obj.data.center.y
+    */
+		break;
+	    case "Polygon":
+      /*
+		point = geometry[obj.data.points[0]].data
+		x = point.x
+		y = point.y
+    */
+		break;
+	    default:
+		console.log("Can't make label for type " + obj.type)
+	    }
+
+      if(obj.type == "Point") {
+        let x1 = coordToImageX(x) + 1;
+        let y1 = coordToImageY(y) + 1;
+        let labName = obj.id;
+
+        image.text(labName).move(x1, y1).font({ fill: '#fff000'/*, family: 'Inconsolata'*/ });
+      }
+	}
+
 }
 
 

@@ -5,9 +5,9 @@ let labels = {}
 
 function init() {
     let render = makeRender(geometry, anim_index)
-    
+
     visual = new Visual(render)
-    
+
     labels = makeLabels(geometry)
 
     colorText(geometry)
@@ -87,7 +87,7 @@ function makeRender(geometry, step) {
 		console.log("We don't handle type " + geo.type)
 	    }
 	}
-	
+
 	// Draw points last
 	for(let i = 0; i < toDraw.length; i++) {
 	    let id = toDraw[i]
@@ -239,7 +239,7 @@ function createStepButtons() {
     prev.id = 'prev_step'
     prev.value = 'Prev Step'
     prev.type = 'button'
-    
+
     next.onclick = () => {
 	updateAnimation(+1)
     }
@@ -317,7 +317,7 @@ function onTouchEnd( event ) {
 
 function updateAnimation(delta) {
     clearText(geometry, anim_index)
-    
+
     if(delta < 0) {
 	anim_index = anim_index === 0 ? anim_index : anim_index + delta
     }
@@ -327,14 +327,14 @@ function updateAnimation(delta) {
 
     let prev = Array.from(document.getElementsByClassName('step_highlighted'))
     prev.forEach((el) => el.className = '')
-    
+
 
     let par = document.getElementById('step_' + anim_index)
     if(par) {
 	par.className = 'step_highlighted'
     }
 
-    
+
     visual.setRender(makeRender(geometry, anim_index))
 }
 
