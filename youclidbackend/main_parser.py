@@ -21,14 +21,14 @@ polygons = {3: "Triangle",
 obj_dict = {}
 
 
-def error(name=None, msg=None, content=None):
+def error(name=None, msg=None, lineno=None):
     """Wrapper function for error handling"""
     if name is not None:
         print("Error: %s" % name, file=sys.stderr)
     if msg is not None:
         print(msg, file=sys.stderr)
-    if content is not None:
-        print(content, file=sys.stderr)
+    if lineno is not None:
+        print("Line number: %d" % int(lineno), file=sys.stderr)
     sys.exit(1)
 
 
@@ -51,7 +51,9 @@ def parse(text):
     curr_step = set()
 
     # Iterate over all matches in the text
-    for match in tokens:
+    for structure in tokens:
+        match = structure['data']
+        lineno = structure['lineno']
         # Get the dictionary of name and unnamed arguments
         args_dict = _parse_match(match)
 
@@ -60,7 +62,7 @@ def parse(text):
         except KeyError as e:
             error(name="Undefined object name",
                   msg="%s is not a valid object name" % args_dict["type"],
-                  content=match[1])
+                  lineno=lineno)
         # Call the appropriate parser function
         obj = f(args_dict)
         # Now we need to handle the return value
@@ -95,35 +97,52 @@ def parse(text):
 
 
 def tokenize(text):
-    tokens = []
-    # Replace brackets by spaces so that we can split on spaces
-    t = text.replace("[", " [ ").replace("]", " ] ")
-    t = shlex.split(t)
-    # Iterate over the entirity of the text
-    while(t):
-        # If we've encountered our syntax, extract it
-        # TODO: Ensure that the previous character wasn't a \
-        if(t[0] == '['):
-            tokens.append(read_from_tokens(t))
-        # Otherwise, go to the next token
-        else:
-            t.pop(0)
-    # Return all of the tokens that we've obtained
+    """Turn text into a list of dictionaries. Each dictionary has two keys:
+   'lineno': The line number of the source code where this declaration started
+   'data': The actual matched content
+   """
+
+    s = shlex.shlex(text, punctuation_chars=']')
+
+    tokens = []  # will be returned
+    inner_tokens = []  # For recursive purposed TODO: make this work
+    depth = 0  # Ensure that there are always matching brackets
+    # All the starting line numbers for the syntax that we are currently
+    # processing (we treat this as a stack). This is used so that we know
+    # what line to tell the user if they have mismatching brackets
+    linenumbers = []
+
+    # TODO: Watch out for escaping!
+    for x in s:
+        # If we've found a starting bracket, it's the start of our syntax
+        if x == '[':
+            # Increase our depth by one since we're parsing our syntax
+            depth += 1
+            # Push this line number on to the stack
+            linenumbers.append(s.lineno)
+            # Append a new dictionary
+            inner_tokens.append({'lineno': s.lineno, 'data': []})
+        # If we've found a closing bracket, it's the end of our syntax
+        elif x == ']':
+            # Decrease our depth since we're no longer parsing this syntax
+            # NOTE: We may still be in a nested statement
+            depth -= 1
+            # Add the last thing we processed (which will be finished since
+            # we're using a stack) to our list of objects
+            tokens.append(inner_tokens.pop())
+            # We found the matching bracket, so remove the line number from
+            # the stack
+            linenumbers.pop()
+        # If we're parsing our syntax, add this token to the data of the
+        # data structure that we're currently working with
+        elif depth:
+            inner_tokens[-1]['data'].append(x)
+    # TODO: Raise error with mismatched brackets
+    if depth > 0:
+        error(name="Mismatching brackets",
+              msg="Opening bracket with no closing bracket",
+              lineno=linenumbers[-1])
     return tokens
-
-
-def read_from_tokens(tokens):
-    token = tokens.pop(0)
-    if token == "[":
-        L = []
-        # Continue iterating over the text until we reach the end of our syntax
-        # TODO: Ensure that the previous character was not a \
-        while tokens[0] != "]":
-            # Allows for nested defintitions
-            L.append(read_from_tokens(tokens))
-        return L
-    else:
-        return token
 
 
 def _parse_match(partials):
