@@ -21,14 +21,14 @@ polygons = {3: "Triangle",
 obj_dict = {}
 
 
-def error(name=None, msg=None, content=None):
+def error(name=None, msg=None, line=None):
     """Wrapper function for error handling"""
     if name is not None:
         print("Error: %s" % name, file=sys.stderr)
     if msg is not None:
         print(msg, file=sys.stderr)
-    if content is not None:
-        print(content, file=sys.stderr)
+    if line is not None:
+        print("Line: %d" % line, file=sys.stderr)
     sys.exit(1)
 
 
@@ -51,7 +51,7 @@ def parse(text):
     curr_step = set()
 
     # Iterate over all matches in the text
-    for match in tokens:
+    for match, line_number in tokens:
         # Get the dictionary of name and unnamed arguments
         args_dict = _parse_match(match)
 
@@ -60,7 +60,7 @@ def parse(text):
         except KeyError as e:
             error(name="Undefined object name",
                   msg="%s is not a valid object name" % args_dict["type"],
-                  content=match[1])
+                  line=line_number)
         # Call the appropriate parser function
         obj = f(args_dict)
         # Now we need to handle the return value
@@ -104,26 +104,33 @@ def tokenize(text):
         # If we've encountered our syntax, extract it
         # TODO: Ensure that the previous character wasn't a \
         if(t[0] == '['):
-            tokens.append(read_from_tokens(t))
+            tokens_return, line_number = read_from_tokens(t, 1)
+            tokens.append((tokens_return, line_number))
         # Otherwise, go to the next token
+        elif '\n' in t[0]:
+            line_number += 1
+            t.pop(0)
         else:
             t.pop(0)
     # Return all of the tokens that we've obtained
     return tokens
 
 
-def read_from_tokens(tokens):
+def read_from_tokens(tokens, line_number):
     token = tokens.pop(0)
     if token == "[":
         L = []
         # Continue iterating over the text until we reach the end of our syntax
         # TODO: Ensure that the previous character was not a \
         while tokens[0] != "]":
+            if '\n' in tokens[0]:
+                line_number += 1
             # Allows for nested defintitions
-            L.append(read_from_tokens(tokens))
-        return L
+            ret, line_number = read_from_tokens(tokens, line_number)
+            L.append(ret)
+        return L, line_number
     else:
-        return token
+        return token, line_number
 
 
 def _parse_match(partials):
@@ -434,7 +441,7 @@ def generate_html(json_object, final):
     html = ""
     # I hope that this is the right way to do this? If not, someone tell me
     basepath = youclidbackend.__path__[0]
-    with open(basepath + "/data/template.html", 'r') as f:
+    with open(basepath + "/data/test.md", 'r') as f:
         html = f.read()
 
     html = html.replace("// insert json here", json.dumps(json_object,

@@ -60,3 +60,7 @@ body {
 .step_highlighted {
     background-color: #CCCCCC;
 }
+
+canvas {
+    margin: auto;
+}
