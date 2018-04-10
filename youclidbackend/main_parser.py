@@ -77,7 +77,7 @@ def parse(text):
                                          "polygon": parse_polygon,
                                          "loc": parse_location,
                                          "step": parse_step,
-                                         "clear": parse_clear
+                                         "clear": parse_clear,
                                          "angle": parse_angle
                                         })
 
@@ -448,7 +448,7 @@ def parse_angle(keyword_args):
 
 def get_degree(p1, p2, p3):
     """Returns degree of the angle defined by three points"""
-    in_radians = math.atan2(p3.y - p2.y, p3.x - p2.x) -
+    in_radians = math.atan2(p3.y - p2.y, p3.x - p2.x) - \
                  math.atan2(p1.y - p2.y, p1.x - p2.x)
     in_degrees = math.degrees(in_radians)
     return in_degrees
