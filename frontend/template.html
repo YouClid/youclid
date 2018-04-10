@@ -3,7 +3,8 @@
 	<head>
 		<meta charset=utf-8>
 		<title>YouClid</title>
-		<link rel="stylesheet" href="default.css">
+		<link id="stylesheet" rel="stylesheet" href="default.css">
+		<link rel="stylesheet" href="switch.css">
 		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
@@ -17,6 +18,14 @@
 	<body>
 	  <div id="text">
 	    <!-- Insert the text here -->
+	  </div>
+	  <div id="lightswitch">
+	    Dark
+	    <label class="switch">
+	      <input id="themeswitch" type="checkbox">
+	      <span class="slider"></span>
+	    </label>
+	    Light
 	  </div>
 	</body>
 </html>

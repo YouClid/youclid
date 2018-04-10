@@ -36,6 +36,8 @@ class Visual {
 
 	this.mouseDown = false
 	this.lineWidth = 0.01
+
+	this.light = false
 	
 	this.init()
     }
@@ -82,7 +84,13 @@ class Visual {
 
     clear() {
 	let gl = this.gl
-	gl.clearColor(0.0, 0.0, 0.0, 1.0)
+	if(this.light){
+	    let bg = 1.0
+	    gl.clearColor(bg, bg, bg, 1.0)
+	}
+	else {
+	    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+	}
 	gl.clear(gl.COLOR_BUFFER_BIT)
     }
     

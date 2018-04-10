@@ -17,6 +17,8 @@ function init() {
 	    el.addEventListener('mouseenter', overTextChange(renderer))
 	    el.addEventListener('mouseleave', overTextRevert(renderer))
 	})
+    document.getElementById("themeswitch").onclick = themeSwitch(renderer)
+    
     renderer.render()
 }
 
@@ -406,3 +408,23 @@ function onKeyDown( r ) {
 	}
     }
 }
+
+function themeSwitch(renderer) {
+    return () => {
+	let darkurl = "default.css"
+	let lighturl = "light.css"
+	let style = document.getElementById("stylesheet")
+	let check = document.getElementById("themeswitch")
+
+	if(check.checked) {
+	    style.href = lighturl
+	    visual.light = true
+	}
+	else {
+	    style.href = darkurl
+	    visual.light = false
+	}
+	renderer.render()
+    }
+}
+
