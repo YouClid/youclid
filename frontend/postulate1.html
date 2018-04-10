@@ -3,9 +3,10 @@
 	<head>
 		<meta charset=utf-8>
 		<title>YouClid</title>
-		<link rel="stylesheet" href="default.css">
-		<script src="draw.js"></script>
-		<script src="index.js"></script>
+		<link id="stylesheet" rel="stylesheet" href="/Users/joe/Documents/School/senior-design/youclid/youclidbackend/data/default.css">
+		<link rel="stylesheet" href="switch.css">
+		<script src="/Users/joe/Documents/School/senior-design/youclid/youclidbackend/data/draw.js"></script>
+		<script src="/Users/joe/Documents/School/senior-design/youclid/youclidbackend/data/index.js"></script>
 		<script>
 		  
 		  window.onload = init
@@ -184,40 +185,40 @@
             "B"
         ],
         [
-            "B",
-            "C",
-            "A",
             "D",
-            "AB",
-            "BCD"
-        ],
-        [
             "B",
-            "C",
-            "A",
-            "E",
-            "D",
             "AB",
-            "ACE",
-            "BCD"
-        ],
-        [
-            "B",
-            "C",
-            "A",
-            "AC",
-            "BC",
-            "E",
-            "D",
-            "AB",
-            "ACE",
-            "BCD"
-        ],
-        [
-            "B",
-            "ABC",
+            "BCD",
             "C",
             "A"
+        ],
+        [
+            "D",
+            "B",
+            "E",
+            "AB",
+            "BCD",
+            "C",
+            "A",
+            "ACE"
+        ],
+        [
+            "D",
+            "AC",
+            "B",
+            "E",
+            "AB",
+            "BCD",
+            "C",
+            "BC",
+            "A",
+            "ACE"
+        ],
+        [
+            "ABC",
+            "C",
+            "A",
+            "B"
         ]
     ]
 }
@@ -243,6 +244,14 @@
         <br>
         <br>
          </div>
+	  </div>
+	  <div id="lightswitch">
+	    Dark
+	    <label class="switch">
+	      <input id="themeswitch" type="checkbox">
+	      <span class="slider"></span>
+	    </label>
+	    Light
 	  </div>
 	</body>
 </html>
