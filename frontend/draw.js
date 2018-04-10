@@ -20,7 +20,7 @@ void main() {
 
 
 class Visual {
-    constructor() {
+    constructor(size) {
 	this.mouse = {x:1000, y:10000}
 	this.mousedown = false
 	this.mouseup = true
@@ -30,7 +30,8 @@ class Visual {
 
 	this.drawn = {}
 
-	this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
+	this.size = size || Math.min(window.innerWidth*0.65, window.innerHeight)
+	this.updateSize = size ? false : true
 
 	this.canvasRect = null
 
@@ -76,7 +77,9 @@ class Visual {
 	document.addEventListener( 'mousemove', onMouseMove.bind(this));
 	document.addEventListener( 'mousedown', () => this.mouseDown = true)
 	document.addEventListener( 'mouseup', () => this.mouseDown = false)
-	window.addEventListener( 'resize', onResize.bind(this));
+	if(this.updateSize) {
+	    window.addEventListener( 'resize', onResize.bind(this));
+	}
 
     }
 
