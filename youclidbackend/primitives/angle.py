@@ -7,28 +7,28 @@ class Angle(YouClidObject):
         super().__init__()
         self.name = name
         self.p1 = None
-        self.l1 = None
-        self.l2 = None
+        self.p2 = None
+        self.p3 = None
+        self.big = False
+        self.degree = None
         self.color = youclidbackend.colors.next_color()
 
     def __str__(self):
         return "Angle %s(%s, %s, %s)" % (str(self.name),
                                          str(self.p1),
-                                         str(self.l1),
-                                         str(self.l2))
+                                         str(self.p2),
+                                         str(self.p3))
 
     def __repr__(self):
         return "Angle %s(%s, %s, %s)" % (str(self.name),
                                          str(self.p1),
-                                         str(self.l1),
-                                         str(self.l2))
+                                         str(self.p2),
+                                         str(self.p3))
 
     def __eq__(self, other):
         if isinstance(other, Angle):
-            myattribs = [self.p1, self.l1, self.l2]
-            otherattribs = [other.p1, other.l1, other.l2]
-            return (all([x in otherattribs for x in myattribs]) and
-                    all([x in myattribs for x in otherattribs]))
+            return (self.p1 == other.p1 and self.p2 == other.p2 and
+                    self.p3 == other.p3)
         else:
             return False
 
@@ -37,7 +37,6 @@ class Angle(YouClidObject):
 
     def __dict__(self):
         return {
-                'p1': self.p1.name if self.p1 is not None else None,
-                'l1': self.l1.name if self.l1 is not None else None,
-                'l2': self.l2.name if self.l2 is not None else None
+                'points': [self.p1, self.p2, self.p3],
+                'degree': self.degree
                }

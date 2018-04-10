@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import shlex
+import math
 import youclidbackend
 from youclidbackend import primitives, colors
 from pprint import pprint
@@ -372,35 +373,27 @@ def parse_angle(keyword_args):
 
     ret = []
     name = keyword_args["name"]
-
     angle = obj_dict.get(name)
 
     if angle is not None:
-        return [angle, angle.p1, angle.l1, angle.l2]
+        return [angle, angle.p1, angle.p2, angle.p3]
     else:
         angle = primitives.Angle(name)
         obj_dict[name] = angle
         ret.append(angle)
         if len(name) == 3:
-            p1 = obj_dict.get(name[1])
+            p1 = obj_dict.get(name[0])
             if p1 is None:
-                p1 = primitives.Point(name[1])
-                obj_dict[name[1]] = p1
-            ret.append(p1)
-            l1 = obj_dict.get(rotate_lex(name[:2]))
-            if l1 is None:
-                l1 = primitives.Line(rotate_lex(name[:2]))
-                obj_dict[rotate_lex(name[:2])] = l1
-            ret.append(l1)
-            l2 = obj_dict.get(rotate_lex(name[1:]))
-            if l2 is None:
-                l2 = primitives.Line(rotate_lex(name[1:]))
-                obj_dict[rotate_lex(name[1:])] = l2
-            ret.append(l2)
-
-            angle.p1 = p1
-            angle.l1 = l1
-            angle.l2 = l2
+                p1 = primitives.Point(name[0])
+                obj_dict[name[0]] = p1
+            p2 = obj_dict.get(name[1])
+            if p2 is None:
+                p2 = primitives.Point(name[1])
+                obj_dict[name[1]] = p2
+            p3 = obj_dict.get(name[2])
+            if p3 is None:
+                p3 = primitives.Point(name[2])
+                obj_dict[name[2]] = p3
 
     p1 = keyword_args.get("p1")
     if p1 is not None:
@@ -408,29 +401,57 @@ def parse_angle(keyword_args):
         if p1 is None:
             p1 = primitives.Point(keyword_args.get("p1"))
             obj_dict[keyword_args.get("p1")] = p1
-            ret.append(p1)
-        angle.p1 = p1
+    p2 = keyword_args.get("p2")
+    if p2 is not None:
+        p2 = obj_dict.get(p2)
+        if p2 is None:
+            p2 = primitives.Point(keyword_args.get("p2"))
+            obj_dict[keyword_args.get("p2")] = p2
+    p3 = keyword_args.get("p3")
+    if p3 is not None:
+        p3 = obj_dict.get(p3)
+        if p3 is None:
+            p3 = primitives.Point(keyword_args.get("p3"))
+            obj_dict[keyword_args.get("p3")] = p3
+    big = keyword_args.get("big")
+    if big is not None:
+        angle.big = big
 
-    l1 = keyword_args.get("l1")
-    if l1 is not None:
-        l1 = obj_dict.get(l1)
-        if l1 is None:
-            l1 = primitives.Line(rotate_lex(keyword_args.get("l1")))
-            obj_dict[rotate_lex(keyword_args.get("l1"))] = l1
-            ret.append(l1)
-        angle.l1 = l1
+    degree = get_degree(p1, p2, p3)
 
-    l2 = keyword_args.get("l2")
-    if l2 is not None:
-        l2 = obj_dict.get(l2)
-        if l2 is None:
-            l2 = primitives.Line(rotate_lex(keyword_args.get("l2")))
-            obj_dict[rotate_lex(keyword_args.get("l2"))] = l2
-            ret.append(l2)
-        angle.l2 = l2
+    if angle.big:
+        if degree < 0:
+            p4 = p1
+            p1 = p3
+            p3 = p4
+            degree = 180 + degree
+        else:
+            degree = 180 - degree
+    else:
+        if degree > 0:
+            p4 = p1
+            p1 = p3
+            p3 = p4
+        else:
+            degree = -1 * degree
+
+    angle.p1 = p1
+    angle.p2 = p2
+    angle.p3 = p3
+    angle.degree = degree
+    ret.append(p1)
+    ret.append(p2)
+    ret.append(p3)
 
     return ret
 
+
+def get_degree(p1, p2, p3):
+    """Returns degree of the angle defined by three points"""
+    in_radians = math.atan2(p3.y - p2.y, p3.x - p2.x) -
+                 math.atan2(p1.y - p2.y, p1.x - p2.x)
+    in_degrees = math.degrees(in_radians)
+    return in_degrees
 
 def parse_location(keyword_args):
     """Parses the location for a particular point object"""
