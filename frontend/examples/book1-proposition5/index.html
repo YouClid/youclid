@@ -3,7 +3,7 @@
 	<head>
 		<meta charset=utf-8>
 		<title>YouClid</title>
-		<link id="stylesheet" rel="stylesheet" href="/home/drew/development/youclid/youclidbackend/data/styles/default.css">
+		<link id="stylesheet" rel="stylesheet" href="styles/default.css">
 		<style>
 		  #lightswitch {
 		  position: absolute;
@@ -69,8 +69,8 @@
 		  }
 
 		</style>
-		<script src="/home/drew/development/youclid/youclidbackend/data/draw.js"></script>
-		<script src="/home/drew/development/youclid/youclidbackend/data/index.js"></script>
+		<script src="draw.js"></script>
+		<script src="index.js"></script>
 		<script>
 		  
 		  window.onload = init
@@ -412,9 +412,9 @@
                 ]
             }
         },
-        "BCG": {
+        "CGB": {
             "type": "Polygon",
-            "id": "BCG",
+            "id": "CGB",
             "color": [
                 0.0,
                 0.4549019607843137,
@@ -423,59 +423,59 @@
             ],
             "data": {
                 "points": [
-                    "B",
                     "C",
-                    "G"
+                    "G",
+                    "B"
                 ]
             }
         }
     },
     "animations": [
         [
-            "A",
+            "ABC",
             "C",
+            "A",
             "AC",
             "B",
-            "AB",
-            "ABC"
+            "AB"
         ],
         [
-            "D",
-            "A",
-            "CE",
-            "C",
-            "AC",
-            "B",
+            "ABC",
             "BD",
-            "AB",
             "E",
-            "ABC"
+            "C",
+            "CE",
+            "A",
+            "AC",
+            "B",
+            "AB",
+            "D"
         ],
         [
-            "F",
-            "BCG",
-            "CF",
-            "AF",
-            "BC",
-            "BF",
-            "B",
-            "G",
-            "BG",
-            "CG",
-            "A",
-            "CE",
-            "E",
-            "AFC",
-            "BFC",
-            "D",
-            "AGB",
-            "C",
-            "AC",
             "AG",
-            "BD",
+            "ABC",
+            "AGB",
+            "B",
+            "D",
+            "E",
+            "CGB",
+            "CF",
             "AE",
+            "BC",
+            "BG",
+            "F",
+            "AF",
+            "CE",
+            "A",
+            "AFC",
+            "CG",
+            "BD",
+            "G",
+            "C",
+            "BF",
+            "AC",
             "AB",
-            "ABC"
+            "BFC"
         ]
     ]
 }
