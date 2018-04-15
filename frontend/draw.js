@@ -153,7 +153,7 @@ class Visual {
     pointUnderMouse(point) {
 	let sz = 5.0/(2*this.size)
 	let center = {x:point.x+(sz/2), y:point.y+(sz/2)}
-	return this.dist(this.mouse, center) < 0.06
+	return this.dist(this.mouse, center) < 0.05
     }
 
     lineUnderMouse(p0, p1) {
@@ -238,7 +238,7 @@ class Visual {
 	return vertices
     }
 
-    drawLine(ident, p1, p2, color) {
+    drawLine(ident, p1, p2, color, changeOnHot=true) {
 
 	let name = "object_line_" + ident.toString()
 
@@ -252,7 +252,7 @@ class Visual {
 	    }
 	}
     
-	if(hot) {
+	if(hot && changeOnHot) {
 	    color = this.hotColor
 	}
 
@@ -410,14 +410,7 @@ class Visual {
 	let vertices = []
 	let num_indices = 0
 
-	if(!fill) {
-	    for(let i = 0; i<points.length-1; i++) {
-		let p1 = points[i]
-		let p2 = points[i+1]
-		this.drawLine(ident, p1, p2, color)
-	    }
-	}
-	else {
+	if(fill) {
 	    let gl = this.gl
 	    vertices = points.map((p) => {
 		return [p.x, p.y, 0.0, 1.0].concat(color)
@@ -448,6 +441,13 @@ class Visual {
 
 	    gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
 	}
+
+	for(let i = 0; i<points.length-1; i++) {
+	    let p1 = points[i]
+	    let p2 = points[i+1]
+	    this.drawLine(ident, p1, p2, color, false)
+	}
+	
 	return hot
     }
 
