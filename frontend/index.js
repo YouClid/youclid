@@ -32,8 +32,15 @@ function sortItems(toDraw, objs) {
     // then everything that isn't a point
     // then all the items that are 'textHot'
     // then the points
+
     toDraw.forEach((id) => {
-	if(objs[id].type == "Polygon" || objs[id].type == "Circle" && !isHot(objs[id])) {
+	if((objs[id].type == "Polygon" || objs[id].type == "Circle") && isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
+
+    toDraw.forEach((id) => {
+	if((objs[id].type == "Polygon" || objs[id].type == "Circle") && !isHot(objs[id])) {
 	    sorted.push(id)
 	}
     })
@@ -44,8 +51,9 @@ function sortItems(toDraw, objs) {
 	}
     })
 
+    
     toDraw.forEach((id) => {
-	if(isHot(objs[id])) {
+	if(isHot(objs[id]) && objs[id].type != "Polygon" && objs[id].type != "Circle") {
 	    sorted.push(id)
 	}
     })
@@ -55,6 +63,8 @@ function sortItems(toDraw, objs) {
 	    sorted.push(id)
 	}
     })
+
+    
 
     return sorted
 }
@@ -116,13 +126,13 @@ class Renderer {
 		    let id = toDrawSorted[i]
 		    let geo = objects[id]
 		    let textHot = isHot(geo)
-		    let color = textHot ? [1.0, 1.0, 0, 1.0] : objects[id].color
+		    let color = textHot ? visual.hotColor : objects[id].color
 		    let hot = false
 
 		    switch(geo.type) {
 		    case "Point":
 			hot = visual.drawPoint(geo.id, geo.data, color)
-			highlightText(geo, hot, textHot)
+			highlightText(geo, hot, textHot, true)
 			break;
 		    case "Line":
 			hot = visual.drawLine(geo.id,
@@ -133,7 +143,7 @@ class Renderer {
 			highlightText(geo, hot, textHot)
 			break;
 		    case "Circle":
-			hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, objects[id].color, textHot)
+			hot = visual.drawCircle(geo.id, geo.data.center, geo.data.radius, objects[id].color, textHot, objects[id].color)
 			highlightText(geo, hot, textHot)
 			break;
 		    case "Polygon":
@@ -251,9 +261,9 @@ function circleFromPoints(p1, p2, p3) {
     return {center: center, radius: radius}
 }
 
-function highlightText(geo, isHot, textHot) {
+function highlightText(geo, isHot, textHot, isPoint) {
     isHot = isHot || textHot
-    if(textHot) {
+    if(textHot || isPoint) {
 	showLabel(geo.id)
     }
     else {
@@ -309,25 +319,25 @@ function makeLabels(data) {
 		x = obj.data.x
 		y = obj.data.y
 		break;
-	    case "Line":
-		point = geometry[obj.data.p2].data
-		x = point.x
-		y = point.y
-		break;
-	    case "Circle":
-		x = obj.data.center.x
-		y = obj.data.center.y
-		break;
-	    case "Polygon":
-		point = geometry[obj.data.points[0]].data
-		x = point.x
-		y = point.y
-		break;
+	    // case "Line":
+	    // 	point = geometry[obj.data.p2].data
+	    // 	x = point.x
+	    // 	y = point.y
+	    // 	break;
+	    // case "Circle":
+	    // 	x = obj.data.center.x
+	    // 	y = obj.data.center.y
+	    // 	break;
+	    // case "Polygon":
+	    // 	point = geometry[obj.data.points[0]].data
+	    // 	x = point.x
+	    // 	y = point.y
+	    // 	break;
 	    default:
-		console.log("Can't make label for type " + obj.type)
+		continue
 	    }
-	    x = ( x + 1) / 2 + 0.01
-	    y = (-y + 1) / 2 - 0.025
+	    x = ( x + 1) / 2 + 0.012
+	    y = (-y + 1) / 2 - 0.03
 	    elem.style.left = (Math.floor(x * visual.size) + visual.canvasRect.left) + 'px'
 	    elem.style.top = (Math.floor(y * visual.size) + visual.canvasRect.top) + 'px'
 	    labels[obj.id] = elem
