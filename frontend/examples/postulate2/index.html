@@ -3,7 +3,72 @@
 	<head>
 		<meta charset=utf-8>
 		<title>YouClid</title>
-		<link rel="stylesheet" href="default.css">
+		<link id="stylesheet" rel="stylesheet" href="styles/default.css">
+		<style>
+		  #lightswitch {
+		  position: absolute;
+		  right: 10px;
+		  top: 10px;
+		  font-size: 0.8em;
+		  
+		  }
+
+		  /* The switch - the box around the slider */
+		  .switch {
+		  position: relative;
+		  display: inline-block;
+		  width: 30px;
+		  height: 17px;
+		  }
+
+		  /* Hide default HTML checkbox */
+		  .switch input {display:none;}
+
+		  /* The slider */
+		  .slider {
+		  position: absolute;
+		  cursor: pointer;
+		  top: 0;
+		  left: 0;
+		  right: 0;
+		  bottom: 0;
+		  background-color: #888;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		  }
+
+		  .slider:before {
+		  position: absolute;
+		  content: "";
+		  height: 13px;
+		  width: 13px;
+		  left: 2px;
+		  bottom: 2px;
+		  background-color: white;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		  }
+
+		  input:focus + .slider {
+		  box-shadow: 0 0 1px #2196F3;
+		  }
+
+		  input:checked + .slider:before {
+		  -webkit-transform: translateX(13px);
+		  -ms-transform: translateX(13px);
+		  transform: translateX(13px);
+		  }
+
+		  /* Rounded sliders */
+		  .slider.round {
+		  border-radius: 17px;
+		  }
+
+		  .slider.round:before {
+		  border-radius: 50%;
+		  }
+
+		</style>
 		<script src="draw.js"></script>
 		<script src="index.js"></script>
 		<script>
@@ -347,91 +412,91 @@
     },
     "animations": [
         [
-            "B",
+            "A",
             "C",
+            "B",
+            "BC"
+        ],
+        [
+            "C",
+            "B",
+            "A",
+            "BC",
+            "L",
+            "AL"
+        ],
+        [
+            "B",
+            "A",
+            "AB",
+            "ABD",
+            "D"
+        ],
+        [
+            "E",
+            "AE",
+            "BF",
+            "BD",
+            "B",
+            "AD",
+            "A",
+            "AB",
+            "ABD",
+            "F",
+            "D"
+        ],
+        [
+            "E",
+            "K",
+            "AE",
+            "BF",
+            "BD",
+            "B",
+            "AD",
+            "H",
+            "A",
+            "GKL",
+            "AB",
+            "ABD",
+            "F",
+            "D",
+            "L",
+            "C",
+            "G",
+            "CGH"
+        ],
+        [
+            "E",
+            "K",
+            "AE",
+            "BF",
+            "B",
+            "BG",
+            "F",
+            "AL",
+            "G",
+            "DL",
+            "BD",
+            "GKL",
+            "L",
+            "C",
+            "DG",
+            "AB",
+            "ABD",
+            "D",
+            "CGH",
+            "AD",
+            "H",
             "A",
             "BC"
         ],
         [
-            "B",
-            "AL",
-            "A",
-            "BC",
-            "L",
-            "C"
-        ],
-        [
-            "B",
-            "ABD",
-            "A",
-            "AB",
-            "D"
-        ],
-        [
-            "B",
-            "BD",
-            "ABD",
-            "AE",
-            "A",
-            "AB",
-            "BF",
-            "F",
-            "AD",
-            "D",
-            "E"
-        ],
-        [
-            "B",
-            "BD",
-            "ABD",
-            "K",
-            "GKL",
-            "AE",
-            "A",
-            "AB",
-            "BF",
-            "CGH",
-            "F",
-            "AD",
-            "H",
-            "G",
-            "L",
             "C",
-            "D",
-            "E"
-        ],
-        [
             "B",
-            "BD",
-            "ABD",
-            "K",
-            "BG",
-            "GKL",
-            "BF",
-            "AB",
-            "L",
-            "CGH",
-            "F",
-            "H",
-            "G",
-            "DL",
-            "C",
-            "D",
-            "AD",
-            "DG",
-            "AL",
-            "AE",
-            "A",
-            "BC",
-            "E"
-        ],
-        [
-            "B",
-            "AL",
             "A",
             "BC",
             "L",
-            "C"
+            "AL"
         ]
     ]
 }
@@ -463,6 +528,14 @@
         <br>
         Therefore, the straight  <span name=text_line_AL class='GeoElement'>line AL</span> equal to the given straight  <span name=text_line_BC class='GeoElement'>line BC</span> has been placed with one end at the given  <span name=text_point_A class='GeoElement'>point A</span>.<br>
          </div>
+	  </div>
+	  <div id="lightswitch">
+	    Dark
+	    <label class="switch">
+	      <input id="themeswitch" type="checkbox">
+	      <span class="slider"></span>
+	    </label>
+	    Light
 	  </div>
 	</body>
 </html>
