@@ -38,6 +38,7 @@ class Visual {
 	this.lineWidth = 0.01
 
 	this.light = false
+	this.hotColor = [1.0, 1.0, 0, 1.0]
 	
 	this.init()
     }
@@ -87,9 +88,11 @@ class Visual {
 	if(this.light){
 	    let bg = 1.0
 	    gl.clearColor(bg, bg, bg, 1.0)
+	    this.hotColor = [0.9, 0.9, 0.2, 1.0]
 	}
 	else {
 	    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+	    this.hotColor = [1.0, 1.0, 0, 1.0]
 	}
 	gl.clear(gl.COLOR_BUFFER_BIT)
     }
@@ -150,7 +153,7 @@ class Visual {
     pointUnderMouse(point) {
 	let sz = 5.0/(2*this.size)
 	let center = {x:point.x+(sz/2), y:point.y+(sz/2)}
-	return this.dist(this.mouse, center) < 0.06
+	return this.dist(this.mouse, center) < 0.05
     }
 
     lineUnderMouse(p0, p1) {
@@ -197,9 +200,10 @@ class Visual {
     drawPoint(ident, point, color) {
         // create a circular point (filled in) of radius 0.0125
 	if(this.pointUnderMouse(point)) {
-	    color = [1.0, 1.0, 0.0, 1.0]
+	    color = this.hotColor
 	}
-        return this.drawCircle(ident, point, 0.013, color, true)
+	let strokeColor = [0,0,0,1]
+        return this.drawCircle(ident, point, 0.013, strokeColor, true, color, 0.001)
     }
 
 
@@ -234,7 +238,7 @@ class Visual {
 	return vertices
     }
 
-    drawLine(ident, p1, p2, color) {
+    drawLine(ident, p1, p2, color, changeOnHot=true) {
 
 	let name = "object_line_" + ident.toString()
 
@@ -248,8 +252,8 @@ class Visual {
 	    }
 	}
     
-	if(hot) {
-	    color = [1.0, 1.0, 0, 1.0] // Yellow
+	if(hot && changeOnHot) {
+	    color = this.hotColor
 	}
 
     
@@ -296,7 +300,7 @@ class Visual {
 	return points
     }
 
-    drawCircle(ident, center, radius, color, fill=false) {
+    drawCircle(ident, center, radius, strokeColor, fill=false, fillColor=[0,0,0,1], strokeWidth=this.lineWidth) {
 
 	let name = "object_line_" + ident.toString()
 
@@ -313,7 +317,7 @@ class Visual {
 	} 
 	
 	if(hot) {
-	    // color = [1.0, 1.0, 0, 1.0] // Yellow
+	    // color = this.hotColor
 	    fill = true
 	}
 
@@ -323,26 +327,46 @@ class Visual {
 	let vertices = []
 	let num_indices = 0
 
-	if(!fill) {
-	    vertices = this.makeLineBuf(points, color, this.lineWidth)
-	    num_indices = 2*(points.length)
-	}
-	else {
+
+
+	if(fill) {
 	    vertices = points.map((p) => {
-		return [p.x, p.y, 0.0, 1.0].concat(color)
+		return [p.x, p.y, 0.0, 1.0].concat(fillColor)
 	    })
 	    vertices = this.flatten(vertices)
 	    num_indices = points.length + 1
+
+	    if(this.glData.length < vertices.length) {
+		this.glData = new Float32Array(vertices.length)
+	    }
+
+	    let data = this.glData
+	    let FSIZE = data.BYTES_PER_ELEMENT
+
+	    data.set(vertices)
+
+	    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+	    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+	    gl.enableVertexAttribArray(a_Position)
+	    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+	    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+	    gl.enableVertexAttribArray(a_Color)
+	    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
+
+
+	    gl.drawArrays(gl.TRIANGLE_FAN, 0, num_indices)
 	}
+
+	vertices = this.makeLineBuf(points, strokeColor, strokeWidth)
+	num_indices = 2*(points.length)
 
 	if(this.glData.length < vertices.length) {
 	    this.glData = new Float32Array(vertices.length)
 	}
-	
+
 	let data = this.glData
-
 	let FSIZE = data.BYTES_PER_ELEMENT
-
 
 	data.set(vertices)
 
@@ -356,10 +380,7 @@ class Visual {
 	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
 
 
-	if (fill === true)
-            gl.drawArrays(gl.TRIANGLE_FAN, 0, num_indices)
-	else
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
 
 	return hot
 
@@ -381,7 +402,7 @@ class Visual {
 	}
 	
 	if(hot) {
-	    // color = [1.0, 1.0, 0, 1.0] // Yellow
+	    // color = this.hotColor
 	    fill = true
 	}
 
@@ -389,14 +410,7 @@ class Visual {
 	let vertices = []
 	let num_indices = 0
 
-	if(!fill) {
-	    for(let i = 0; i<points.length-1; i++) {
-		let p1 = points[i]
-		let p2 = points[i+1]
-		this.drawLine(ident, p1, p2, color)
-	    }
-	}
-	else {
+	if(fill) {
 	    let gl = this.gl
 	    vertices = points.map((p) => {
 		return [p.x, p.y, 0.0, 1.0].concat(color)
@@ -427,6 +441,13 @@ class Visual {
 
 	    gl.drawArrays(gl.TRIANGLE_STRIP, 0, num_indices)
 	}
+
+	for(let i = 0; i<points.length-1; i++) {
+	    let p1 = points[i]
+	    let p2 = points[i+1]
+	    this.drawLine(ident, p1, p2, color, false)
+	}
+	
 	return hot
     }
 

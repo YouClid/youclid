@@ -228,7 +228,7 @@ def get_text(match, step):
 
 
 def parse_line(keyword_args):
-    name = rotate_lex(keyword_args["name"])
+    name = keyword_args["name"]
     point_list = []
     ret = []
 
@@ -345,7 +345,7 @@ def parse_center(keyword_args):
 
 
 def parse_polygon(keyword_args):
-    name = ''.join(rotate_lex(keyword_args['name']))
+    name = keyword_args['name']
     point_list = []
     ret = []
 
@@ -424,23 +424,8 @@ def generate_html(json_object, final, path=None):
         ]
         for fname in to_copy:
             shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname) 
-                
-        
 
     return html
-
-
-def rotate(l, n):
-    return l[-n:] + l[:-n]
-
-
-def rotate_lex(l):
-    ind = l.index(min(l))
-    if(ind != 0):
-        rot = len(l) - ind
-        return rotate(l, rot)
-    else:
-        return l
 
 
 if __name__ == "__main__":
