@@ -1,0 +1,71 @@
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    background-color: rgb(25, 25, 25);
+    font-family: sans-serif;
+    color: rgb(250, 250, 250);
+}
+
+#text {
+    float: left;
+    flex-grow: 100;
+    height: 94vh;
+    vertical-align: top;
+    padding: 1em;
+    overflow-y: auto;
+
+    line-height: 1.3em;
+
+}
+
+.shadowed {
+    text-shadow: 0 0 10px white;
+}
+
+
+.label {
+    color: white;
+    font-size: 1.3em;
+    -webkit-font-smoothing: antialiased;
+    text-shadow: -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;  
+}
+
+.GeoElement {
+
+}
+
+.step_btn {
+    position: absolute;
+    border : solid 0px #000000;
+    border-radius : 5px;
+    moz-border-radius : 5px;
+    -webkit-box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+    -moz-box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+    box-shadow : 0px 0px 2px rgba(0,0,0,1.0);
+    font-size : 20px;
+    color : #ffffff;
+    padding : 4px 16px;
+    background-color : #8c8c8c;
+}
+.step_btn:hover {
+    background-color: #666666;
+}
+
+/* #next_step { */
+/*     bottom: 10%; */
+/*     right: 15%; */
+/* } */
+
+/* #prev_step { */
+/*     bottom: 10%; */
+/*     right: 40%; */
+/* } */
+
+.step_highlighted {
+    background-color: #444444;
+}
