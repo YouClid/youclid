@@ -395,24 +395,26 @@ def parse_angle(keyword_args):
                 p3 = primitives.Point(name[2])
                 obj_dict[name[2]] = p3
 
-    p1 = keyword_args.get("p1")
-    if p1 is not None:
-        p1 = obj_dict.get(p1)
-        if p1 is None:
-            p1 = primitives.Point(keyword_args.get("p1"))
-            obj_dict[keyword_args.get("p1")] = p1
-    p2 = keyword_args.get("p2")
-    if p2 is not None:
-        p2 = obj_dict.get(p2)
-        if p2 is None:
-            p2 = primitives.Point(keyword_args.get("p2"))
-            obj_dict[keyword_args.get("p2")] = p2
-    p3 = keyword_args.get("p3")
-    if p3 is not None:
-        p3 = obj_dict.get(p3)
-        if p3 is None:
-            p3 = primitives.Point(keyword_args.get("p3"))
-            obj_dict[keyword_args.get("p3")] = p3
+        else:
+            p1 = keyword_args.get("p1")
+            if p1 is not None:
+                p1 = obj_dict.get(p1)
+                if p1 is None:
+                    p1 = primitives.Point(keyword_args.get("p1"))
+                    obj_dict[keyword_args.get("p1")] = p1
+            p2 = keyword_args.get("p2")
+            if p2 is not None:
+                p2 = obj_dict.get(p2)
+                if p2 is None:
+                    p2 = primitives.Point(keyword_args.get("p2"))
+                    obj_dict[keyword_args.get("p2")] = p2
+            p3 = keyword_args.get("p3")
+            if p3 is not None:
+                p3 = obj_dict.get(p3)
+                if p3 is None:
+                    p3 = primitives.Point(keyword_args.get("p3"))
+                    obj_dict[keyword_args.get("p3")] = p3
+
     big = keyword_args.get("big")
     if big is not None:
         angle.big = big
