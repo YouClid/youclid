@@ -7,6 +7,8 @@ import shlex
 import youclidbackend
 from youclidbackend import primitives, colors
 from pprint import pprint
+import os
+import shutil
 
 polygons = {3: "Triangle",
             5: "Pentagon",
@@ -392,7 +394,7 @@ def parse_clear(keyword_args):
     return [_Clear()]
 
 
-def generate_html(json_object, final):
+def generate_html(json_object, final, path=None):
     html = ""
     # I hope that this is the right way to do this? If not, someone tell me
     basepath = youclidbackend.__path__[0]
@@ -405,25 +407,25 @@ def generate_html(json_object, final):
                         json_object['text'].replace("\n", "<br>\n        "))
 
     if not final:
-        html = html.replace("default.css",
-                            youclidbackend.__path__[0] + "/data/default.css")
+        html = html.replace("styles/default.css",
+                            youclidbackend.__path__[0] + "/data/styles/default.css")
         html = html.replace("draw.js",
                             youclidbackend.__path__[0] + "/data/draw.js")
         html = html.replace("index.js",
                             youclidbackend.__path__[0] + "/data/index.js")
     else:
-        with open(youclidbackend.__path__[0] + "/data/default.css") as f:
-            data = f.read()
-        html = html.replace('<link rel="stylesheet" href="default.css">',
-                            '<style>' + data + '</style>')
-        with open(youclidbackend.__path__[0] + "/data/draw.js") as f:
-            data = f.read()
-        html = html.replace('<script src="draw.js"></script>',
-                            '<script>' + data + '</script>')
-        with open(youclidbackend.__path__[0] + "/data/index.js") as f:
-            data = f.read()
-        html = html.replace('<script src="index.js"></script>',
-                            '<script>' + data + '</script>')
+        with open(path + "/index.html", 'w') as f:
+            f.write(html)
+        to_copy = [
+            "/styles/default.css",
+            "/styles/light.css",
+            "/draw.js",
+            "/index.js"
+        ]
+        for fname in to_copy:
+            shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname) 
+                
+        
 
     return html
 
@@ -461,8 +463,11 @@ if __name__ == "__main__":
 
     json_object = parse(text)
 
-    if(args.output):
+    if(args.output and not args.final):
         with open(args.output, "w") as f:
             f.write(generate_html(json_object, args.final))
+    elif(args.output and args.final):
+        os.makedirs(args.output + "/styles", exist_ok=True)
+        generate_html(json_object, args.final, path=args.output)
     else:
         print(json_object)

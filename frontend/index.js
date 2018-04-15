@@ -1,6 +1,8 @@
 let visual = null
 let hotText = {}
 let labels = {}
+let darkurl = ""
+let lighturl = ""
 
 function init() {
     visual = new Visual()
@@ -18,6 +20,8 @@ function init() {
 	    el.addEventListener('mouseleave', overTextRevert(renderer))
 	})
     document.getElementById("themeswitch").onclick = themeSwitch(renderer)
+
+    setStyleURLs()
     
     renderer.render()
 }
@@ -411,8 +415,6 @@ function onKeyDown( r ) {
 
 function themeSwitch(renderer) {
     return () => {
-	let darkurl = "default.css"
-	let lighturl = "light.css"
 	let style = document.getElementById("stylesheet")
 	let check = document.getElementById("themeswitch")
 
@@ -426,5 +428,14 @@ function themeSwitch(renderer) {
 	}
 	renderer.render()
     }
+}
+
+function setStyleURLs() {
+    let style = document.getElementById("stylesheet")
+
+    darkurl = style.href
+    lighturl = darkurl.replace("default.css", "light.css")
+    console.log(darkurl)
+    console.log(lighturl)
 }
 
