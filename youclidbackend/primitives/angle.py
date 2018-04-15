@@ -37,6 +37,6 @@ class Angle(YouClidObject):
 
     def __dict__(self):
         return {
-                'points': [self.p1, self.p2, self.p3],
+                'points': [self.p1.name, self.p2.name, self.p3.name],
                 'degree': self.degree
                }

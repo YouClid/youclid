@@ -87,6 +87,7 @@ def parse(text):
     curr_step = set()
 
     # Iterate over all matches in the text
+    a = []
     for match in extract(text):
         # Get the dictionary of name and unnamed arguments
         args_dict = _parse_match(match[1])
@@ -97,6 +98,8 @@ def parse(text):
             # TODO Print a nice error message
             raise e
         # Call the appropriate parser function
+        if(args_dict['type'] == 'angle'):
+            a.append(args_dict)
         obj = f(args_dict)
         # Now we need to handle the return value
 
@@ -122,7 +125,8 @@ def parse(text):
 
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
-
+    for angle in a:
+        parse_angle(angle)
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
@@ -372,75 +376,78 @@ def parse_angle(keyword_args):
     """Creates an angle object from the given parameters"""
 
     ret = []
-    name = keyword_args["name"]
+    name = keyword_args['name']
     angle = obj_dict.get(name)
 
-    if angle is not None:
-        return [angle, angle.p1, angle.p2, angle.p3]
-    else:
+    #if angle is not None:
+    #    return [angle, angle.p1, angle.p2, angle.p3]
+    if angle is None:
         angle = primitives.Angle(name)
         obj_dict[name] = angle
-        ret.append(angle)
-        if len(name) == 3:
-            p1 = obj_dict.get(name[0])
-            if p1 is None:
-                p1 = primitives.Point(name[0])
-                obj_dict[name[0]] = p1
-            p2 = obj_dict.get(name[1])
-            if p2 is None:
-                p2 = primitives.Point(name[1])
-                obj_dict[name[1]] = p2
-            p3 = obj_dict.get(name[2])
-            if p3 is None:
-                p3 = primitives.Point(name[2])
-                obj_dict[name[2]] = p3
+    if len(name) == 3:
+        p1 = obj_dict.get(name[0])
+        if p1 is None:
+            p1 = primitives.Point(name[0])
+            obj_dict[name[0]] = p1
+        p2 = obj_dict.get(name[1])
+        if p2 is None:
+            p2 = primitives.Point(name[1])
+            obj_dict[name[1]] = p2
+        p3 = obj_dict.get(name[2])
+        if p3 is None:
+            p3 = primitives.Point(name[2])
+            obj_dict[name[2]] = p3
 
-        else:
-            p1 = keyword_args.get("p1")
-            if p1 is not None:
-                p1 = obj_dict.get(p1)
-                if p1 is None:
-                    p1 = primitives.Point(keyword_args.get("p1"))
-                    obj_dict[keyword_args.get("p1")] = p1
-            p2 = keyword_args.get("p2")
-            if p2 is not None:
-                p2 = obj_dict.get(p2)
-                if p2 is None:
-                    p2 = primitives.Point(keyword_args.get("p2"))
-                    obj_dict[keyword_args.get("p2")] = p2
-            p3 = keyword_args.get("p3")
-            if p3 is not None:
-                p3 = obj_dict.get(p3)
-                if p3 is None:
-                    p3 = primitives.Point(keyword_args.get("p3"))
-                    obj_dict[keyword_args.get("p3")] = p3
+    else:
+        p1 = keyword_args.get("p1")
+        if p1 is not None:
+            p1 = obj_dict.get(p1)
+            if p1 is None:
+                p1 = primitives.Point(keyword_args.get("p1"))
+                obj_dict[keyword_args.get("p1")] = p1
+        p2 = keyword_args.get("p2")
+        if p2 is not None:
+            p2 = obj_dict.get(p2)
+            if p2 is None:
+                p2 = primitives.Point(keyword_args.get("p2"))
+                obj_dict[keyword_args.get("p2")] = p2
+        p3 = keyword_args.get("p3")
+        if p3 is not None:
+            p3 = obj_dict.get(p3)
+            if p3 is None:
+                p3 = primitives.Point(keyword_args.get("p3"))
+                obj_dict[keyword_args.get("p3")] = p3
 
     big = keyword_args.get("big")
     if big is not None:
         angle.big = big
 
-    degree = get_degree(p1, p2, p3)
+    if (p1.x is not None and p2.x is not None and p3.x is not None):
 
-    if angle.big:
-        if degree < 0:
-            p4 = p1
-            p1 = p3
-            p3 = p4
-            degree = 180 + degree
+        degree = get_degree(p1, p2, p3)
+
+        if angle.big:
+            if degree < 0:
+                p4 = p1
+                p1 = p3
+                p3 = p4
+                degree = 180 + degree
+            else:
+                degree = 180 - degree
         else:
-            degree = 180 - degree
-    else:
-        if degree > 0:
-            p4 = p1
-            p1 = p3
-            p3 = p4
-        else:
-            degree = -1 * degree
+            if degree > 0:
+                p4 = p1
+                p1 = p3
+                p3 = p4
+            else:
+                degree = -1 * degree
+
+        angle.degree = degree
 
     angle.p1 = p1
     angle.p2 = p2
     angle.p3 = p3
-    angle.degree = degree
+    ret.append(angle)
     ret.append(p1)
     ret.append(p2)
     ret.append(p3)
