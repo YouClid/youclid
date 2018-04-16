@@ -1,3 +1,4 @@
+import sympy
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -43,6 +44,23 @@ class Circle(YouClidObject):
                 'p1': self.p1.name if self.p1 is not None else None,
                 'p2': self.p2.name if self.p2 is not None else None,
                 'p3': self.p3.name if self.p3 is not None else None,
-                'radius': self.radius if self.radius is not None else None,
+                'radius': self.radius_length() if self.radius is not None else None,
                 'center': self.center.name if self.center is not None else None
                }
+
+    def radius_length(self):
+        return self.radius[0].dist(self.radius[1]) if type(self.radius) is tuple else self.radius
+
+    def symify(self):
+        # TODO: Implicityly assuming that the center is given coordaintes.
+        if self.radius is None:
+            if self.p1.x is not None:
+                self.radius = (self.center, self.p1)
+            if self.p2.x is not None:
+                self.radius = (self.center, self.p2)
+            if self.p3.x is not None:
+                self.radius = (self.center, self.p3)
+        try:
+            return sympy.Circle(self.center.symify(), self.radius_length())
+        except:
+            return None
