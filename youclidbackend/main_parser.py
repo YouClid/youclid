@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.6
 import sympy
 import argparse
+import math
 import json
 import re
 import shlex
@@ -266,7 +267,7 @@ def parse_circle(keyword_args):
 
     center = keyword_args.get("center")
     if center is not None:
-        center = obj_dict.get("center")
+        center = obj_dict.get(center)
         if center is None:
             center = primitives.Point(keyword_args.get("center"))
             obj_dict[keyword_args.get("center")] = center
@@ -279,20 +280,34 @@ def parse_circle(keyword_args):
             circle.radius = float(radius)
         except ValueError:
             circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
+
+    if center is not None and circle.center.x is not None and radius is None:
+        point = None
+        if circle.p1.x is not None:
+            point = circle.p1
+        elif circle.p2.x is not None:
+            point = circle.p2
+        elif circle.p3.x is not None:
+            point = circle.p3
+        if point is not None:
+            circle.radius = math.sqrt((point.x - circle.center.x)**2 +
+                                      (point.y - circle.center.y)**2)
+
     return ret
 
 
 def parse_point(keyword_args):
     name = keyword_args["name"]
-    ret = []
     if obj_dict.get(name) is None:
         point = primitives.Point(name)
-        ret = [point]
         obj_dict[name] = point
     else:
         point = obj_dict.get(name)
-        ret.append(point)
-    return ret
+    if keyword_args.get("x"):
+        point.x = float(keyword_args.get("x"))
+        point.y = float(keyword_args.get("y"))
+
+    return [point]
 
 
 def parse_center(keyword_args):
@@ -494,7 +509,7 @@ def generate_html(json_object, final, path=None):
             "/index.js"
         ]
         for fname in to_copy:
-            shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname) 
+            shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname)
 
     return html
 
