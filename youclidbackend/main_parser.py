@@ -27,11 +27,11 @@ obj_dict = {}
 def error(name=None, msg=None, lineno=None):
     """Wrapper function for error handling"""
     if name is not None:
-        print("Error: %s" % name, file=sys.stderr)
+        print("\033[31;1;4mError:\033[0m %s" % name, file=sys.stderr)
     if msg is not None:
         print(msg, file=sys.stderr)
     if lineno is not None:
-        print("Line number: %d" % int(lineno), file=sys.stderr)
+        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno), file=sys.stderr)
     sys.exit(1)
 
 
@@ -413,8 +413,12 @@ def constrain(obj_dict):
             break
 
     for p in points:
-        p.x = float(p.x)
-        p.y = float(p.y)
+        try:
+            p.x = float(p.x)
+            p.y = float(p.y)
+        except TypeError:
+            error(name="Underconstrained System",
+                  msg="The following object is underconstrained: %s" % p.name)
 
 
 def format_text(text):
