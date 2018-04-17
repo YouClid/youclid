@@ -358,7 +358,7 @@ def parse_angle(keyword_args):
     if angle is None:
         angle = primitives.Angle(name)
         obj_dict[name] = angle
-    if len(name) == 3:
+    if name and not (keyword_args.get("p1") or keyword_args.get("p2") or keyword_args.get("p3")):
         p1 = obj_dict.get(name[0])
         if p1 is None:
             p1 = primitives.Point(name[0])
