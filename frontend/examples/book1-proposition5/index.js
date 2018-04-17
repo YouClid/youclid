@@ -44,6 +44,12 @@ function sortItems(toDraw, objs) {
 	    sorted.push(id)
 	}
     })
+
+    toDraw.forEach((id) => {
+	if(objs[id].type == "Angle" && !isHot(objs[id])) {
+	    sorted.push(id)
+	}
+    })
     
     toDraw.forEach((id) => {
 	if(objs[id].type == "Line" && !isHot(objs[id])) {
@@ -148,6 +154,14 @@ class Renderer {
 			break;
 		    case "Polygon":
 			hot = visual.drawPoly(geo.id, geo.data.points.map((p) => objects[p].data), objects[id].color, textHot)
+			highlightText(geo, hot, textHot)
+			break;
+		    case "Angle":
+			hot = visual.drawAngle(geo.id,
+					       geo.data.points.map((p) => objects[p].data),
+					       geo.color,
+					       geo.data.degree,
+					       textHot)
 			highlightText(geo, hot, textHot)
 			break;
 		    default:

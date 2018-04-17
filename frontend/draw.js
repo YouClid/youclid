@@ -458,7 +458,7 @@ class Visual {
 
 	let points = [p1]
 	let theta = 0
-	let inc = 0.05
+	let inc = 0.02
 	while(theta <= angle) {
 	    let x = (start.x * Math.cos(theta)) + (start.y * -1 * Math.sin(theta))
 	    let y = (start.x * Math.sin(theta)) + (start.y * Math.cos(theta))
