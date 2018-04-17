@@ -20,8 +20,7 @@ function init() {
 	(el) => {
 	    el.addEventListener('mouseenter', overTextChange(renderer))
 	    el.addEventListener('mouseleave', overTextRevert(renderer))
-	    el.addEventListener('touchstart', overTextChange(renderer))
-	    el.addEventListener('touchend', overTextRevert(renderer))
+	    el.addEventListener('touchstart', textToggle(renderer))
 	})
     document.getElementById("themeswitch").onclick = themeSwitch(renderer)
 
@@ -400,6 +399,15 @@ function overTextRevert(renderer)  {
     return () => {
 	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
 	hotText[obj_id_str] = false
+	renderer.render()
+    }
+}
+
+function textToggle(renderer)  {
+    return (event) => {
+	event.preventDefault()
+	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+	hotText[obj_id_str] = hotText[obj_id_str] ? false : true
 	renderer.render()
     }
 }
