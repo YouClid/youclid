@@ -28,15 +28,16 @@ class Visual {
 	this.gl = null
 	this.glData = null
 
-	this.drawn = {}
 	let width = document.body.clientWidth
-	width = width < 600 ? width : width*0.65
+	this.mobile = width < 600
+	
+	width = this.mobile ? width : width*0.65
 	this.size = Math.min(width, window.innerHeight)
 
 	this.canvasRect = null
 
 	this.mouseDown = false
-	this.lineWidth = 0.01
+	this.lineWidth = this.mobile ? 0.025 : 0.01
 
 	this.light = false
 	this.hotColor = [1.0, 1.0, 0, 1.0]
@@ -48,7 +49,7 @@ class Visual {
 	
 	
 	let canvas = document.createElement('canvas')
-	document.body.insertBefore(canvas, document.body.firstChild)
+	document.body.insertBefore(canvas, document.body.childNodes[2])
 
 	// Adjust canvas size based on screen
 	{
@@ -78,6 +79,15 @@ class Visual {
 
 	// Register listeners
 	document.addEventListener( 'mousemove', onMouseMove.bind(this));
+	let touchevent = (e) => {
+	    e.preventDefault();
+	    event.clientX = event.touches[0].clientX;
+	    event.clientY = event.touches[0].clientY;
+	    let move = onMouseMove.bind(this)
+	    move(e);
+	}
+	document.addEventListener( 'touchstart', touchevent);
+	document.addEventListener( 'touchmove', touchevent);
 	document.addEventListener( 'mousedown', () => this.mouseDown = true)
 	document.addEventListener( 'mouseup', () => this.mouseDown = false)
 	window.addEventListener( 'resize', onResize.bind(this));
@@ -167,7 +177,8 @@ class Visual {
 	    return false
 	}
 	let d = this.dist(a_to_m, scale(n, coeff))
-	return d < 0.02
+	let thresh = this.mobile ? 0.1 : 0.03
+	return d < thresh
     }
 
     polyUnderMouse(points) {
@@ -204,7 +215,8 @@ class Visual {
 	    color = this.hotColor
 	}
 	let strokeColor = [0,0,0,1]
-        return this.drawCircle(ident, point, 0.013, strokeColor, true, color, 0.001)
+	let radius = this.mobile ? 0.025 : 0.013
+        return this.drawCircle(ident, point, radius, strokeColor, true, color, 0.001)
     }
 
 
@@ -464,6 +476,7 @@ class Visual {
 *************************************/
 
 function onMouseMove( event ) {
+    this.canvasRect = this.gl.canvas.getBoundingClientRect()
     let canvasRect = this.canvasRect
     let size = this.size
     
@@ -471,12 +484,15 @@ function onMouseMove( event ) {
     let ygood = event.clientY > canvasRect.top  && event.clientY < canvasRect.bottom
 
     if(xgood && ygood) {
+	event.preventDefault();
 	this.mouseInCanvas = true
 	this.mouse.x = ((event.clientX - canvasRect.left) / size ) * 2 - 1;
 	this.mouse.y = - ( (event.clientY - canvasRect.top) / size ) * 2 + 1;
     }
     else {
 	this.mouseInCanvas = false
+	this.mouse.x = -10000000
+	this.mouse.y = -10000000
     }
 }
 

@@ -26,6 +26,7 @@ body {
 
 
 .label {
+    position: absolute;
     color: white;
     font-size: 1.3em;
     -webkit-font-smoothing: antialiased;
@@ -73,18 +74,24 @@ body {
 
 @media only screen and (max-width: 600px) {
     canvas {
-        position: absolute;
+        position: fixed;
 	left: 0;
     }
     #text {
 	position: absolute;
 	top: 100vw;
-	width: 90%;
 	overflow-y: initial;
-	margin: auto;
+	line-height: 1.6em;
+	margin-left: 6%;
+	margin-right: 6%;
     }
 
     .step_btn {
+	position: fixed;
 	font-size : 14px;
     }
+    .label {
+	position: fixed;
+    }
+    
 }
