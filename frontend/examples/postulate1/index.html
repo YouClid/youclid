@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset=utf-8>
+	  <meta charset=utf-8>
+	  <meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>YouClid</title>
 		<link id="stylesheet" rel="stylesheet" href="styles/default.css">
 		<style>
@@ -11,6 +12,12 @@
 		  top: 10px;
 		  font-size: 0.8em;
 		  
+		  }
+
+		  @media only screen and (max-width: 600px) {
+		  #lightswitch {
+		  position: fixed;
+		  }
 		  }
 
 		  /* The switch - the box around the slider */
@@ -161,8 +168,8 @@
                 1.0
             ],
             "data": {
-                "x": 0.249553073225227,
-                "y": 0.0211359180361616
+                "x": -0.717770039417227,
+                "y": 0.176610277797205
             }
         },
         "ACE": {
@@ -192,8 +199,8 @@
                 1.0
             ],
             "data": {
-                "x": 0.417798584159884,
-                "y": 0.471002797395024
+                "x": 0.454306842306861,
+                "y": 0.456353716087203
             }
         },
         "AC": {
@@ -245,43 +252,43 @@
     "animations": [
         [
             "AB",
-            "B",
-            "A"
-        ],
-        [
-            "D",
-            "AB",
-            "B",
-            "C",
-            "BCD",
-            "A"
-        ],
-        [
-            "D",
-            "ACE",
-            "AB",
-            "B",
-            "E",
-            "C",
-            "BCD",
-            "A"
-        ],
-        [
-            "D",
-            "ACE",
-            "AB",
-            "B",
-            "AC",
-            "E",
-            "C",
-            "BCD",
-            "BC",
-            "A"
-        ],
-        [
-            "C",
-            "B",
             "A",
+            "B"
+        ],
+        [
+            "BCD",
+            "A",
+            "B",
+            "D",
+            "AB",
+            "C"
+        ],
+        [
+            "BCD",
+            "A",
+            "E",
+            "B",
+            "D",
+            "ACE",
+            "AB",
+            "C"
+        ],
+        [
+            "BCD",
+            "A",
+            "E",
+            "B",
+            "D",
+            "ACE",
+            "AC",
+            "AB",
+            "C",
+            "BC"
+        ],
+        [
+            "A",
+            "C",
+            "B",
             "ABC"
         ]
     ]

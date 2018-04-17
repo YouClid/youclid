@@ -13,11 +13,14 @@ function init() {
     colorText(geometry)
 
     document.addEventListener( 'keydown', onKeyDown(renderer))
+    document.addEventListener('touchstart', () => renderer.render())
+    document.addEventListener('touchmove', () => renderer.render())
     let textElements = Array.from(document.getElementsByClassName('GeoElement'))
     textElements.forEach(
 	(el) => {
 	    el.addEventListener('mouseenter', overTextChange(renderer))
 	    el.addEventListener('mouseleave', overTextRevert(renderer))
+	    el.addEventListener('touchstart', textToggle(renderer))
 	})
     document.getElementById("themeswitch").onclick = themeSwitch(renderer)
 
@@ -188,8 +191,14 @@ class Renderer {
 	document.body.append(prev)
 	document.body.append(next)
 
-
+	let width = -1 // Only respond to real 'resize' events
 	let moveButtons = () => {
+	    if(window.innerWidth == width) {
+		return
+	    }
+	    else {
+		width = window.innerWidth
+	    }
 	    let rect = visual.canvasRect
 	    let pad = 40
 
@@ -308,7 +317,6 @@ function makeLabels(data) {
 	    let elem = document.createElement('div')
 	    elem.id = obj.id
 	    elem.innerHTML = obj.id
-	    elem.style.position = 'absolute'
 	    elem.className = 'label'
 	    elem.style.display = "none"
 	    let x = 0
@@ -319,20 +327,6 @@ function makeLabels(data) {
 		x = obj.data.x
 		y = obj.data.y
 		break;
-	    // case "Line":
-	    // 	point = geometry[obj.data.p2].data
-	    // 	x = point.x
-	    // 	y = point.y
-	    // 	break;
-	    // case "Circle":
-	    // 	x = obj.data.center.x
-	    // 	y = obj.data.center.y
-	    // 	break;
-	    // case "Polygon":
-	    // 	point = geometry[obj.data.points[0]].data
-	    // 	x = point.x
-	    // 	y = point.y
-	    // 	break;
 	    default:
 		continue
 	    }
@@ -341,6 +335,22 @@ function makeLabels(data) {
 	    elem.style.left = (Math.floor(x * visual.size) + visual.canvasRect.left) + 'px'
 	    elem.style.top = (Math.floor(y * visual.size) + visual.canvasRect.top) + 'px'
 	    labels[obj.id] = elem
+	    let width = window.innerWidth // Workaround for safari resize bug
+	    window.addEventListener('resize', function() {
+		if(window.innerWidth === width) {
+		    return
+		}
+		else {
+		    width = window.innerWidth
+		}
+		let x = obj.data.x
+		let y = obj.data.y
+		let l = elem
+		x = ( x + 1) / 2 + 0.012
+		y = (-y + 1) / 2 - 0.03
+		l.style.left = (Math.floor(x * visual.size) + visual.canvasRect.left) + 'px'
+		l.style.top = (Math.floor(y * visual.size) + visual.canvasRect.top) + 'px'
+	    })
 	    document.body.appendChild(elem)
 	}
     }
@@ -378,6 +388,7 @@ function colorText(geometry) {
 /* Two functions for hovering over span elements, and leaving from hover */
 function overTextChange(renderer)  {
     return (event) => {
+	event.preventDefault()
 	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
 	hotText[obj_id_str] = true
 	renderer.render()
@@ -392,24 +403,13 @@ function overTextRevert(renderer)  {
     }
 }
 
-
-function onTouchStart( event ) {
-    event.preventDefault();
-    event.clientX = event.touches[0].clientX;
-    event.clientY = event.touches[0].clientY;
-    onMouseDown( event );
-}
-
-function onTouchMove( event ) {
-    event.preventDefault();
-    event.clientX = event.touches[0].clientX;
-    event.clientY = event.touches[0].clientY;
-    onMouseMove( event );
-}
-
-function onTouchEnd( event ) {
-    event.preventDefault();
-    onMouseUp( event );
+function textToggle(renderer)  {
+    return (event) => {
+	event.preventDefault()
+	let obj_id_str = event.target.getAttribute("name").replace('text_', '');
+	hotText[obj_id_str] = hotText[obj_id_str] ? false : true
+	renderer.render()
+    }
 }
 
 function onKeyDown( r ) {
