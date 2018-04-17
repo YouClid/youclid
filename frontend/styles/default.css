@@ -69,3 +69,22 @@ body {
 .step_highlighted {
     background-color: #444444;
 }
+
+
+@media only screen and (max-width: 600px) {
+    canvas {
+        position: absolute;
+	left: 0;
+    }
+    #text {
+	position: absolute;
+	top: 100vw;
+	width: 90%;
+	overflow-y: initial;
+	margin: auto;
+    }
+
+    .step_btn {
+	font-size : 14px;
+    }
+}

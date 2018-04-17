@@ -29,8 +29,9 @@ class Visual {
 	this.glData = null
 
 	this.drawn = {}
-
-	this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
+	let width = document.body.clientWidth
+	width = width < 600 ? width : width*0.65
+	this.size = Math.min(width, window.innerHeight)
 
 	this.canvasRect = null
 
@@ -481,7 +482,9 @@ function onMouseMove( event ) {
 
 function onResize( event ) {
     this.canvasRect = this.gl.canvas.getBoundingClientRect()
-    this.size = Math.min(window.innerWidth*0.65, window.innerHeight)
+    let width = document.body.clientWidth
+    width = width < 600 ? width : width*0.65
+    this.size = Math.min(width, window.innerHeight)
     let realToCSSPixels = window.devicePixelRatio
     let drawSize = Math.floor(this.size * realToCSSPixels)
     this.gl.canvas.style.width = this.size + "px";
