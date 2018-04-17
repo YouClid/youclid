@@ -3,7 +3,9 @@ body {
     margin: 0;
     height: 100vh;
     display: flex;
-    background-color: rgb(25, 25, 25);
+    background-color: white;
+    font-family: sans-serif;
+    color: rgb(25, 25, 25);
 }
 
 #text {
@@ -13,26 +15,29 @@ body {
     vertical-align: top;
     padding: 1em;
     overflow-y: auto;
-    font-family: sans-serif;
-    color: rgb(250, 250, 250);
 
     line-height: 1.3em;
 
 }
 
 .shadowed {
-    text-shadow: 0 0 10px white;
+    text-shadow: 1px 1px 1px black;
 }
 
 
 .label {
-    color: white;
+    color: black;
     font-size: 1.3em;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    /* text-shadow: */
+    /* -1px -1px 0 #000, */
+    /* 1px -1px 0 #000, */
+    /* -1px 1px 0 #000, */
+    /* 1px 1px 0 #000;  */
 }
 
 .GeoElement {
-
+    -webkit-text-stroke: 0.5px black; 
+    text-stroke: 0.5px black;
 }
 
 .step_btn {
@@ -63,5 +68,5 @@ body {
 /* } */
 
 .step_highlighted {
-    background-color: #444444;
+    background-color: #bbb;
 }
