@@ -48,7 +48,7 @@ class Visual {
 	
 	
 	let canvas = document.createElement('canvas')
-	document.body.appendChild( canvas )
+	document.body.insertBefore(canvas, document.body.firstChild)
 
 	// Adjust canvas size based on screen
 	{
