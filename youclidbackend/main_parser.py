@@ -405,9 +405,9 @@ def parse_angle(keyword_args):
                 p4 = p1
                 p1 = p3
                 p3 = p4
-                degree = 180 + degree
+                degree = 360 + degree
             else:
-                degree = 180 - degree
+                degree = 360 - degree
         else:
             if degree > 0:
                 p4 = p1
