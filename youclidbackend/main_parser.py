@@ -106,6 +106,10 @@ def tokenize(text):
    """
 
     s = shlex.shlex(text, punctuation_chars=']')
+    # The next line is needed to remove the fact that shlex treats the "#"
+    # character as a comment, which messes everything up if you use that
+    # character!
+    s.commenters = ""
 
     # List of dictionaries to be returned
     tokens = []
