@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.6
 import sympy
 import argparse
+import math
 import json
 import re
 import shlex
@@ -26,11 +27,11 @@ obj_dict = {}
 def error(name=None, msg=None, lineno=None):
     """Wrapper function for error handling"""
     if name is not None:
-        print("Error: %s" % name, file=sys.stderr)
+        print("\033[31;1;4mError:\033[0m %s" % name, file=sys.stderr)
     if msg is not None:
         print(msg, file=sys.stderr)
     if lineno is not None:
-        print("Line number: %d" % int(lineno), file=sys.stderr)
+        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno), file=sys.stderr)
     sys.exit(1)
 
 
@@ -105,6 +106,10 @@ def tokenize(text):
    """
 
     s = shlex.shlex(text, punctuation_chars=']')
+    # The next line is needed to remove the fact that shlex treats the "#"
+    # character as a comment, which messes everything up if you use that
+    # character!
+    s.commenters = ""
 
     # List of dictionaries to be returned
     tokens = []
@@ -266,7 +271,7 @@ def parse_circle(keyword_args):
 
     center = keyword_args.get("center")
     if center is not None:
-        center = obj_dict.get("center")
+        center = obj_dict.get(center)
         if center is None:
             center = primitives.Point(keyword_args.get("center"))
             obj_dict[keyword_args.get("center")] = center
@@ -279,20 +284,34 @@ def parse_circle(keyword_args):
             circle.radius = float(radius)
         except ValueError:
             circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
+
+    if center is not None and circle.center.x is not None and radius is None:
+        point = None
+        if circle.p1.x is not None:
+            point = circle.p1
+        elif circle.p2.x is not None:
+            point = circle.p2
+        elif circle.p3.x is not None:
+            point = circle.p3
+        if point is not None:
+            circle.radius = math.sqrt((point.x - circle.center.x)**2 +
+                                      (point.y - circle.center.y)**2)
+
     return ret
 
 
 def parse_point(keyword_args):
     name = keyword_args["name"]
-    ret = []
     if obj_dict.get(name) is None:
         point = primitives.Point(name)
-        ret = [point]
         obj_dict[name] = point
     else:
         point = obj_dict.get(name)
-        ret.append(point)
-    return ret
+    if keyword_args.get("x"):
+        point.x = float(keyword_args.get("x"))
+        point.y = float(keyword_args.get("y"))
+
+    return [point]
 
 
 def parse_center(keyword_args):
@@ -398,8 +417,12 @@ def constrain(obj_dict):
             break
 
     for p in points:
-        p.x = float(p.x)
-        p.y = float(p.y)
+        try:
+            p.x = float(p.x)
+            p.y = float(p.y)
+        except TypeError:
+            error(name="Underconstrained System",
+                  msg="The following object is underconstrained: %s" % p.name)
 
 
 def format_text(text):
@@ -494,7 +517,7 @@ def generate_html(json_object, final, path=None):
             "/index.js"
         ]
         for fname in to_copy:
-            shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname) 
+            shutil.copyfile(youclidbackend.__path__[0] + "/data" + fname, path+fname)
 
     return html
 

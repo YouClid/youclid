@@ -1,17 +1,7 @@
 <center><b>Book 1 - Proposition 1</b></center>
 <center>To construct an equilateral triangle on a given finite straight line.</center>
 
-Let [line AB] be the given finite straight line.
-It is required to construct an equilateral triangle on the straight [line AB]. [step]
-Describe the [circle BCD name=BCD radius=AB] with [center A circle=BCD] and radius [line AB]. [step]
-Again describe the [circle ACE name=ACE radius=AB] with [center B circle=ACE] and radius [line BA]. [step]
-Join the straight lines [line CA] and [line CB] from the [point C] at which the circles cut one another to the points [point A] and [point B]. [step]
-Now, since the [point A] is the center of the [circle CDB name=BCD], therefore [line AC] equals [line AB].
-Again, since the [point B] is the center of the [circle CAE name=ACE], therefore [line BC] equals [line BA].
-But [line AC] was proved equal to [line AB], therefore each of the straight lines [line AC] and [line BC] equals [line AB].
-And things which equal the same thing also equal one another, therefore [line AC] also equals [line BC].
-Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another.
-Therefore the [polygon ABC] is equilateral, and it has been constructed on the given finite straight [line AB].
+Let [line AB color=fb4934] be the given finite straight line. It is required to construct an equilateral triangle on the straight [line AB]. [step] Describe the [circle BCD radius=AB color=508b0a] with [center A circle=BCD] and [line AB text="radius AB"]. [step] Again describe the [circle ACE radius=AB color=268bd2] with [center B circle=ACE] and [line AB text="radius BA"]. [step] Join the straight lines [line AC color=5f495f] and [line BC color=d33682] from the [point C] at which the circles cut one another to the points [point A] and [point B]. [step] Now, since the [point A] is the center of the [circle BCD], therefore [line AC] equals [line AB]. Again, since the [point B] is the center of the [circle ACE], therefore [line BC] equals [line AB]. But [line AC] was proved equal to [line AB], therefore each of the straight lines [line AC] and [line BC] equals [line AB]. And things which equal the same thing also equal one another, therefore [line AC] also equals [line BC]. Therefore the three straight lines [line AC], [line AB], and [line BC] equal one another. Therefore the [polygon ABC text="triangle ABC"] is equilateral, and it has been constructed on the given finite straight [line AB].
 [clear]
 [polygon ABC hidden]
 
