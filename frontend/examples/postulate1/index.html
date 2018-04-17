@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset=utf-8>
+	  <meta charset=utf-8>
+	  <meta name="viewport" content="width=device-width,initial-scale=1">
 		<title>YouClid</title>
 		<link id="stylesheet" rel="stylesheet" href="styles/default.css">
 		<style>
@@ -11,6 +12,12 @@
 		  top: 10px;
 		  font-size: 0.8em;
 		  
+		  }
+
+		  @media only screen and (max-width: 600px) {
+		  #lightswitch {
+		  position: fixed;
+		  }
 		  }
 
 		  /* The switch - the box around the slider */
@@ -161,8 +168,8 @@
                 1.0
             ],
             "data": {
-                "x": 0.249553073225227,
-                "y": 0.0211359180361616
+                "x": -0.115490937106066,
+                "y": 0.481567557046149
             }
         },
         "ACE": {
@@ -192,8 +199,8 @@
                 1.0
             ],
             "data": {
-                "x": 0.417798584159884,
-                "y": 0.471002797395024
+                "x": 0.267372480108388,
+                "y": -0.499698105794773
             }
         },
         "AC": {
@@ -244,45 +251,45 @@
     },
     "animations": [
         [
+            "A",
             "AB",
-            "B",
-            "A"
+            "B"
         ],
         [
-            "D",
-            "AB",
             "B",
-            "C",
             "BCD",
+            "AB",
+            "D",
+            "C",
             "A"
         ],
         [
-            "D",
             "ACE",
-            "AB",
-            "B",
             "E",
-            "C",
+            "B",
             "BCD",
+            "AB",
+            "D",
+            "C",
             "A"
         ],
         [
-            "D",
             "ACE",
-            "AB",
-            "B",
+            "E",
             "AC",
-            "E",
-            "C",
+            "B",
             "BCD",
             "BC",
+            "AB",
+            "D",
+            "C",
             "A"
         ],
         [
-            "C",
-            "B",
+            "ABC",
             "A",
-            "ABC"
+            "B",
+            "C"
         ]
     ]
 }
