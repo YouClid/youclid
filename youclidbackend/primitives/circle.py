@@ -59,12 +59,14 @@ class Circle(YouClidObject):
         if self.radius is None:
             if self.p1.x is not None:
                 self.radius = (self.center, self.p1)
-            if self.p2.x is not None:
+            elif self.p2.x is not None:
                 self.radius = (self.center, self.p2)
-            if self.p3.x is not None:
+            elif self.p3.x is not None:
                 self.radius = (self.center, self.p3)
+            else:
+                return None
 
+        # TODO: Should this check go first?
         if self.center.x is None:
-            print("No center")
             return None
         return sympy.Circle(self.center.symify(), self.radius_length())

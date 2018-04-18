@@ -218,6 +218,15 @@ def parse_line(keyword_args):
     for p in point_list:
         p.constraints.add(line)
 
+    lieson = keyword_args.get("lieson")
+    if lieson is not None:
+        o = obj_dict.get(lieson)
+        if o is None:
+            line_creation = parse_line({"type": "line", "name": lieson})
+            o = line_creation[0]
+            ret.extend(line_creation)
+        line.constraints.add(o)
+
     ret.extend((line, line.p1, line.p2))
 
     return ret
@@ -401,55 +410,78 @@ def constrain(obj_dict):
 
     while points:
         if i == len(points):
+            # Ensure that something has changed
             if old_len == len(points):
+                # If nothing has changed, error out
                 error(name="Underconstrained system",
                       msg="Unable to place the following points: " +
                           str([x.name for x in points]))
+            # Modular arithmetic
             old_len = len(points)
             i = 0
+        # Get the current point
         p = points[i]
+
+        # If there are no constraints on the point, generate it randomly
         if len(p.constraints) == 0:
             p.x = random.uniform(-1, 1)
             p.y = random.uniform(-1, 1)
             points.remove(p)
             i = 0
             continue
+        # If there is one constraint on the point, we can plcae it anywhere
+        # on the constraint
         elif len(p.constraints) == 1:
-            try:
-                tmp = [x for x in p.constraints][0].symify()
-                if tmp is None:
-                    i += 1
-                    continue
-                tmp = tmp.arbitrary_point()
-            except AttributeError as e:
+            tmp = list(p.constraints)[0].symify()
+            # Ensure that we have placed the actual constraint
+            if tmp is None:
                 i += 1
                 continue
+            # Gererate an equation for an artibrary point, and then
+            # substitute in an arbitrary location
+            tmp = tmp.arbitrary_point()
             t = sympy.Symbol('t', real=True)
+            # 2 * math.pi was for circles, but for lines, there can be anywhere
+            # that is on the line
             r = random.uniform(0, 2*math.pi)
-            intersection = [sympy.Point(tmp.x.subs(t, r),
-                                        tmp.y.subs(t, r))]
-        else:
-            constraints = []
-            should_continue = False
-            for x in p.constraints:
-                tmp = x.symify()
-                if tmp is None:
-                    i += 1
-                    should_continue = True
-                    break
-                else:
-                    constraints.append(tmp)
-            if should_continue:
-                continue
-            intersection = sympy.intersection(*constraints)
-        if intersection == []:
-            i += 1
-            continue
-        else:
-            p.x = float(intersection[0].x)
-            p.y = float(intersection[0].y)
+            # Get the point object for the arbitrary point
+            arbitrary_point = sympy.Point(tmp.x.subs(t, r),
+                                          tmp.y.subs(t, r))
+            # Convert the cordinates to floats and then assign them
+            p.x = float(arbitrary_point.x)
+            p.y = float(arbitrary_point.y)
+            # Start the iteration over
             i = 0
             points.remove(p)
+        # Otherwise, there are multiple constraints
+        else:
+            symified_constraints = []
+            # Get all of the constraints that we have processed and given
+            # locations to
+            for x in p.constraints:
+                tmp = x.symify()
+                if tmp is not None:
+                    symified_constraints.append(tmp)
+            # Ensure that we have at least two constraints
+            # (to define an intersection); if not go to the next point
+            if len(symified_constraints) < 2:
+                i += 1
+                continue
+            # Compute the intersection
+            intersection = sympy.intersection(*symified_constraints)
+
+            # If there was no intersection, continue
+            if intersection == []:
+                i += 1
+                continue
+            # Otherwise, we have a list of possible intersections, pick
+            # one of them randomly to use
+            else:
+                r = random.randint(0, len(intersection) - 1)
+                p.x = float(intersection[r].x)
+                p.y = float(intersection[r].y)
+                i = 0
+                points.remove(p)
 
 
 def format_text(text):

@@ -41,6 +41,5 @@ class Polygon(YouClidObject):
 
     def symify(self):
         if any([True if x.x is None else False for x in self.points]):
-            print("No polygon coordinates")
             return None
         return sympy.Polygon([x.symify() for x in self.points])

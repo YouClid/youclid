@@ -8,12 +8,12 @@ It is required to place a straight [line AL] equal to the given straight [line B
 [clear]
 Join the straight [line AB] from the [point A] to the [point B], and construct the equilateral [polygon ABD text=DAB].
 [step]
-Produce the straight [line AE] and straight [line BF] in a straight line with [line AD text=DA] and [line BD text=DB].
+Produce the straight [line AE lieson=AD] and straight [line BF lieson=BD] in a straight line with [line AD text=DA] and [line BD text=DB].
 [step]
 Describe the [circle CGH] with [center B circle=CGH], and again, descibe the [circle GKL] with [center D circle=GKL].
 [step]
 Since the [point B] is the center of the [circle CGH], therefore, [line BC] equals [line BG].
-Again, since the [point D] is the center of the circle GKL, therefore, [line DL] equals [line DG].
+Again, since the [point D] is the center of the [circle GKL], therefore, [line DL] equals [line DG].
 And in these, [line AD text=DA] equals [line BD text=DB], therefore, the remainder [line AL] equals the remainder [line BG].
 But [line BC] was also proved equal to [line BG], therefore each of the straight lines [line AL] and [line BC] equals [line BG].
 And things which equal the same thing also equal one another, therefore, [line AL] also equals [line BC].

@@ -11,6 +11,7 @@ class Line(YouClidObject):
         self.p2 = None
         self.name = name
         self.color = youclidbackend.colors.next_color()
+        self.constraints = set()
 
     def __str__(self):
         return "Line %s(%s, %s)" % (str(self.name),
@@ -40,6 +41,5 @@ class Line(YouClidObject):
 
     def symify(self):
         if self.p1.x or self.p2.x is None:
-            print("No line coordinates")
             return None
         return sympy.Line(self.p1.symify(), self.p2.symify())

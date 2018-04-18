@@ -44,6 +44,5 @@ class Point(YouClidObject):
 
     def symify(self):
         if self.x is None:
-            print("No point coordinates")
             return None
         return sympy.Point(self.x, self.y)
