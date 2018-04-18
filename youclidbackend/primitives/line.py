@@ -34,8 +34,8 @@ class Line(YouClidObject):
 
     def __dict__(self):
         return {
-                'p1': self.p1.name if self.p1 is not None else None,
-                'p2': self.p2.name if self.p2 is not None else None,
+                'p1': "point_"+self.p1.name if self.p1 is not None else None,
+                'p2': "point_"+self.p2.name if self.p2 is not None else None,
                }
 
     def symify(self):
