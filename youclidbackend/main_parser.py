@@ -562,6 +562,7 @@ def create_output(d, text, animations):
                                           'id': k + "_" + v.name,
                                           'color': v.color,
                                           'data': v.__dict__(),
+                                          'label': v.name
                                          }
 
     return output

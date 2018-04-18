@@ -321,7 +321,7 @@ function makeLabels(data) {
 	    if(labels[obj.id]) continue
 	    let elem = document.createElement('div')
 	    elem.id = obj.id
-	    elem.innerHTML = obj.id
+	    elem.innerHTML = obj.label
 	    elem.style.position = 'absolute'
 	    elem.className = 'label'
 	    elem.style.display = "none"
