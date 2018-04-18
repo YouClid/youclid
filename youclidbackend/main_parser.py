@@ -384,45 +384,72 @@ def parse_step(keyword_args):
 def parse_clear(keyword_args):
     return [_Clear()]
 
+
 def constrain(obj_dict):
     """Takes in a object dictionary and modifies points, giving them
     coordinates"""
 
-    points = set()
+    point_set = set()
     for obj in obj_dict.values():
         if type(obj) == primitives.Point and (obj.x is obj.y is None):
-            points.add(obj)
+            point_set.add(obj)
 
-    while True:
-        updated = False
-        for p in points:
+    i = 0
+    points = [y for y in point_set]
+
+    old_len = None
+
+    while points:
+        if i == len(points):
+            if old_len == len(points):
+                error(name="Underconstrained system",
+                      msg="Unable to place the following points: " +
+                          str([x.name for x in points]))
+            old_len = len(points)
+            i = 0
+        p = points[i]
+        if len(p.constraints) == 0:
+            p.x = random.uniform(-1, 1)
+            p.y = random.uniform(-1, 1)
+            points.remove(p)
+            i = 0
+            continue
+        elif len(p.constraints) == 1:
             try:
-                symified_constraints = [x.symify() for x in p.constraints
-                                        if x.symify() is not None]
-                intersection = sympy.intersection(*symified_constraints)
-                if intersection == []:
-                    tmp = symified_constraints[0].arbitrary_point()
-                    t = sympy.Symbol('t', real=True)
-                    r = random.uniform(0, 2*math.pi)
-                    intersection = [sympy.Point(tmp.x.subs(t, r),
-                                                tmp.y.subs(t, r))]
-                if p.x is not None:
+                tmp = [x for x in p.constraints][0].symify()
+                if tmp is None:
+                    i += 1
                     continue
-                p.x = intersection[0].x
-                p.y = intersection[0].y
-                updated = True
-            except Exception as e:
+                tmp = tmp.arbitrary_point()
+            except AttributeError as e:
+                i += 1
                 continue
-        if not updated:
-            break
-
-    for p in points:
-        try:
-            p.x = float(p.x)
-            p.y = float(p.y)
-        except TypeError:
-            error(name="Underconstrained System",
-                  msg="The following object is underconstrained: %s" % p.name)
+            t = sympy.Symbol('t', real=True)
+            r = random.uniform(0, 2*math.pi)
+            intersection = [sympy.Point(tmp.x.subs(t, r),
+                                        tmp.y.subs(t, r))]
+        else:
+            constraints = []
+            should_continue = False
+            for x in p.constraints:
+                tmp = x.symify()
+                if tmp is None:
+                    i += 1
+                    should_continue = True
+                    break
+                else:
+                    constraints.append(tmp)
+            if should_continue:
+                continue
+            intersection = sympy.intersection(*constraints)
+        if intersection == []:
+            i += 1
+            continue
+        else:
+            p.x = float(intersection[0].x)
+            p.y = float(intersection[0].y)
+            i = 0
+            points.remove(p)
 
 
 def format_text(text):
@@ -549,4 +576,4 @@ if __name__ == "__main__":
         os.makedirs(args.output + "/styles", exist_ok=True)
         generate_html(json_object, args.final, path=args.output)
     else:
-        print(json_object)
+        print(json.dumps(json_object, indent=4))

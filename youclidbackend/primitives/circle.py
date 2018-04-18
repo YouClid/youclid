@@ -1,4 +1,7 @@
 import sympy
+import time
+import random
+import math
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -60,7 +63,8 @@ class Circle(YouClidObject):
                 self.radius = (self.center, self.p2)
             if self.p3.x is not None:
                 self.radius = (self.center, self.p3)
-        try:
-            return sympy.Circle(self.center.symify(), self.radius_length())
-        except:
+
+        if self.center.x is None:
+            print("No center")
             return None
+        return sympy.Circle(self.center.symify(), self.radius_length())

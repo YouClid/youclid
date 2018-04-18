@@ -40,7 +40,7 @@ class Polygon(YouClidObject):
         return ret_dict
 
     def symify(self):
-        try:
-            return sympy.Polygon([x.symify() for x in self.points])
-        except:
+        if any([True if x.x is None else False for x in self.points]):
+            print("No polygon coordinates")
             return None
+        return sympy.Polygon([x.symify() for x in self.points])

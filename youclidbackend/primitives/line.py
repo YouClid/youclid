@@ -39,7 +39,7 @@ class Line(YouClidObject):
                }
 
     def symify(self):
-        try:
-            return sympy.Line(self.p1.symify(), self.p2.symify())
-        except:
+        if self.p1.x or self.p2.x is None:
+            print("No line coordinates")
             return None
+        return sympy.Line(self.p1.symify(), self.p2.symify())

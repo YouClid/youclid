@@ -43,7 +43,7 @@ class Point(YouClidObject):
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def symify(self):
-        try:
-            return sympy.Point(self.x, self.y)
-        except:
+        if self.x is None:
+            print("No point coordinates")
             return None
+        return sympy.Point(self.x, self.y)
