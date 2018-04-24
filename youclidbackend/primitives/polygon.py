@@ -36,7 +36,7 @@ class Polygon(YouClidObject):
 
     def __dict__(self):
         ret_dict = {}
-        ret_dict["points"] = [x.name for x in self.points]
+        ret_dict["points"] = ["point_"+x.name for x in self.points]
         return ret_dict
 
     def symify(self):

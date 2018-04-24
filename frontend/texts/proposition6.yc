@@ -1,0 +1,18 @@
+<center><b>Book 1 - Proposition 6</b></center>
+<center>If in a triangle two angles equal one another, then the sides opposite the equal angles also equal one another.</center>
+
+Let [polygon ABC text="ABC"] be a triangle having the [angle angleabc text="angle ABC" p1=A p2=B p3=C] equal to the [angle angleacb text="angle ACB" p1=A p2=C p3=B].[step][clear]
+I say that the [line AB text="side AB"] also equals the [line AC text="side AC"].
+If [line AB] does not equal [line AC], then one of them is greater.
+Let [line AB] be greater.
+[step]
+Cut off [line BD] from [line AB] the greater equal to [line AC] the less, and join [line CD].
+Since [line BD] equals [line AC], and [line BC] is common, therefore the two sides [line BD] and [line BC] equal the two sides [line AC] and [line BC] respectively, and the [angle angledbc text="angle DBC" p1=D p2=B p3=C] equals the [angle angleacb text="angle ACB" p1=A p2=C p3=B].
+Therefore the [line CD text="base CD"] equals the [line AB text="base AB"], and the [polygon BCD text="triangle DBC"] equals the [polygon ABC text="triangle ACB"], the less equals the greater, which is absurd.[step][clear]
+Therefore if in a triangle two angles equal one another, then the sides opposite the equal angles also equal one another.
+[polygon ABC hidden]
+
+[loc A x=0.25 y=0.5]
+[loc B x=0 y=0]
+[loc C x=0.5 y=0]
+[loc D x=0.125 y=0.25]

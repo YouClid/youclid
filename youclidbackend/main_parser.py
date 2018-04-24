@@ -21,7 +21,7 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
-obj_dict = {}
+obj_dict = {'polygon':{}, 'line':{}, 'point':{}, 'circle':{}, 'angle':{}}
 
 
 def error(name=None, msg=None, lineno=None):
@@ -45,7 +45,8 @@ def parse(text):
                                          "polygon": parse_polygon,
                                          "loc": parse_location,
                                          "step": parse_step,
-                                         "clear": parse_clear
+                                         "clear": parse_clear,
+                                         "angle": parse_angle
                                         })
 
     # A list of the objects that need to be drawn at each step
@@ -54,6 +55,8 @@ def parse(text):
     curr_step = set()
 
     # Iterate over all matches in the text
+
+    a = []
     for structure in tokens:
         match = structure['data']
         lineno = structure['lineno']
@@ -67,6 +70,8 @@ def parse(text):
                   msg="%s is not a valid object name" % args_dict["type"],
                   lineno=lineno)
         # Call the appropriate parser function
+        if(args_dict['type'] == 'angle'):
+            a.append(args_dict)
         obj = f(args_dict)
         # Now we need to handle the return value
 
@@ -88,13 +93,14 @@ def parse(text):
             if args_dict.get('color'):
                 obj[0].color = colors.hex_to_rgba(args_dict['color'])
             for e in obj:
-                curr_step.add(e.name)
+                curr_step.add(e)
 
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
+    for angle in a:
+        parse_angle(angle)
 
     constrain(obj_dict)
-
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
@@ -200,25 +206,25 @@ def parse_line(keyword_args):
     ret = []
 
     for p in name:
-        if obj_dict.get(p) is None:
+        if obj_dict['line'].get(p) is None:
             point = primitives.Point(p)
             point_list.append(point)
-            obj_dict[p] = point
+            obj_dict['point'][p] = point
         else:
-            point_list.append(obj_dict[p])
+            point_list.append(obj_dict['point'][p])
 
-    if obj_dict.get(name) is None:
+    if obj_dict['line'].get(name) is None:
         line = primitives.Line(name)
         line.p1 = point_list[0]
         line.p2 = point_list[1]
-        obj_dict[name] = line
+        obj_dict['line'][name] = line
     else:
-        line = obj_dict.get(name)
+        line = obj_dict['line'].get(name)
 
     for p in point_list:
         p.constraints.add(line)
 
-    ret.extend((line, line.p1, line.p2))
+    ret.extend(("line_"+line.name, "point_"+line.p1.name, "point_"+line.p2.name))
 
     return ret
 
@@ -230,40 +236,40 @@ def parse_circle(keyword_args):
     ret = []
     name = keyword_args["name"]
 
-    circle = obj_dict.get(name)
+    circle = obj_dict['circle'].get(name)
 
     if circle is not None:
         # TODO: We need to figure out what to do here. IE: do we just update
         # parameters? What if the update affects other objects? Do we not
         # update anything?
-        return [circle, circle.p1, circle.p2, circle.p3]
+        return ["circle_"+circle.name, "point_"+circle.p1.name, "point_"+circle.p2.name, "point_"+circle.p3.name]
     else:
         circle = primitives.Circle(name)
-        obj_dict[name] = circle
-        ret.append(circle)
+        obj_dict['circle'][name] = circle
+        ret.append("circle_"+circle.name)
         # TODO: JANKY WORKAROUND! MUST BE CHANGED
         if len(name) == 3:
-            p1 = obj_dict.get(name[0])
+            p1 = obj_dict['point'].get(name[0])
             # TODO: Call parse point?
             if p1 is None:
                 p1 = primitives.Point(name[0])
-                obj_dict[name[0]] = p1
+                obj_dict['point'][name[0]] = p1
             p1.constraints.add(circle)
-            ret.append(p1)
-            p2 = obj_dict.get(name[1])
+            ret.append("point_"+p1.name)
+            p2 = obj_dict['point'].get(name[1])
             # TODO: Call parse point?
             if p2 is None:
                 p2 = primitives.Point(name[1])
-                obj_dict[name[1]] = p2
+                obj_dict['point'][name[1]] = p2
             p2.constraints.add(circle)
-            ret.append(p2)
-            p3 = obj_dict.get(name[2])
+            ret.append("point_"+p2.name)
+            p3 = obj_dict['point'].get(name[2])
             # TODO: Call parse point?
             if p3 is None:
                 p3 = primitives.Point(name[2])
-                obj_dict[name[2]] = p3
+                obj_dict['point'][name[2]] = p3
             p3.constraints.add(circle)
-            ret.append(p3)
+            ret.append("point_"+p3.name)
 
             circle.p1 = p1
             circle.p2 = p2
@@ -271,11 +277,12 @@ def parse_circle(keyword_args):
 
     center = keyword_args.get("center")
     if center is not None:
-        center = obj_dict.get(center)
+        center = obj_dict['point'].get("center")
+
         if center is None:
             center = primitives.Point(keyword_args.get("center"))
-            obj_dict[keyword_args.get("center")] = center
-            ret.append(center)
+            obj_dict['point'][keyword_args.get("center")] = center
+            ret.append("point_"+center.name)
         circle.center = center
 
     radius = keyword_args.get("radius")
@@ -283,8 +290,7 @@ def parse_circle(keyword_args):
         try:
             circle.radius = float(radius)
         except ValueError:
-            circle.radius = (obj_dict.get(radius[0]), obj_dict.get(radius[1]))
-
+            circle.radius = (obj_dict['point'].get(radius[0]), obj_dict['point'].get(radius[1]))
     if center is not None and circle.center.x is not None and radius is None:
         point = None
         if circle.p1.x is not None:
@@ -302,16 +308,16 @@ def parse_circle(keyword_args):
 
 def parse_point(keyword_args):
     name = keyword_args["name"]
-    if obj_dict.get(name) is None:
+    ret = []
+    if obj_dict['point'].get(name) is None:
         point = primitives.Point(name)
-        obj_dict[name] = point
+        ret = ["point_"+point.name]
+        obj_dict['point'][name] = point
     else:
-        point = obj_dict.get(name)
-    if keyword_args.get("x"):
-        point.x = float(keyword_args.get("x"))
-        point.y = float(keyword_args.get("y"))
+        point = obj_dict['point'].get(name)
+        ret.append("point_"+point.name)
+    return ret
 
-    return [point]
 
 
 def parse_center(keyword_args):
@@ -320,15 +326,14 @@ def parse_center(keyword_args):
     circle = keyword_args["circle"]
     ret = []
 
-    if obj_dict.get(name):
-        point = obj_dict.get(name)
+    if obj_dict['point'].get(name):
+        point = obj_dict['point'].get(name)
     else:
         point = primitives.Point(name=name)
-        obj_dict[name] = point
-
-    circle = obj_dict[circle]
+        obj_dict['point'][name] = point
+    circle = obj_dict['circle'][circle]
     circle.center = point
-    ret.append(point)
+    ret.append("point_"+point.name)
     return ret
 
 
@@ -338,20 +343,20 @@ def parse_polygon(keyword_args):
     ret = []
 
     for p in name:
-        if obj_dict.get(p) is None:
+        if obj_dict['point'].get(p) is None:
             point_list.append(primitives.Point(p))
         else:
-            point_list.append(obj_dict[p])
+            point_list.append(obj_dict['point'][p])
 
-    if obj_dict.get(name) is None:
+    if obj_dict['polygon'].get(name) is None:
         polygon = primitives.Polygon(name)
         polygon.points = point_list
-        ret = [polygon] + point_list
-        obj_dict[name] = polygon
+        ret = ["polygon_"+polygon.name] + ["point_"+i.name for i in point_list]
+        obj_dict['polygon'][name] = polygon
     else:
-        polygon = obj_dict.get(name)
-        ret.append(polygon)
-        ret.extend(point_list)
+        polygon = obj_dict['polygon'].get(name)
+        ret.append("polygon_"+polygon.name)
+        ret.extend(["point_"+i.name for i in point_list])
 
     for p in point_list:
         p.constraints.add(polygon)
@@ -359,22 +364,112 @@ def parse_polygon(keyword_args):
     return ret
 
 
+def parse_angle(keyword_args):
+    """Creates an angle object from the given parameters"""
+
+    ret = []
+    name = keyword_args['name']
+    angle = obj_dict['angle'].get(name)
+
+    #if angle is not None:
+    #    return [angle, angle.p1, angle.p2, angle.p3]
+    if angle is None:
+        angle = primitives.Angle(name)
+        obj_dict['angle'][name] = angle
+    if name and not (keyword_args.get("p1") or keyword_args.get("p2") or keyword_args.get("p3")):
+        p1 = obj_dict['point'].get(name[0])
+        if p1 is None:
+            p1 = primitives.Point(name[0])
+            obj_dict['point'][name[0]] = p1
+        p2 = obj_dict['point'].get(name[1])
+        if p2 is None:
+            p2 = primitives.Point(name[1])
+            obj_dict['point'][name[1]] = p2
+        p3 = obj_dict['point'].get(name[2])
+        if p3 is None:
+            p3 = primitives.Point(name[2])
+            obj_dict['point'][name[2]] = p3
+
+    else:
+        p1 = keyword_args.get("p1")
+        if p1 is not None:
+            p1 = obj_dict['point'].get(p1)
+            if p1 is None:
+                p1 = primitives.Point(keyword_args.get("p1"))
+                obj_dict['point'][keyword_args.get("p1")] = p1
+        p2 = keyword_args.get("p2")
+        if p2 is not None:
+            p2 = obj_dict['point'].get(p2)
+            if p2 is None:
+                p2 = primitives.Point(keyword_args.get("p2"))
+                obj_dict['point'][keyword_args.get("p2")] = p2
+        p3 = keyword_args.get("p3")
+        if p3 is not None:
+            p3 = obj_dict['point'].get(p3)
+            if p3 is None:
+                p3 = primitives.Point(keyword_args.get("p3"))
+                obj_dict['point'][keyword_args.get("p3")] = p3
+
+    big = keyword_args.get("big")
+    if big is not None:
+        angle.big = big
+
+    if (p1.x is not None and p2.x is not None and p3.x is not None):
+
+        degree = get_degree(p1, p2, p3)
+
+        if angle.big:
+            if degree < 0:
+                p4 = p1
+                p1 = p3
+                p3 = p4
+                degree = 360 + degree
+            else:
+                degree = 360 - degree
+        else:
+            if degree > 0:
+                p4 = p1
+                p1 = p3
+                p3 = p4
+            else:
+                degree = -1 * degree
+
+        angle.degree = degree
+
+    angle.p1 = p1
+    angle.p2 = p2
+    angle.p3 = p3
+    ret.append("angle_"+angle.name)
+    ret.append("point_"+p1.name)
+    ret.append("point_"+p2.name)
+    ret.append("point_"+p3.name)
+
+    return ret
+
+
+def get_degree(p1, p2, p3):
+    """Returns degree of the angle defined by three points"""
+    in_radians = math.atan2(p3.y - p2.y, p3.x - p2.x) - \
+                 math.atan2(p1.y - p2.y, p1.x - p2.x)
+    in_degrees = math.degrees(in_radians)
+    return in_degrees
+
 def parse_location(keyword_args):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
     x = float(keyword_args["x"])
     y = float(keyword_args["y"])
-    if obj_dict.get(name):
-        o = obj_dict[name]
+    if obj_dict['point'].get(name):
+        o = obj_dict['point'][name]
     else:
         o = primitives.Point(keyword_args["name"])
-        obj_dict[name] = o
+        obj_dict['point'][name] = o
     ret = o
 
     o.x = x
     o.y = y
 
-    return [ret]
+    return ["point_"+ret.name]
 
 
 def parse_step(keyword_args):
@@ -389,9 +484,15 @@ def constrain(obj_dict):
     coordinates"""
 
     points = set()
-    for obj in obj_dict.values():
-        if type(obj) == primitives.Point and (obj.x is obj.y is None):
-            points.add(obj)
+    for val in obj_dict.values():
+        for obj in val.values():
+            if type(obj) == primitives.Point and (obj.x is obj.y is None):
+                points.add(obj)
+
+
+    #for obj in obj_dict.values():
+    #    if type(obj) == primitives.Point and (obj.x is obj.y is None):
+    #        points.add(obj)
 
     while True:
         updated = False
@@ -456,7 +557,7 @@ def get_text(match, step):
     # We need to replace "center" with "point" in order to get the correct
     # highlighting on the frontend
     t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
-    span_name = "text_%s_%s" % (t, args_dict['name'])
+    span_name = "text_%s_%s_%s" % (t, t, args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
         return ""
@@ -477,13 +578,15 @@ def create_output(d, text, animations):
     output['geometry'] = {}
     output['animations'] = animations
 
-    for k, v in d.items():
-        output['geometry'][v.name] = {
-                                      'type': v.__class__.__name__,
-                                      'id': v.name,
-                                      'color': v.color,
-                                      'data': v.__dict__(),
-                                     }
+    for k, val in d.items():
+        for key, v in val.items():
+            output['geometry'][k + "_" + v.name] = {
+                                          'type': v.__class__.__name__,
+                                          'id': k + "_" + v.name,
+                                          'color': v.color,
+                                          'data': v.__dict__(),
+                                          'label': v.name
+                                         }
 
     return output
 
