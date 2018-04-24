@@ -91,7 +91,8 @@ def parse(text):
         # for display purposes
         else:
             if args_dict.get('color'):
-                obj[0].color = colors.hex_to_rgba(args_dict['color'])
+                n2 = obj[0].split("_")[1]
+                obj_dict[args_dict['type']][n2].color = colors.hex_to_rgba(args_dict['color'])
             for e in obj:
                 curr_step.add(e)
 
