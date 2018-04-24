@@ -26,6 +26,7 @@ body {
 
 
 .label {
+    position: absolute;
     color: black;
     font-size: 1.3em;
     /* text-shadow: */
@@ -69,4 +70,29 @@ body {
 
 .step_highlighted {
     background-color: #f0f0ff;
+}
+
+
+@media only screen and (max-width: 600px) {
+    canvas {
+        position: fixed;
+	left: 0;
+    }
+    #text {
+	position: absolute;
+	top: 100vw;
+	overflow-y: initial;
+	line-height: 1.6em;
+	margin-left: 6%;
+	margin-right: 6%;
+    }
+
+    .step_btn {
+	position: fixed;
+	font-size : 14px;
+    }
+    .label {
+	position: fixed;
+    }
+    
 }

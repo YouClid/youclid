@@ -66,7 +66,7 @@ Now, you can open the HTML file in your browser, and you should see a line!
 
 If you wish to specify colors for a particular object, you can do so directly in the markup, as follows:
 ```
-[line AB color=#ffffffff]
+[line AB color=ffffffff]
 ```
 Where the hex values are of the form RGBA (Red, Green, Blue, Alpha).
 If you do not specify an Alpha, it will be assumed to be `ff`.
