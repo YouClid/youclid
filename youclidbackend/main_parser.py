@@ -453,7 +453,13 @@ def get_degree(p1, p2, p3):
     in_radians = math.atan2(p3.y - p2.y, p3.x - p2.x) - \
                  math.atan2(p1.y - p2.y, p1.x - p2.x)
     in_degrees = math.degrees(in_radians)
-    return in_degrees
+    if abs(in_degrees) < (360 - abs(in_degrees)):
+        return in_degrees
+    elif in_degrees > 0:
+        return -(360 - abs(in_degrees))
+    else:
+        return (360 - abs(in_degrees))
+
 
 def parse_location(keyword_args):
     """Parses the location for a particular point object"""
