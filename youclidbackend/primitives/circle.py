@@ -44,11 +44,11 @@ class Circle(YouClidObject):
 
     def __dict__(self):
         return {
-                'p1': self.p1.name if self.p1 is not None else None,
-                'p2': self.p2.name if self.p2 is not None else None,
-                'p3': self.p3.name if self.p3 is not None else None,
+                'p1': "point_"+self.p1.name if self.p1 is not None else None,
+                'p2': "point_"+self.p2.name if self.p2 is not None else None,
+                'p3': "point_"+self.p3.name if self.p3 is not None else None,
                 'radius': self.radius_length() if self.radius is not None else None,
-                'center': self.center.name if self.center is not None else None
+                'center': "point_"+self.center.name if self.center is not None else None
                }
 
     def radius_length(self):

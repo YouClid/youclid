@@ -451,6 +451,82 @@ class Visual {
 	return hot
     }
 
+    getArcPoints(p1, p0, angle) {
+	let d = dist(p0, p1)
+	let radius = d / 4.0
+	let start = scale(sub(p0, p1), radius/d)
+
+	let points = [p1]
+	let theta = 0
+	let inc = 0.05
+	while(theta <= angle) {
+	    let x = (start.x * Math.cos(theta)) + (start.y * -1 * Math.sin(theta))
+	    let y = (start.x * Math.sin(theta)) + (start.y * Math.cos(theta))
+	    points.push(add(v2(x, y), p1))
+	    theta += inc
+	}
+	return points
+    }
+
+    drawAngle(ident, points, color, angle, fill=false) {
+	angle = angle * (Math.PI/180.0)
+
+	let hot = false
+	let active = false
+
+	hot = hot || this.lineUnderMouse(points[0], points[1])
+	hot = hot || this.lineUnderMouse(points[1], points[2])
+	
+	if(hot) {
+	    // color = this.hotColor
+	    fill = true
+	}
+
+	let vertices = []
+	let num_indices = 0
+
+	if(fill) {
+	    let arc = this.getArcPoints(points[1], points[2], angle)
+	    let gl = this.gl
+	    vertices = arc.map((p) => {
+		return [p.x, p.y, 0.0, 1.0].concat(color)
+	    })
+	    vertices = this.flatten(vertices)
+	    num_indices = arc.length
+	    
+	    if(this.glData.length < vertices.length) {
+		this.glData = new Float32Array(vertices.length)
+	    }
+	    
+	    let data = this.glData
+
+	    let FSIZE = data.BYTES_PER_ELEMENT
+
+
+	    data.set(vertices)
+
+	    gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW)
+	    let a_Position = gl.getAttribLocation(gl.program, "a_Position")
+	    gl.enableVertexAttribArray(a_Position)
+	    gl.vertexAttribPointer(a_Position, 4, gl.FLOAT, false, 8*FSIZE, 0)
+
+	    let a_Color = gl.getAttribLocation(gl.program, "a_Color")
+	    gl.enableVertexAttribArray(a_Color)
+	    gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, 8*FSIZE, 4*FSIZE)
+
+
+	    gl.drawArrays(gl.TRIANGLE_FAN, 0, num_indices)
+	}
+
+	for(let i = 0; i<points.length-1; i++) {
+	    let p1 = points[i]
+	    let p2 = points[i+1]
+	    this.drawLine(ident, p1, p2, color, false)
+	}
+	
+	return hot
+    }
+
 
 
 }

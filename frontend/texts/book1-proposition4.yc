@@ -1,0 +1,25 @@
+<center><b>Book 1 - Proposition 4</b></center>
+<center>If two triangles have two sides equal to two sides respectively, and have the angles contained by the equal straight lines equal, then they also have the base equal to the base, the triangle equals the triangle, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides.</center>
+
+Let [polygon CAB] and [polygon FED] be two triangles having the two sides [line AB] and [line AC] equal to the two sides [line DE] and [line DF] respectively, namely [line AB] equal to [line DE] and [line AC] equal to [line DF], and the [angle BAC] equal to the [angle EDF].
+
+I say that the base [line BC] also equals the base [line EF], the [polygon CAB] equals the [polygon FED], and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides, that is, the [angle name=angleABC p1=A p2=B p3=C] equals the [angle name=angleDEF p1=D p2=E p3=F], and the [angle ACB] equals the [angle name=angleDFE p1=D p2=F p3=E].
+
+If the [polygon CAB] is superposed on the [polygon FED], and if the [point A] is placed on the [point D] and the straight [line AB] on [line DE], then the [point B] also coincides with [point E], because [line AB] equals [line DE].
+
+Again, [line AB] coinciding with [line DE], the straight [line AC] also coincides with [line DF], because the [angle BAC] equals the [angle EDF]. Hence, the [point C] also coincides with the [point F], because [line AC] again equals [line DF].
+
+But [point B] also coincides with [point E], hence the base [line BC] coincides with the base [line EF] and equals it.
+
+Thus the whole [polygon CAB] coincides with the whole [polygon FED] and equals it.
+
+And the remaining angles also coincide with the remaining angles and equal them, the [angle name=angleABC p1=A p2=B p3=C] equals the [angle name=angleDEF p1=D p2=E p3=F], and the [angle ACB] equals the [angle name=angleDFE p1=D p2=F p3=E].
+
+Therefore if two triangles have two sides equal to two sides respectively, and have the angles contained by the equal straight lines equal, then they also have the base equal to the base, the triangle equals the triangle, and the remaining angles equal the remaining angles respectively, namely those opposite the equal sides.
+
+[loc A x=-0.3 y=.5]
+[loc B x=-0.6 y=0]
+[loc C x=-0.2 y=0]
+[loc D x=0.5 y=.5]
+[loc E x=0.2 y=0]
+[loc F x=0.6 y=0]
