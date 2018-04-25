@@ -207,7 +207,7 @@ def parse_line(keyword_args):
     ret = []
 
     for p in name:
-        if obj_dict['line'].get(p) is None:
+        if obj_dict['point'].get(p) is None:
             point = primitives.Point(p)
             point_list.append(point)
             obj_dict['point'][p] = point

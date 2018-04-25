@@ -34,7 +34,7 @@ DEFAULT = [AQUA, GREEN, BLUE, RED, ORANGE, PURPLE,
 class _object_color():
     def __init__(self):
         self._counter = 0
-        self._colors = SOLARIZED
+        self._colors = DEFAULT
 
     def next_color(self):
         r = self._colors[self._counter]

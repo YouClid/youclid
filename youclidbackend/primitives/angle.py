@@ -1,6 +1,7 @@
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
+
 class Angle(YouClidObject):
     """Represents an Angle"""
     def __init__(self, name):

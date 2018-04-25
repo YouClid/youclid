@@ -1,7 +1,4 @@
 import sympy
-import time
-import random
-import math
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
