@@ -72,7 +72,13 @@ def parse(text):
         # Call the appropriate parser function
         if(args_dict['type'] == 'angle'):
             a.append(args_dict)
-        obj = f(args_dict)
+        try:
+            obj = f(args_dict)
+        except NotImplementedError as e:
+            error(name="Reference to object before creation",
+                  msg=("You attempted to use to lieson keyword with an object "
+                       "that does not yet exist"),
+                  lineno=lineno)
         # Now we need to handle the return value
 
         # Don't do anything special for locations
@@ -319,6 +325,12 @@ def parse_point(keyword_args):
         ret.append("point_"+point.name)
     if keyword_args.get("random"):
         point.random = True
+    if keyword_args.get("lieson") is not None:
+        line = obj_dict["line"].get(keyword_args.get("lieson"))
+        if line is None:
+            raise NotImplementedError
+        else:
+            point.constraints.add(line)
     return ret
 
 
