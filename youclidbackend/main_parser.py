@@ -6,7 +6,6 @@ import json
 import re
 import shlex
 import random
-import math
 import sys
 
 import youclidbackend
@@ -21,7 +20,7 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
-obj_dict = {'polygon':{}, 'line':{}, 'point':{}, 'circle':{}, 'angle':{}}
+obj_dict = {'polygon': {}, 'line': {}, 'point': {}, 'circle': {}, 'angle': {}}
 
 
 def error(name=None, msg=None, lineno=None):
@@ -31,7 +30,8 @@ def error(name=None, msg=None, lineno=None):
     if msg is not None:
         print(msg, file=sys.stderr)
     if lineno is not None:
-        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno), file=sys.stderr)
+        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno),
+              file=sys.stderr)
     sys.exit(1)
 
 
@@ -505,10 +505,15 @@ def constrain(obj_dict):
         if i == len(points):
             # Ensure that something has changed
             if old_len == len(points):
-                # If nothing has changed, error out
-                error(name="Underconstrained system",
-                      msg="Unable to place the following points: " +
-                          str([x.name for x in points]))
+                p = final_check(points)
+                if p is None:
+                    # If nothing has changed, error out
+                    error(name="Underconstrained system",
+                          msg="Unable to place the following points: " +
+                              str([x.name for x in points]))
+                else:
+                    points.remove(p)
+                    continue
             # Modular arithmetic
             old_len = len(points)
             i = 0
@@ -525,26 +530,15 @@ def constrain(obj_dict):
         # If there is one constraint on the point, we can plcae it anywhere
         # on the constraint
         elif len(p.constraints) == 1:
-            tmp = list(p.constraints)[0].symify()
-            # Ensure that we have placed the actual constraint
-            if tmp is None:
-                i += 1
-                continue
-            # Gererate an equation for an artibrary point, and then
-            # substitute in an arbitrary location
-            tmp = tmp.arbitrary_point()
-            t = sympy.Symbol('t', real=True)
-            # 2 * math.pi was for circles, but for lines, there can be anywhere
-            # that is on the line
             if type(list(p.constraints)[0]) != primitives.Circle:
                 error(name="Not Implemented", msg="Only circle generation is implemented")
-            r = random.uniform(0, 2*math.pi)
-            # Get the point object for the arbitrary point
-            arbitrary_point = sympy.Point(tmp.x.subs(t, r),
-                                          tmp.y.subs(t, r))
-            # Convert the cordinates to floats and then assign them
-            p.x = float(arbitrary_point.x)
-            p.y = float(arbitrary_point.y)
+            circle = list(p.constraints)[0]
+            if circle is None:
+                i += 1
+                continue
+
+            p.x, p.y = circle.arbitrary_point()
+
             # Start the iteration over
             i = 0
             points.remove(p)
@@ -577,6 +571,25 @@ def constrain(obj_dict):
                 p.y = float(intersection[r].y)
                 i = 0
                 points.remove(p)
+
+
+def final_check(points):
+    """Performs a final check to make sure there are no constraints that
+    we can do anything with"""
+    for p in points:
+        constraints = p.constraints
+        if all([type(c) == primitives.Line for c in constraints]):
+            p.x = random.uniform(-1, 1)
+            p.y = random.uniform(-1, 1)
+            return p
+        elif [type(c) for c in constraints].count(primitives.Circle) == 1:
+            for c in constraints:
+                if type(c) == primitives.Circle:
+                    circle = c
+                    break
+            p.x, p.y = circle.arbitrary_point()
+            return p
+    return None
 
 
 def format_text(text):
