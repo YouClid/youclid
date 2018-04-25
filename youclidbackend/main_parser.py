@@ -466,8 +466,11 @@ def get_degree(p1, p2, p3):
 def parse_location(keyword_args):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
-    x = float(keyword_args["x"])
-    y = float(keyword_args["y"])
+    if keyword_args.get("random"):
+        x, y = random.uniform(-1, 1), random.uniform(-1, 1)
+    else:
+        x = float(keyword_args["x"])
+        y = float(keyword_args["y"])
     if obj_dict['point'].get(name):
         o = obj_dict['point'][name]
     else:
