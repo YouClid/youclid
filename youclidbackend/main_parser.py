@@ -492,8 +492,8 @@ def constrain(obj_dict):
     coordinates"""
 
     point_set = set()
-    for obj in obj_dict.values():
-        if type(obj) == primitives.Point and (obj.x is obj.y is None):
+    for obj in obj_dict['point'].values():
+        if obj.x is None and obj.y is None:
             point_set.add(obj)
 
     i = 0
@@ -536,6 +536,8 @@ def constrain(obj_dict):
             t = sympy.Symbol('t', real=True)
             # 2 * math.pi was for circles, but for lines, there can be anywhere
             # that is on the line
+            if type(list(p.constraints)[0]) != primitives.Circle:
+                error(name="Not Implemented", msg="Only circle generation is implemented")
             r = random.uniform(0, 2*math.pi)
             # Get the point object for the arbitrary point
             arbitrary_point = sympy.Point(tmp.x.subs(t, r),
