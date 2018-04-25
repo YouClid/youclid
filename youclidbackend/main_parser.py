@@ -317,6 +317,8 @@ def parse_point(keyword_args):
     else:
         point = obj_dict['point'].get(name)
         ret.append("point_"+point.name)
+    if keyword_args.get("random"):
+        point.random = True
     return ret
 
 
@@ -494,7 +496,11 @@ def constrain(obj_dict):
     point_set = set()
     for obj in obj_dict['point'].values():
         if obj.x is None and obj.y is None:
-            point_set.add(obj)
+                if obj.random is True:
+                    obj.x = random.uniform(-1, 1)
+                    obj.y = random.uniform(-1, 1)
+                else:
+                    point_set.add(obj)
 
     i = 0
     points = [y for y in point_set]

@@ -10,6 +10,7 @@ class Point(YouClidObject):
         super().__init__()
         self.x = None
         self.y = None
+        self.random = False
         self.name = name
         self.color = youclidbackend.colors.next_color()
         self.constraints = set()
