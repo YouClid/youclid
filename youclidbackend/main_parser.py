@@ -119,7 +119,7 @@ def tokenize(text):
    'data': The actual matched content
    """
 
-    s = shlex.shlex(text, punctuation_chars=']')
+    s = shlex.shlex(text, punctuation_chars=']=')
     # The next line is needed to remove the fact that shlex treats the "#"
     # character as a comment, which messes everything up if you use that
     # character!
@@ -138,6 +138,9 @@ def tokenize(text):
     # The previous character (so that we can make sure that we don't parse
     # things that are escaped)
     previous = ''
+    # For parsing keyword arguments
+    kwarg = ""
+
     for x in s:
         # If we've found an unescaped starting bracket, it's the start
         # of our syntax
@@ -148,6 +151,17 @@ def tokenize(text):
             linenumbers.append(s.lineno)
             # Append a new dictionary
             inner_tokens.append({'lineno': s.lineno, 'data': []})
+        # If we've got a keyword argument, store the previous thing (the name
+        # of the argument), and the equal sign
+        elif x == "=" and previous != '\\':
+            kwarg = previous + x
+        # Otherwise, if the previous thing we saw was an equal sign and we've
+        # started parsing keyword arguments, store the quoted data
+        elif previous == "=" and kwarg:
+            kwarg += x
+            inner_tokens[-1]['data'].append(kwarg)
+            # Reset the keyword argument counter
+            kwarg = ""
         # If we're parsing our syntax (ie if depth is > 0) and we've found
         # an unescaped closing bracket, it's the end of our syntax
         elif depth and x == ']' and previous != '\\':
@@ -386,6 +400,7 @@ def parse_triangle(keyword_args):
     """Small function to make dealing with triangles easier"""
     if keyword_args.get("text") is None:
         keyword_args['text'] = "triangle " + keyword_args["name"]
+    keyword_args['type'] = "polygon"
     return parse_polygon(keyword_args)
 
 
@@ -654,6 +669,8 @@ def get_text(match, step):
     # We need to replace "center" with "point" in order to get the correct
     # highlighting on the frontend
     t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
+    # TODO: Hack, this should be changed
+    t = 'polygon' if t == 'triangle' else t
     span_name = "text_%s_%s_%s" % (t, t, args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
