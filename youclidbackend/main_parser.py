@@ -43,6 +43,7 @@ def parse(text):
                                          "point": parse_point,
                                          "center": parse_center,
                                          "polygon": parse_polygon,
+                                         "triangle": parse_triangle,
                                          "loc": parse_location,
                                          "step": parse_step,
                                          "clear": parse_clear,
@@ -347,7 +348,9 @@ def parse_polygon(keyword_args):
 
     for p in name:
         if obj_dict['point'].get(p) is None:
-            point_list.append(primitives.Point(p))
+            point = primitives.Point(p)
+            point_list.append(point)
+            obj_dict['point'][p] = point
         else:
             point_list.append(obj_dict['point'][p])
 
@@ -365,6 +368,13 @@ def parse_polygon(keyword_args):
         p.constraints.add(polygon)
 
     return ret
+
+
+def parse_triangle(keyword_args):
+    """Small function to make dealing with triangles easier"""
+    if keyword_args.get("text") is None:
+        keyword_args['text'] = "triangle " + keyword_args["name"]
+    return parse_polygon(keyword_args)
 
 
 def parse_angle(keyword_args):
