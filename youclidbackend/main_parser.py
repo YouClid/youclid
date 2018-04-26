@@ -550,7 +550,14 @@ def _parse_lieson(parameters, point, lineno=None):
     if lieson_obj is None:
         lieson_type = parameters.split()[0]
         lieson_name = " ".join(parameters.split()[1:])
-        tmp = obj_dict[lieson_type]
+        try:
+            tmp = obj_dict[lieson_type]
+        except KeyError:
+            error(name="Undefined object %s" % lieson_type,
+                  msg="You referenced an object that does not exist. Make "
+                      "sure that you defined lieson after the initial creation"
+                      " of the object",
+                  lineno=lineno)
         if tmp is not None:
             lieson_obj = tmp.get(lieson_name)
     if lieson_obj is None:
@@ -665,7 +672,7 @@ def final_check(points):
             else:
                 error(title="Only one point can be specified on for lieson",
                       msg="For point %s, you have specified more than one "
-                          "object that it lies on")
+                          "object that it lies on" % p.name)
             return p
         elif [type(c) for c in constraints].count(primitives.Circle) == 1:
             for c in constraints:
