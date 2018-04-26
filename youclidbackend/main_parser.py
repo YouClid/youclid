@@ -675,17 +675,16 @@ def final_check(points):
     we can do anything with"""
     for p in points:
         constraints = p.constraints
+        if len(p.lies_on) == 1:
+            p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
+            return p
+        elif len(p.lies_on) > 1:
+            error(title="Only one point can be specified on for lieson",
+                  msg="For point %s, you have specified more than one "
+                      "object that it lies on" % p.name)
         if all([type(c) == primitives.Line for c in constraints]):
-            if len(p.lies_on) == 0:
-                p.x = random.uniform(-1, 1)
-                p.y = random.uniform(-1, 1)
-            elif len(p.lies_on) == 1:
-                tmp = [x for x in p.lies_on]
-                p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
-            else:
-                error(title="Only one point can be specified on for lieson",
-                      msg="For point %s, you have specified more than one "
-                          "object that it lies on" % p.name)
+            p.x = random.uniform(-1, 1)
+            p.y = random.uniform(-1, 1)
             return p
         elif [type(c) for c in constraints].count(primitives.Circle) == 1:
             for c in constraints:
