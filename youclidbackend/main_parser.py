@@ -679,9 +679,23 @@ def final_check(points):
             p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
             return p
         elif len(p.lies_on) > 1:
-            error(name="Only one point can be specified on for lieson",
-                  msg="For point %s, you have specified more than one "
-                      "object that it lies on" % p.name)
+            symified_constraints = []
+            # Get all of the constraints that we have processed and given
+            # locations to
+            for x in p.lies_on:
+                tmp = x.symify()
+                if tmp is not None:
+                    symified_constraints.append(tmp)
+            # Ensure that we have at least two constraints
+            # (to define an intersection); if not go to the next point
+            if len(symified_constraints) >= 2:
+                # Compute the intersection
+                intersection = sympy.intersection(*symified_constraints)
+                if intersection:
+                    p.x = float(intersection[0].x)
+                    p.y = float(intersection[0].y)
+                    return p
+
         if all([type(c) == primitives.Line for c in constraints]):
             p.x = random.uniform(-1, 1)
             p.y = random.uniform(-1, 1)
