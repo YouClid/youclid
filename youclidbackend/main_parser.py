@@ -597,6 +597,7 @@ def constrain(obj_dict):
                               str([x.name for x in points]))
                 else:
                     points.remove(p)
+                    i = 0
                     continue
             # Modular arithmetic
             old_len = len(points)
