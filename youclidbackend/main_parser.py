@@ -627,14 +627,14 @@ def constrain(obj_dict):
         # If there is one constraint on the point, we can plcae it anywhere
         # on the constraint
         elif len(p.constraints) == 1:
-            if type(list(p.constraints)[0]) != primitives.Circle:
-                error(name="Not Implemented", msg="Only circle generation is implemented")
-            circle = list(p.constraints)[0]
-            if circle is None:
+            obj = list(p.constraints)[0]
+            # Check the symify constraint because of the fact that arbitrary
+            # point calls it
+            if obj is None or obj.symify() is None:
                 i += 1
                 continue
 
-            p.x, p.y = circle.arbitrary_point()
+            p.x, p.y = obj.arbitrary_point()
 
             # Start the iteration over
             i = 0
@@ -691,8 +691,9 @@ def final_check(points):
                 if type(c) == primitives.Circle:
                     circle = c
                     break
-            p.x, p.y = circle.arbitrary_point()
-            return p
+            if circle.symify() is not None:
+                p.x, p.y = circle.arbitrary_point()
+                return p
     return None
 
 
