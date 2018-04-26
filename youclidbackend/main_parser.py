@@ -105,10 +105,10 @@ def parse(text):
 
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
-    for angle, lineno in a:
-        parse_angle(angle, lineno=lineno)
 
     constrain(obj_dict)
+    for angle, lineno in a:
+        parse_angle(angle, lineno=lineno)
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
