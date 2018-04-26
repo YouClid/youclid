@@ -38,3 +38,7 @@ class _Clear():
     """
     def __eq__(self, other):
         return type(other) == _Clear
+
+
+def lerp(a, b, t):
+    return (b * t) + ((1 - t) * a)

@@ -3,6 +3,7 @@ import math
 import random
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
+from youclidbackend.utils import lerp
 
 
 class Line(YouClidObject):
@@ -50,16 +51,11 @@ class Line(YouClidObject):
                              (self.p2.y - self.p1.y)**2)
 
     def arbitrary_point(self):
-        s = self.symify()
-        if s is None:
-            return s
-        tmp = s.arbitrary_point()
-        t = sympy.Symbol('t', real=True)
-        r = random.uniform(0, 1) * self.length()
-        arbitrary_point = sympy.Point(tmp.x.subs(t, r),
-                                      tmp.y.subs(t, r))
+        t = random.uniform(0.2, 0.8)  # Add a pad so its not too close to endpoints
+        nx = lerp(self.p1.x, self.p2.x, t)
+        ny = lerp(self.p1.y, self.p2.y, t)
 
-        return (float(arbitrary_point.x), float(arbitrary_point.y))
+        return (nx, ny)
 
     def symify(self):
         if self.p1.x is None or self.p2.x is None:
