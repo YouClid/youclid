@@ -679,7 +679,7 @@ def final_check(points):
             p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
             return p
         elif len(p.lies_on) > 1:
-            error(title="Only one point can be specified on for lieson",
+            error(name="Only one point can be specified on for lieson",
                   msg="For point %s, you have specified more than one "
                       "object that it lies on" % p.name)
         if all([type(c) == primitives.Line for c in constraints]):
