@@ -695,6 +695,8 @@ def final_check(points):
                     p.x = float(intersection[0].x)
                     p.y = float(intersection[0].y)
                     return p
+            else:
+                return None
 
         if all([type(c) == primitives.Line for c in constraints]):
             p.x = random.uniform(-1, 1)
