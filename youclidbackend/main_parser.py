@@ -557,6 +557,7 @@ def _parse_lieson(parameters, point, lineno=None):
         raise NotImplementedError
     else:
         point.constraints.add(lieson_obj)
+        point.lies_on.add(lieson_obj)
 
 
 def constrain(obj_dict):
@@ -655,8 +656,16 @@ def final_check(points):
     for p in points:
         constraints = p.constraints
         if all([type(c) == primitives.Line for c in constraints]):
-            p.x = random.uniform(-1, 1)
-            p.y = random.uniform(-1, 1)
+            if len(p.lies_on) == 0:
+                p.x = random.uniform(-1, 1)
+                p.y = random.uniform(-1, 1)
+            elif len(p.lies_on) == 1:
+                tmp = [x for x in p.lies_on]
+                p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
+            else:
+                error(title="Only one point can be specified on for lieson",
+                      msg="For point %s, you have specified more than one "
+                          "object that it lies on")
             return p
         elif [type(c) for c in constraints].count(primitives.Circle) == 1:
             for c in constraints:

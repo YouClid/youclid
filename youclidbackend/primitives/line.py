@@ -56,11 +56,16 @@ class Line(YouClidObject):
         tmp = s.arbitrary_point()
         t = sympy.Symbol('t', real=True)
         r = random.uniform(0, 1) * self.length()
-        arbitrary_point = sympy.Point(tmp.x.subs(t, r), tmp.y.subs(t, r))
+        arbitrary_point = sympy.Point(tmp.x.subs(t, r),
+                                      tmp.y.subs(t, r))
 
-        return (arbitrary_point.x, arbitrary_point.y)
+        return (float(arbitrary_point.x), float(arbitrary_point.y))
 
     def symify(self):
-        if self.p1.x or self.p2.x is None:
+        if self.p1.x is None or self.p2.x is None:
             return None
-        return sympy.Segment(self.p1.symify(), self.p2.symify())
+        sym_p1 = self.p1.symify()
+        sym_p2 = self.p2.symify()
+        if sym_p1 is None or sym_p2 is None:
+            return None
+        return sympy.Segment(sym_p1, sym_p2)
