@@ -72,9 +72,9 @@ def parse(text):
                   lineno=lineno)
         # Call the appropriate parser function
         if(args_dict['type'] == 'angle'):
-            a.append(args_dict)
+            a.append([args_dict, lineno])
         try:
-            obj = f(args_dict)
+            obj = f(args_dict, lineno)
         except NotImplementedError as e:
             error(name="Reference to object before creation",
                   msg=("You attempted to use to lieson keyword with an object "
@@ -105,8 +105,8 @@ def parse(text):
 
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
-    for angle in a:
-        parse_angle(angle)
+    for angle, lineno in a:
+        parse_angle(angle, lineno=lineno)
 
     constrain(obj_dict)
     # Create the output from the dictionary of objects
@@ -225,7 +225,7 @@ def _parse_match(partials):
     return args_dict
 
 
-def parse_line(keyword_args):
+def parse_line(keyword_args, lineno=None):
     name = keyword_args["name"]
     point_list = []
     ret = []
@@ -254,7 +254,7 @@ def parse_line(keyword_args):
     return ret
 
 
-def parse_circle(keyword_args):
+def parse_circle(keyword_args, lineno=None):
     """Creates a circle object from the given parameters"""
 
     # Objects that we have created in this parse function, for display purposes
@@ -331,7 +331,7 @@ def parse_circle(keyword_args):
     return ret
 
 
-def parse_point(keyword_args):
+def parse_point(keyword_args, lineno=None):
     name = keyword_args["name"]
     ret = []
     if obj_dict['point'].get(name) is None:
@@ -344,21 +344,12 @@ def parse_point(keyword_args):
     if keyword_args.get("random"):
         point.random = True
     if keyword_args.get("lieson") is not None:
-        lieson_type = keyword_args["lieson"].split()[0]
-        lieson_name = " ".join(keyword_args["lieson"].split()[1:])
-        line = None
-        tmp = obj_dict[lieson_type]
-        if tmp is not None:
-            line = tmp.get(lieson_name)
-        if line is None:
-            raise NotImplementedError
-        else:
-            point.constraints.add(line)
+        _parse_lieson(keyword_args["lieson"], point)
+
     return ret
 
 
-
-def parse_center(keyword_args):
+def parse_center(keyword_args, lineno=None):
     # ASSUME CIRCLE ALREADY EXISTS
     name = keyword_args["name"]
     circle = keyword_args["circle"]
@@ -375,7 +366,7 @@ def parse_center(keyword_args):
     return ret
 
 
-def parse_polygon(keyword_args):
+def parse_polygon(keyword_args, lineno=None):
     name = keyword_args['name']
     point_list = []
     ret = []
@@ -404,15 +395,15 @@ def parse_polygon(keyword_args):
     return ret
 
 
-def parse_triangle(keyword_args):
+def parse_triangle(keyword_args, lineno=None):
     """Small function to make dealing with triangles easier"""
     if keyword_args.get("text") is None:
         keyword_args['text'] = "triangle " + keyword_args["name"]
     keyword_args['type'] = "polygon"
-    return parse_polygon(keyword_args)
+    return parse_polygon(keyword_args, lineno=lineno)
 
 
-def parse_angle(keyword_args):
+def parse_angle(keyword_args, lineno=None):
     """Creates an angle object from the given parameters"""
 
     ret = []
@@ -508,7 +499,7 @@ def get_degree(p1, p2, p3):
         return (360 - abs(in_degrees))
 
 
-def parse_location(keyword_args):
+def parse_location(keyword_args, lineno=None):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
     if keyword_args.get("random"):
@@ -529,12 +520,43 @@ def parse_location(keyword_args):
     return ["point_"+ret.name]
 
 
-def parse_step(keyword_args):
+def parse_step(keyword_args, lineno=None):
     return [_Step()]
 
 
-def parse_clear(keyword_args):
+def parse_clear(keyword_args, lineno=None):
     return [_Clear()]
+
+
+def _parse_lieson(parameters, point, lineno=None):
+    lieson_obj = None
+    valid = []
+    for v in obj_dict:
+        lieson_obj = obj_dict[v].get(parameters)
+        if lieson_obj is not None:
+            valid.append(lieson_obj)
+
+    if len(valid) > 1:
+        error(name="Ambiguous object",
+              msg="Multiple objects are have name %s: %s" %
+                   (parameters, str([" ".join([x.__class__.__name__, x.name])
+                                     for x in valid])),
+              lineno=lineno)
+    elif len(valid) == 1:
+        lieson_obj = valid[0]
+    else:
+        lieson_obj = None
+
+    if lieson_obj is None:
+        lieson_type = parameters.split()[0]
+        lieson_name = " ".join(parameters.split()[1:])
+        tmp = obj_dict[lieson_type]
+        if tmp is not None:
+            lieson_obj = tmp.get(lieson_name)
+    if lieson_obj is None:
+        raise NotImplementedError
+    else:
+        point.constraints.add(lieson_obj)
 
 
 def constrain(obj_dict):
