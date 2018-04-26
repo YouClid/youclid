@@ -505,8 +505,20 @@ def parse_location(keyword_args, lineno=None):
     if keyword_args.get("random"):
         x, y = random.uniform(-1, 1), random.uniform(-1, 1)
     else:
-        x = float(keyword_args["x"])
-        y = float(keyword_args["y"])
+        try:
+            x = float(keyword_args["x"])
+        except KeyError:
+            error(name="Malformed 'loc' command",
+                  msg="The location command is malformed. Maybe you forgot to "
+                      "specify 'x='?",
+                  lineno=lineno)
+        try:
+            y = float(keyword_args["y"])
+        except KeyError:
+            error(name="Malformed 'loc' command",
+                  msg="The location command is malformed. Maybe you forgot to "
+                      "specify 'y='?",
+                  lineno=lineno)
     if obj_dict['point'].get(name):
         o = obj_dict['point'][name]
     else:
