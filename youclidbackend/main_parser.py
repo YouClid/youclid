@@ -158,7 +158,10 @@ def tokenize(text):
         # Otherwise, if the previous thing we saw was an equal sign and we've
         # started parsing keyword arguments, store the quoted data
         elif previous == "=" and kwarg:
-            kwarg += x
+            if ((x[0] == x[-1]) and (x[0] == '"' or x[0] == "'")):
+                kwarg += x[1:-1]
+            else:
+                kwarg += x
             inner_tokens[-1]['data'].append(kwarg)
             # Reset the keyword argument counter
             kwarg = ""
@@ -341,7 +344,12 @@ def parse_point(keyword_args):
     if keyword_args.get("random"):
         point.random = True
     if keyword_args.get("lieson") is not None:
-        line = obj_dict["line"].get(keyword_args.get("lieson"))
+        lieson_type = keyword_args["lieson"].split()[0]
+        lieson_name = " ".join(keyword_args["lieson"].split()[1:])
+        line = None
+        tmp = obj_dict[lieson_type]
+        if tmp is not None:
+            line = tmp.get(lieson_name)
         if line is None:
             raise NotImplementedError
         else:
