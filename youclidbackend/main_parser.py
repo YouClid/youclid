@@ -22,16 +22,26 @@ polygons = {3: "Triangle",
 
 obj_dict = {'polygon': {}, 'line': {}, 'point': {}, 'circle': {}, 'angle': {}}
 
+error_color = True
+
 
 def error(name=None, msg=None, lineno=None):
     """Wrapper function for error handling"""
     if name is not None:
-        print("\033[31;1;4mError:\033[0m %s" % name, file=sys.stderr)
+        if error_color:
+            print("\033[31;1;4mError:\033[0m %s" % name, file=sys.stderr)
+        else:
+            print("Error: %s" % name, file=sys.stderr)
     if msg is not None:
         print(msg, file=sys.stderr)
     if lineno is not None:
-        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno),
-              file=sys.stderr)
+        if error_color:
+            print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno),
+                  file=sys.stderr)
+
+        else:
+            print("Line Number: %d" % int(lineno),
+                  file=sys.stderr)
     sys.exit(1)
 
 
@@ -838,7 +848,12 @@ if __name__ == "__main__":
                         help="If present, output a copy of the HTML "
                              "for distrubition",
                         action='store_true')
+    parser.add_argument("-nc",
+                        "--nocolor",
+                        help="If present, don't output errors in color",
+                        action='store_false')
     args = parser.parse_args()
+    error_color = args.nocolor
 
     with open(args.path) as f:
         text = f.read()
