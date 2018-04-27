@@ -512,12 +512,20 @@ def parse_location(keyword_args, lineno=None):
                   msg="The location command is malformed. Maybe you forgot to "
                       "specify 'x='?",
                   lineno=lineno)
+        except ValueError:
+            error(name="Not a number",
+                  msg="You did not specify a number for the x coordinate",
+                  lineno=lineno)
         try:
             y = float(keyword_args["y"])
         except KeyError:
             error(name="Malformed 'loc' command",
                   msg="The location command is malformed. Maybe you forgot to "
                       "specify 'y='?",
+                  lineno=lineno)
+        except ValueError:
+            error(name="Not a number",
+                  msg="You did not specify a number for the y coordinate",
                   lineno=lineno)
     if obj_dict['point'].get(name):
         o = obj_dict['point'][name]
