@@ -676,8 +676,11 @@ def final_check(points):
     for p in points:
         constraints = p.constraints
         if len(p.lies_on) == 1:
-            p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
-            return p
+            if [x for x in p.lies_on][0].symify() is not None:
+                p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
+                return p
+            else:
+                return None
         elif len(p.lies_on) > 1:
             symified_constraints = []
             # Get all of the constraints that we have processed and given
