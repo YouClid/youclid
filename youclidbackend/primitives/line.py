@@ -1,6 +1,9 @@
 import sympy
+import math
+import random
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
+from youclidbackend.utils import lerp
 
 
 class Line(YouClidObject):
@@ -11,6 +14,7 @@ class Line(YouClidObject):
         self.p2 = None
         self.name = name
         self.color = youclidbackend.colors.next_color()
+        self.constraints = set()
 
     def __str__(self):
         return "Line %s(%s, %s)" % (str(self.name),
@@ -38,8 +42,26 @@ class Line(YouClidObject):
                 'p2': "point_"+self.p2.name if self.p2 is not None else None,
                }
 
-    def symify(self):
-        try:
-            return sympy.Line(self.p1.symify(), self.p2.symify())
-        except:
+    def length(self):
+        if (self.p1 is None or self.p2 is None or
+                self.p1.x is None or self.p2.x is None):
             return None
+        else:
+            return math.sqrt((self.p2.x - self.p1.x)**2 +
+                             (self.p2.y - self.p1.y)**2)
+
+    def arbitrary_point(self):
+        t = random.uniform(0.2, 0.8)  # Add a pad so its not too close to endpoints
+        nx = lerp(self.p1.x, self.p2.x, t)
+        ny = lerp(self.p1.y, self.p2.y, t)
+
+        return (nx, ny)
+
+    def symify(self):
+        if self.p1.x is None or self.p2.x is None:
+            return None
+        sym_p1 = self.p1.symify()
+        sym_p2 = self.p2.symify()
+        if sym_p1 is None or sym_p2 is None:
+            return None
+        return sympy.Segment(sym_p1, sym_p2)

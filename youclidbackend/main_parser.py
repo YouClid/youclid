@@ -6,7 +6,6 @@ import json
 import re
 import shlex
 import random
-import math
 import sys
 
 import youclidbackend
@@ -21,7 +20,7 @@ polygons = {3: "Triangle",
             6: "Hexagon",
             8: "Octagon"}
 
-obj_dict = {'polygon':{}, 'line':{}, 'point':{}, 'circle':{}, 'angle':{}}
+obj_dict = {'polygon': {}, 'line': {}, 'point': {}, 'circle': {}, 'angle': {}}
 
 
 def error(name=None, msg=None, lineno=None):
@@ -31,7 +30,8 @@ def error(name=None, msg=None, lineno=None):
     if msg is not None:
         print(msg, file=sys.stderr)
     if lineno is not None:
-        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno), file=sys.stderr)
+        print("\033[32;1;4mLine Number:\033[0m %d" % int(lineno),
+              file=sys.stderr)
     sys.exit(1)
 
 
@@ -43,6 +43,7 @@ def parse(text):
                                          "point": parse_point,
                                          "center": parse_center,
                                          "polygon": parse_polygon,
+                                         "triangle": parse_triangle,
                                          "loc": parse_location,
                                          "step": parse_step,
                                          "clear": parse_clear,
@@ -71,8 +72,14 @@ def parse(text):
                   lineno=lineno)
         # Call the appropriate parser function
         if(args_dict['type'] == 'angle'):
-            a.append(args_dict)
-        obj = f(args_dict)
+            a.append([args_dict, lineno])
+        try:
+            obj = f(args_dict, lineno)
+        except NotImplementedError as e:
+            error(name="Reference to object before creation",
+                  msg=("You attempted to use to lieson keyword with an object "
+                       "that does not yet exist"),
+                  lineno=lineno)
         # Now we need to handle the return value
 
         # Don't do anything special for locations
@@ -98,10 +105,10 @@ def parse(text):
 
     # Ensure that we have something in the animations variable
     animations.append([x for x in curr_step])
-    for angle in a:
-        parse_angle(angle)
 
     constrain(obj_dict)
+    for angle, lineno in a:
+        parse_angle(angle, lineno=lineno)
     # Create the output from the dictionary of objects
     return create_output(obj_dict, text, animations)
 
@@ -112,7 +119,7 @@ def tokenize(text):
    'data': The actual matched content
    """
 
-    s = shlex.shlex(text, punctuation_chars=']')
+    s = shlex.shlex(text, punctuation_chars=']=')
     # The next line is needed to remove the fact that shlex treats the "#"
     # character as a comment, which messes everything up if you use that
     # character!
@@ -131,6 +138,9 @@ def tokenize(text):
     # The previous character (so that we can make sure that we don't parse
     # things that are escaped)
     previous = ''
+    # For parsing keyword arguments
+    kwarg = ""
+
     for x in s:
         # If we've found an unescaped starting bracket, it's the start
         # of our syntax
@@ -141,6 +151,20 @@ def tokenize(text):
             linenumbers.append(s.lineno)
             # Append a new dictionary
             inner_tokens.append({'lineno': s.lineno, 'data': []})
+        # If we've got a keyword argument, store the previous thing (the name
+        # of the argument), and the equal sign
+        elif x == "=" and previous != '\\':
+            kwarg = previous + x
+        # Otherwise, if the previous thing we saw was an equal sign and we've
+        # started parsing keyword arguments, store the quoted data
+        elif previous == "=" and kwarg:
+            if ((x[0] == x[-1]) and (x[0] == '"' or x[0] == "'")):
+                kwarg += x[1:-1]
+            else:
+                kwarg += x
+            inner_tokens[-1]['data'].append(kwarg)
+            # Reset the keyword argument counter
+            kwarg = ""
         # If we're parsing our syntax (ie if depth is > 0) and we've found
         # an unescaped closing bracket, it's the end of our syntax
         elif depth and x == ']' and previous != '\\':
@@ -201,13 +225,13 @@ def _parse_match(partials):
     return args_dict
 
 
-def parse_line(keyword_args):
+def parse_line(keyword_args, lineno=None):
     name = keyword_args["name"]
     point_list = []
     ret = []
 
     for p in name:
-        if obj_dict['line'].get(p) is None:
+        if obj_dict['point'].get(p) is None:
             point = primitives.Point(p)
             point_list.append(point)
             obj_dict['point'][p] = point
@@ -230,7 +254,7 @@ def parse_line(keyword_args):
     return ret
 
 
-def parse_circle(keyword_args):
+def parse_circle(keyword_args, lineno=None):
     """Creates a circle object from the given parameters"""
 
     # Objects that we have created in this parse function, for display purposes
@@ -307,7 +331,7 @@ def parse_circle(keyword_args):
     return ret
 
 
-def parse_point(keyword_args):
+def parse_point(keyword_args, lineno=None):
     name = keyword_args["name"]
     ret = []
     if obj_dict['point'].get(name) is None:
@@ -319,11 +343,13 @@ def parse_point(keyword_args):
         ret.append("point_"+point.name)
     if keyword_args.get("random"):
         point.random = True
+    if keyword_args.get("lieson") is not None:
+        _parse_lieson(keyword_args["lieson"], point)
+
     return ret
 
 
-
-def parse_center(keyword_args):
+def parse_center(keyword_args, lineno=None):
     # ASSUME CIRCLE ALREADY EXISTS
     name = keyword_args["name"]
     circle = keyword_args["circle"]
@@ -340,14 +366,16 @@ def parse_center(keyword_args):
     return ret
 
 
-def parse_polygon(keyword_args):
+def parse_polygon(keyword_args, lineno=None):
     name = keyword_args['name']
     point_list = []
     ret = []
 
     for p in name:
         if obj_dict['point'].get(p) is None:
-            point_list.append(primitives.Point(p))
+            point = primitives.Point(p)
+            point_list.append(point)
+            obj_dict['point'][p] = point
         else:
             point_list.append(obj_dict['point'][p])
 
@@ -367,7 +395,15 @@ def parse_polygon(keyword_args):
     return ret
 
 
-def parse_angle(keyword_args):
+def parse_triangle(keyword_args, lineno=None):
+    """Small function to make dealing with triangles easier"""
+    if keyword_args.get("text") is None:
+        keyword_args['text'] = "triangle " + keyword_args["name"]
+    keyword_args['type'] = "polygon"
+    return parse_polygon(keyword_args, lineno=lineno)
+
+
+def parse_angle(keyword_args, lineno=None):
     """Creates an angle object from the given parameters"""
 
     ret = []
@@ -463,11 +499,26 @@ def get_degree(p1, p2, p3):
         return (360 - abs(in_degrees))
 
 
-def parse_location(keyword_args):
+def parse_location(keyword_args, lineno=None):
     """Parses the location for a particular point object"""
     name = keyword_args["name"]
-    x = float(keyword_args["x"])
-    y = float(keyword_args["y"])
+    if keyword_args.get("random"):
+        x, y = random.uniform(-1, 1), random.uniform(-1, 1)
+    else:
+        try:
+            x = float(keyword_args["x"])
+        except KeyError:
+            error(name="Malformed 'loc' command",
+                  msg="The location command is malformed. Maybe you forgot to "
+                      "specify 'x='?",
+                  lineno=lineno)
+        try:
+            y = float(keyword_args["y"])
+        except KeyError:
+            error(name="Malformed 'loc' command",
+                  msg="The location command is malformed. Maybe you forgot to "
+                      "specify 'y='?",
+                  lineno=lineno)
     if obj_dict['point'].get(name):
         o = obj_dict['point'][name]
     else:
@@ -481,62 +532,188 @@ def parse_location(keyword_args):
     return ["point_"+ret.name]
 
 
-def parse_step(keyword_args):
+def parse_step(keyword_args, lineno=None):
     return [_Step()]
 
 
-def parse_clear(keyword_args):
+def parse_clear(keyword_args, lineno=None):
     return [_Clear()]
+
+
+def _parse_lieson(parameters, point, lineno=None):
+    lieson_obj = None
+    valid = []
+    for v in obj_dict:
+        lieson_obj = obj_dict[v].get(parameters)
+        if lieson_obj is not None:
+            valid.append(lieson_obj)
+
+    if len(valid) > 1:
+        error(name="Ambiguous object",
+              msg="Multiple objects are have name %s: %s" %
+                   (parameters, str([" ".join([x.__class__.__name__, x.name])
+                                     for x in valid])),
+              lineno=lineno)
+    elif len(valid) == 1:
+        lieson_obj = valid[0]
+    else:
+        lieson_obj = None
+
+    if lieson_obj is None:
+        lieson_type = parameters.split()[0]
+        lieson_name = " ".join(parameters.split()[1:])
+        try:
+            tmp = obj_dict[lieson_type]
+        except KeyError:
+            error(name="Undefined object %s" % lieson_type,
+                  msg="You referenced an object that does not exist. Make "
+                      "sure that you defined lieson after the initial creation"
+                      " of the object",
+                  lineno=lineno)
+        if tmp is not None:
+            lieson_obj = tmp.get(lieson_name)
+    if lieson_obj is None:
+        raise NotImplementedError
+    else:
+        point.constraints.add(lieson_obj)
+        point.lies_on.add(lieson_obj)
+
 
 def constrain(obj_dict):
     """Takes in a object dictionary and modifies points, giving them
     coordinates"""
 
-    points = set()
-    for val in obj_dict.values():
-        for obj in val.values():
-            if type(obj) == primitives.Point and (obj.x is obj.y is None):
+    point_set = set()
+    for obj in obj_dict['point'].values():
+        if obj.x is None and obj.y is None:
                 if obj.random is True:
                     obj.x = random.uniform(-1, 1)
                     obj.y = random.uniform(-1, 1)
                 else:
-                    points.add(obj)
+                    point_set.add(obj)
 
+    i = 0
+    points = [y for y in point_set]
 
-    #for obj in obj_dict.values():
-    #    if type(obj) == primitives.Point and (obj.x is obj.y is None):
-    #        points.add(obj)
+    old_len = None
 
-    while True:
-        updated = False
-        for p in points:
-            try:
-                symified_constraints = [x.symify() for x in p.constraints
-                                        if x.symify() is not None]
-                intersection = sympy.intersection(*symified_constraints)
-                if intersection == []:
-                    tmp = symified_constraints[0].arbitrary_point()
-                    t = sympy.Symbol('t', real=True)
-                    r = random.uniform(0, 2*math.pi)
-                    intersection = [sympy.Point(tmp.x.subs(t, r),
-                                                tmp.y.subs(t, r))]
-                if p.x is not None:
+    while points:
+        if i == len(points):
+            # Ensure that something has changed
+            if old_len == len(points):
+                p = final_check(points)
+                if p is None:
+                    # If nothing has changed, error out
+                    error(name="Underconstrained system",
+                          msg="Unable to place the following points: " +
+                              str([x.name for x in points]))
+                else:
+                    points.remove(p)
+                    i = 0
                     continue
-                p.x = intersection[0].x
-                p.y = intersection[0].y
-                updated = True
-            except Exception as e:
-                continue
-        if not updated:
-            break
+            # Modular arithmetic
+            old_len = len(points)
+            i = 0
+        # Get the current point
+        p = points[i]
 
+        # If there are no constraints on the point, generate it randomly
+        if len(p.constraints) == 0:
+            p.x = random.uniform(-1, 1)
+            p.y = random.uniform(-1, 1)
+            points.remove(p)
+            i = 0
+            continue
+        # If there is one constraint on the point, we can plcae it anywhere
+        # on the constraint
+        elif len(p.constraints) == 1:
+            obj = list(p.constraints)[0]
+            # Check the symify constraint because of the fact that arbitrary
+            # point calls it
+            if obj is None or obj.symify() is None:
+                i += 1
+                continue
+
+            p.x, p.y = obj.arbitrary_point()
+
+            # Start the iteration over
+            i = 0
+            points.remove(p)
+        # Otherwise, there are multiple constraints
+        else:
+            symified_constraints = []
+            # Get all of the constraints that we have processed and given
+            # locations to
+            for x in p.constraints:
+                tmp = x.symify()
+                if tmp is not None:
+                    symified_constraints.append(tmp)
+            # Ensure that we have at least two constraints
+            # (to define an intersection); if not go to the next point
+            if len(symified_constraints) < 2:
+                i += 1
+                continue
+            # Compute the intersection
+            intersection = sympy.intersection(*symified_constraints)
+
+            # If there was no intersection, continue
+            if intersection == []:
+                i += 1
+                continue
+            # Otherwise, we have a list of possible intersections, pick
+            # one of them randomly to use
+            else:
+                r = random.randint(0, len(intersection) - 1)
+                p.x = float(intersection[r].x)
+                p.y = float(intersection[r].y)
+                i = 0
+                points.remove(p)
+
+
+def final_check(points):
+    """Performs a final check to make sure there are no constraints that
+    we can do anything with"""
     for p in points:
-        try:
-            p.x = float(p.x)
-            p.y = float(p.y)
-        except TypeError:
-            error(name="Underconstrained System",
-                  msg="The following object is underconstrained: %s" % p.name)
+        constraints = p.constraints
+        if len(p.lies_on) == 1:
+            if [x for x in p.lies_on][0].symify() is not None:
+                p.x, p.y = [x for x in p.lies_on][0].arbitrary_point()
+                return p
+            else:
+                return None
+        elif len(p.lies_on) > 1:
+            symified_constraints = []
+            # Get all of the constraints that we have processed and given
+            # locations to
+            for x in p.lies_on:
+                tmp = x.symify()
+                if tmp is not None:
+                    symified_constraints.append(tmp)
+            # Ensure that we have at least two constraints
+            # (to define an intersection); if not go to the next point
+            if len(symified_constraints) >= 2:
+                # Compute the intersection
+                intersection = sympy.intersection(*symified_constraints)
+                if intersection:
+                    p.x = float(intersection[0].x)
+                    p.y = float(intersection[0].y)
+                    return p
+            else:
+                return None
+
+        if all([type(c) == primitives.Line for c in constraints]):
+            p.x = random.uniform(-1, 1)
+            p.y = random.uniform(-1, 1)
+            return p
+        elif [type(c) for c in constraints].count(primitives.Circle) == 1:
+            for c in constraints:
+                if type(c) == primitives.Circle:
+                    circle = c
+                    break
+            if circle.symify() is not None:
+                p.x, p.y = circle.arbitrary_point()
+                return p
+    return None
 
 
 def format_text(text):
@@ -570,6 +747,8 @@ def get_text(match, step):
     # We need to replace "center" with "point" in order to get the correct
     # highlighting on the frontend
     t = args_dict['type'] if args_dict['type'] != 'center' else 'point'
+    # TODO: Hack, this should be changed
+    t = 'polygon' if t == 'triangle' else t
     span_name = "text_%s_%s_%s" % (t, t, args_dict['name'])
     output = " <span name=%s class='GeoElement'>{text}</span>" % span_name
     if (args_dict.get('hidden', False)):
@@ -665,4 +844,4 @@ if __name__ == "__main__":
         os.makedirs(args.output + "/styles", exist_ok=True)
         generate_html(json_object, args.final, path=args.output)
     else:
-        print(json_object)
+        print(json.dumps(json_object, indent=4))

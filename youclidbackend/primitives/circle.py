@@ -1,4 +1,6 @@
 import sympy
+import random
+import math
 import youclidbackend.colors
 from youclidbackend.primitives import YouClidObject
 
@@ -51,16 +53,30 @@ class Circle(YouClidObject):
     def radius_length(self):
         return self.radius[0].dist(self.radius[1]) if type(self.radius) is tuple else self.radius
 
+    def arbitrary_point(self):
+        """Compute an arbitrary point on the circle"""
+        tmp = self.symify().arbitrary_point()
+        t = sympy.Symbol('t', real=True)
+        r = random.uniform(0, 2*math.pi)
+        arbitrary_point = sympy.Point(tmp.x.subs(t, r),
+                                      tmp.y.subs(t, r))
+
+        # Convert the cordinates to floats and then assign them
+        return (float(arbitrary_point.x), float(arbitrary_point.y))
+
     def symify(self):
         # TODO: Implicityly assuming that the center is given coordaintes.
         if self.radius is None:
             if self.p1.x is not None:
                 self.radius = (self.center, self.p1)
-            if self.p2.x is not None:
+            elif self.p2.x is not None:
                 self.radius = (self.center, self.p2)
-            if self.p3.x is not None:
+            elif self.p3.x is not None:
                 self.radius = (self.center, self.p3)
-        try:
-            return sympy.Circle(self.center.symify(), self.radius_length())
-        except:
+            else:
+                return None
+
+        # TODO: Should this check go first?
+        if self.center.x is None:
             return None
+        return sympy.Circle(self.center.symify(), self.radius_length())

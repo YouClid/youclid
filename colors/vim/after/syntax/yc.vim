@@ -4,7 +4,7 @@ syntax case ignore
 " Match any character that isn't a \ which is followed by a [ which delimits
 " the start of one of our markups.
 syn region YouclidText matchgroup=YouclidMarker start="\\\@<!\[" end="\\\@<!\]" contains=YouclidKeyword keepend nextgroup=YouclidKeyword
-syn keyword YouclidKeyword contained point line circle center loc step polygon clear nextgroup=YouclidName
+syn keyword YouclidKeyword contained point line circle center loc step polygon clear angle triangle nextgroup=YouclidName
 syn region YouclidName matchgroup=YouclidMarker start=' ' end="[ \]]" contained
 
 " Youclid Customizations
